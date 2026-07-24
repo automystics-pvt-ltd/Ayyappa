@@ -22,7 +22,10 @@ echo "=== [6/7] Deploying files ==="
 rsync -av --delete artifacts/ayyappan-temple/dist/public/ \
   /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech/
 
+# Deploy to BOTH locations to cover whichever path PM2 is using
 rsync -av artifacts/api-server/dist/ /opt/ayyappan-api/dist/
+mkdir -p /home/automystics-ayyappan/api/dist
+rsync -av artifacts/api-server/dist/ /home/automystics-ayyappan/api/dist/
 
 echo "=== [7/7] Restarting API & seeding admin ==="
 pm2 restart ayyappan-api

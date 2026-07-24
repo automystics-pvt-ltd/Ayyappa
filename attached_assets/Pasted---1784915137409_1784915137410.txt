@@ -1,0 +1,462 @@
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 28 │ automystics-api       │ default     │ 0.0.0   │ fork    │ 1524446  │ 13D    │ 2    │ online    │ 0%       │ 227.9mb  │ root     │ disabled │
+│ 29 │ automystics-api       │ default     │ N/A     │ fork    │ 1130269  │ 0s     │ 178… │ online    │ 0%       │ 18.0mb   │ root     │ disabled │
+│ 35 │ ayyappan-api          │ default     │ N/A     │ cluster │ 1130262  │ 0s     │ 1975 │ online    │ 0%       │ 49.0mb   │ root     │ disabled │
+│ 32 │ docscan-api           │ default     │ 0.0.0   │ fork    │ 542910   │ 28h    │ 8    │ online    │ 0%       │ 146.3mb  │ root     │ disabled │
+│ 11 │ erp-automystics       │ default     │ N/A     │ fork    │ 342673   │ 2h     │ 11   │ online    │ 0%       │ 117.1mb  │ root     │ disabled │
+│ 1  │ fitro360              │ default     │ 1.0.0   │ fork    │ 1524182  │ 13D    │ 4    │ online    │ 0%       │ 110.1mb  │ root     │ disabled │
+│ 2  │ kalvicore-api         │ default     │ 0.0.0   │ fork    │ 198081   │ 29h    │ 8    │ online    │ 0%       │ 122.2mb  │ root     │ disabled │
+│ 13 │ mmwear-erp            │ default     │ 0.0.0   │ fork    │ 3396013  │ 3D     │ 137  │ online    │ 0%       │ 603.0mb  │ root     │ disabled │
+│ 14 │ mystics-audit         │ default     │ 0.0.0   │ fork    │ 1035800  │ 9D     │ 586  │ online    │ 0%       │ 214.0mb  │ root     │ disabled │
+│ 5  │ mysticscivil-api      │ default     │ N/A     │ fork    │ 1524242  │ 13D    │ 4    │ online    │ 0%       │ 222.3mb  │ root     │ disabled │
+│ 26 │ mysticshr-api         │ default     │ 0.0.0   │ fork    │ 852146   │ 8D     │ 14   │ online    │ 0%       │ 408.6mb  │ root     │ disabled │
+│ 12 │ mysticsinventory      │ default     │ N/A     │ fork    │ 1130191  │ 1s     │ 242… │ online    │ 38.7%    │ 78.5mb   │ root     │ disabled │
+│ 3  │ people-connect-api    │ default     │ 0.0.0   │ fork    │ 1524209  │ 13D    │ 4    │ online    │ 0%       │ 198.0mb  │ root     │ disabled │
+│ 6  │ solarnexus-api        │ default     │ 0.0.0   │ fork    │ 1524251  │ 13D    │ 4    │ online    │ 0%       │ 129.5mb  │ root     │ disabled │
+│ 4  │ tkprabhu-api          │ default     │ 0.0.0   │ fork    │ 1524217  │ 13D    │ 4    │ online    │ 3.2%     │ 194.2mb  │ root     │ disabled │
+│ 8  │ ungalrajeev-api       │ default     │ N/A     │ fork    │ 1129834  │ 5s     │ 957… │ online    │ 0%       │ 139.4mb  │ root     │ disabled │
+│ 7  │ ungaludan-sarath      │ default     │ 0.0.0   │ fork    │ 1524287  │ 13D    │ 4    │ online    │ 0%       │ 205.8mb  │ root     │ disabled │
+│ 9  │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1129886  │ 5s     │ 256… │ online    │ 0%       │ 135.8mb  │ root     │ disabled │
+│ 10 │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1524307  │ 13D    │ 199… │ online    │ 0%       │ 97.8mb   │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 99.9% | ram usage: 41.6% | lo: ⇓ 0.021mb/s ⇑ 0.021mb/s | eth0: ⇓ 2.315mb/s ⇑ 0.006mb/s | disk: ⇓ 0.027mb/s ⇑ 4.152mb/s |
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+INSERT 0 1
+{"status":"ok"} Done
+root@srv1609330:/opt/ayyappan-source# find / -name "pnpm-workspace.yaml" 2>/dev/null | grep -v node_modules | head -5
+find / -name ".git" -type d 2>/dev/null | grep -v node_modules | grep -v ".local" | head -5
+/home/automystics-erp/htdocs/erp.automystics.tech/pnpm-workspace.yaml
+/home/automystics-scada/htdocs/scada.automystics.tech/Mystics-Scada/pnpm-workspace.yaml
+/home/automystics-scada/htdocs/scada.automystics.tech/pnpm-workspace.yaml
+/home/automystics_civil/htdocs/mysticscivil.automystics.tech/pnpm-workspace.yaml
+/home/automystics-mysticsaudit/htdocs/mysticsaudit.automystics.tech/Mystics-Audit/pnpm-workspace.yaml
+/home/automystics-erp/htdocs/erp.automystics.tech/.git
+/home/automystics-scada/htdocs/scada.automystics.tech/.git
+/home/automystics-scada/htdocs/scada.automystics.tech/Mystics-Scada/.git
+/home/automystics_civil/htdocs/mysticscivil.automystics.tech/.git
+/home/automystics-mysticsaudit/htdocs/mysticsaudit.automystics.tech/.git
+root@srv1609330:/opt/ayyappan-source# # Find the running API bundle
+find /opt/ayyappan-api -name "*.mjs" 2>/dev/null
+
+# Then replace the old error message in-place
+sed -i 's/Email and password are required/Username and password required/g' /opt/ayyappan-api/dist/index.mjs
+
+# Restart
+pm2 restart ayyappan-api
+sleep 2
+
+# Test login
+curl -s -X POST http://127.0.0.1:3010/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin@2026$"}'
+/opt/ayyappan-api/dist/pino-worker.mjs
+/opt/ayyappan-api/dist/index.mjs
+/opt/ayyappan-api/dist/pino-file.mjs
+/opt/ayyappan-api/dist/thread-stream-worker.mjs
+/opt/ayyappan-api/dist/pino-pretty.mjs
+/opt/ayyappan-api/node_modules/event-target-shim/dist/event-target-shim.mjs
+/opt/ayyappan-api/node_modules/abort-controller/browser.mjs
+/opt/ayyappan-api/node_modules/abort-controller/polyfill.mjs
+/opt/ayyappan-api/node_modules/abort-controller/dist/abort-controller.mjs
+/opt/ayyappan-api/node_modules/node-fetch/lib/index.mjs
+/opt/ayyappan-api/node_modules/uuid/wrapper.mjs
+/opt/ayyappan-api/node_modules/hasown/eslint.config.mjs
+/opt/ayyappan-api/node_modules/bignumber.js/bignumber.mjs
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [ayyappan-api](ids: [ 35 ])
+[PM2] [ayyappan-api](35) ✓
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 28 │ automystics-api       │ default     │ 0.0.0   │ fork    │ 1524446  │ 13D    │ 2    │ online    │ 1.6%     │ 227.9mb  │ root     │ disabled │
+│ 29 │ automystics-api       │ default     │ N/A     │ fork    │ 1149157  │ 0s     │ 178… │ online    │ 0%       │ 49.3mb   │ root     │ disabled │
+│ 35 │ ayyappan-api          │ default     │ N/A     │ cluster │ 1149168  │ 0s     │ 2091 │ online    │ 0%       │ 46.5mb   │ root     │ disabled │
+│ 32 │ docscan-api           │ default     │ 0.0.0   │ fork    │ 542910   │ 28h    │ 8    │ online    │ 0%       │ 146.3mb  │ root     │ disabled │
+│ 11 │ erp-automystics       │ default     │ N/A     │ fork    │ 342673   │ 2h     │ 11   │ online    │ 0%       │ 117.1mb  │ root     │ disabled │
+│ 1  │ fitro360              │ default     │ 1.0.0   │ fork    │ 1524182  │ 13D    │ 4    │ online    │ 0%       │ 110.1mb  │ root     │ disabled │
+│ 2  │ kalvicore-api         │ default     │ 0.0.0   │ fork    │ 198081   │ 29h    │ 8    │ online    │ 0%       │ 122.2mb  │ root     │ disabled │
+│ 13 │ mmwear-erp            │ default     │ 0.0.0   │ fork    │ 3396013  │ 3D     │ 137  │ online    │ 1.6%     │ 603.0mb  │ root     │ disabled │
+│ 14 │ mystics-audit         │ default     │ 0.0.0   │ fork    │ 1035800  │ 9D     │ 586  │ online    │ 0%       │ 214.0mb  │ root     │ disabled │
+│ 5  │ mysticscivil-api      │ default     │ N/A     │ fork    │ 1524242  │ 13D    │ 4    │ online    │ 0%       │ 222.3mb  │ root     │ disabled │
+│ 26 │ mysticshr-api         │ default     │ 0.0.0   │ fork    │ 852146   │ 8D     │ 14   │ online    │ 0%       │ 408.6mb  │ root     │ disabled │
+│ 12 │ mysticsinventory      │ default     │ N/A     │ fork    │ 1149096  │ 0s     │ 242… │ online    │ 62.9%    │ 80.4mb   │ root     │ disabled │
+│ 3  │ people-connect-api    │ default     │ 0.0.0   │ fork    │ 1524209  │ 13D    │ 4    │ online    │ 0%       │ 198.0mb  │ root     │ disabled │
+│ 6  │ solarnexus-api        │ default     │ 0.0.0   │ fork    │ 1524251  │ 13D    │ 4    │ online    │ 0%       │ 129.5mb  │ root     │ disabled │
+│ 4  │ tkprabhu-api          │ default     │ 0.0.0   │ fork    │ 1524217  │ 13D    │ 4    │ online    │ 0%       │ 194.2mb  │ root     │ disabled │
+│ 8  │ ungalrajeev-api       │ default     │ N/A     │ fork    │ 1148491  │ 9s     │ 957… │ online    │ 0%       │ 139.5mb  │ root     │ disabled │
+│ 7  │ ungaludan-sarath      │ default     │ 0.0.0   │ fork    │ 1524287  │ 13D    │ 4    │ online    │ 0%       │ 205.8mb  │ root     │ disabled │
+│ 9  │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1148983  │ 2s     │ 256… │ online    │ 25.8%    │ 136.3mb  │ root     │ disabled │
+│ 10 │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1524307  │ 13D    │ 199… │ online    │ 0%       │ 97.8mb   │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 99.9% | ram usage: 41.6% | lo: ⇓ 0.022mb/s ⇑ 0.022mb/s | eth0: ⇓ 0.001mb/s ⇑ 0.002mb/s | disk: ⇓ 2.871mb/s ⇑ 1.161mb/s |
+{"error":"Email and password are requi# Find exact string in the bundlen-source# # Find exact string in the bundle
+grep -o '"Email[^"]*"' /opt/ayyappan-api/dist/index.mjs | head -5
+"Email"
+"Email"
+"Email"
+"Email"
+"Email"
+root@srv1609330:/opt/ayyappan-source# node -e "
+const fs = require('fs');
+let code = fs.readFileSync('/opt/ayyappan-api/dist/index.mjs', 'utf8');
+const before = code.length;
+// Fix all variants of the wrong error message
+code = code.replace(/Email and password are required/g, 'Username and password required');
+code = code.replace(/email.*password.*required/gi, 'Username and password required');
+fs.writeFileSync('/opt/ayyappan-api/dist/index.mjs', code);
+console.log('Patched', before, '->', code.length, 'chars');
+"
+
+pm2 restart ayyappan-api
+sleep 2
+
+# Test
+curl -s -X POST http://127.0.0.1:3010/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin@2026$"}'
+Patched 10611732 -> 10611732 chars
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [ayyappan-api](ids: [ 35 ])
+[PM2] [ayyappan-api](35) ✓
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 28 │ automystics-api       │ default     │ 0.0.0   │ fork    │ 1524446  │ 13D    │ 2    │ online    │ 0%       │ 227.9mb  │ root     │ disabled │
+│ 29 │ automystics-api       │ default     │ N/A     │ fork    │ 1158226  │ 0      │ 178… │ stopped   │ 0%       │ 0b       │ root     │ disabled │
+│ 35 │ ayyappan-api          │ default     │ N/A     │ cluster │ 1158300  │ 0s     │ 2147 │ online    │ 0%       │ 47.9mb   │ root     │ disabled │
+│ 32 │ docscan-api           │ default     │ 0.0.0   │ fork    │ 542910   │ 28h    │ 8    │ online    │ 0%       │ 146.3mb  │ root     │ disabled │
+│ 11 │ erp-automystics       │ default     │ N/A     │ fork    │ 342673   │ 2h     │ 11   │ online    │ 0%       │ 117.1mb  │ root     │ disabled │
+│ 1  │ fitro360              │ default     │ 1.0.0   │ fork    │ 1524182  │ 13D    │ 4    │ online    │ 0%       │ 110.1mb  │ root     │ disabled │
+│ 2  │ kalvicore-api         │ default     │ 0.0.0   │ fork    │ 198081   │ 29h    │ 8    │ online    │ 0%       │ 122.2mb  │ root     │ disabled │
+│ 13 │ mmwear-erp            │ default     │ 0.0.0   │ fork    │ 3396013  │ 3D     │ 137  │ online    │ 0%       │ 603.0mb  │ root     │ disabled │
+│ 14 │ mystics-audit         │ default     │ 0.0.0   │ fork    │ 1035800  │ 9D     │ 586  │ online    │ 0%       │ 214.0mb  │ root     │ disabled │
+│ 5  │ mysticscivil-api      │ default     │ N/A     │ fork    │ 1524242  │ 13D    │ 4    │ online    │ 0%       │ 222.3mb  │ root     │ disabled │
+│ 26 │ mysticshr-api         │ default     │ 0.0.0   │ fork    │ 852146   │ 8D     │ 14   │ online    │ 0%       │ 408.6mb  │ root     │ disabled │
+│ 12 │ mysticsinventory      │ default     │ N/A     │ fork    │ 1158307  │ 0s     │ 242… │ online    │ 0%       │ 39.0mb   │ root     │ disabled │
+│ 3  │ people-connect-api    │ default     │ 0.0.0   │ fork    │ 1524209  │ 13D    │ 4    │ online    │ 0%       │ 198.0mb  │ root     │ disabled │
+│ 6  │ solarnexus-api        │ default     │ 0.0.0   │ fork    │ 1524251  │ 13D    │ 4    │ online    │ 3.4%     │ 129.5mb  │ root     │ disabled │
+│ 4  │ tkprabhu-api          │ default     │ 0.0.0   │ fork    │ 1524217  │ 13D    │ 4    │ online    │ 0%       │ 194.2mb  │ root     │ disabled │
+│ 8  │ ungalrajeev-api       │ default     │ N/A     │ fork    │ 1158062  │ 2s     │ 957… │ online    │ 0%       │ 139.9mb  │ root     │ disabled │
+│ 7  │ ungaludan-sarath      │ default     │ 0.0.0   │ fork    │ 1524287  │ 13D    │ 4    │ online    │ 0%       │ 205.8mb  │ root     │ disabled │
+│ 9  │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1157908  │ 4s     │ 256… │ online    │ 27.6%    │ 0b       │ root     │ disabled │
+│ 10 │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1524307  │ 13D    │ 199… │ online    │ 0%       │ 97.8mb   │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 99.8% | ram usage: 41.5% | lo: ⇓ 0.021mb/s ⇑ 0.021mb/s | eth0: ⇓ 0.001mb/s ⇑ 0.002mb/s | disk: ⇓ 0mb/s ⇑ 0.213mb/s |
+{"error":"Email and password are required"}root@srv1609330:/opt/ayyappan-source# ls /opt/ayyappan-source/
+artifacts  attached_assets  deploy  lib  node_modules  package.json  pnpm-lock.yaml  pnpm-workspace.yaml  replit.md  replit.nix  scripts  tsconfig.base.json  tsconfig.json  zipFile.zip
+root@srv1609330:/opt/ayyappan-source# cd /opt/ayyappan-source
+git pull origin main
+pnpm install
+pnpm --filter @workspace/api-server build
+rsync -av artifacts/api-server/dist/ /opt/ayyappan-api/dist/
+pm2 restart ayyappan-api
+sleep 2
+curl -s -X POST http://127.0.0.1:3010/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin@2026$"}'
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+Scope: all 10 workspace projects
+✓ Lockfile passes supply-chain policies (verified 2h ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+└─ Done in 54ms
+[ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild@0.27.3
+
+Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.
+Scope: all 10 workspace projects
+✓ Lockfile passes supply-chain policies (verified 2h ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+└─ Done in 36ms
+[ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild@0.27.3
+
+Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.
+[ERROR] Command failed with exit code 1: pnpm install
+
+pnpm: Command failed with exit code 1: pnpm install
+    at getFinalError (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:88203:14)
+    at makeError (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:90510:21)
+    at getSyncResult (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:92354:10)
+    at spawnSubprocessSync (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:92314:14)
+    at execaCoreSync (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:92244:23)
+    at callBoundExeca (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:94772:23)
+    at boundExeca (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:94749:49)
+    at sync2 (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:94904:14)
+    at runPnpmCli (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:249523:5)
+    at runDepsStatusCheck (file:///usr/lib/node_modules/pnpm/dist/pnpm.mjs:251287:7)
+sending incremental file list
+rsync: [sender] change_dir "/opt/ayyappan-source/artifacts/api-server/dist" failed: No such file or directory (2)
+
+sent 19 bytes  received 12 bytes  62.00 bytes/sec
+total size is 0  speedup is 0.00
+rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1356) [sender=3.2.7]
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [ayyappan-api](ids: [ 35 ])
+[PM2] [ayyappan-api](35) ✓
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 28 │ automystics-api       │ default     │ 0.0.0   │ fork    │ 1524446  │ 13D    │ 2    │ online    │ 0%       │ 227.9mb  │ root     │ disabled │
+│ 29 │ automystics-api       │ default     │ N/A     │ fork    │ 1161415  │ 0      │ 178… │ stopped   │ 0%       │ 0b       │ root     │ disabled │
+│ 35 │ ayyappan-api          │ default     │ N/A     │ cluster │ 1161452  │ 0s     │ 2165 │ online    │ 0%       │ 48.7mb   │ root     │ disabled │
+│ 32 │ docscan-api           │ default     │ 0.0.0   │ fork    │ 542910   │ 28h    │ 8    │ online    │ 2.4%     │ 146.3mb  │ root     │ disabled │
+│ 11 │ erp-automystics       │ default     │ N/A     │ fork    │ 342673   │ 2h     │ 11   │ online    │ 0%       │ 117.1mb  │ root     │ disabled │
+│ 1  │ fitro360              │ default     │ 1.0.0   │ fork    │ 1524182  │ 13D    │ 4    │ online    │ 0%       │ 110.1mb  │ root     │ disabled │
+│ 2  │ kalvicore-api         │ default     │ 0.0.0   │ fork    │ 198081   │ 29h    │ 8    │ online    │ 0%       │ 122.2mb  │ root     │ disabled │
+│ 13 │ mmwear-erp            │ default     │ 0.0.0   │ fork    │ 3396013  │ 3D     │ 137  │ online    │ 0%       │ 603.0mb  │ root     │ disabled │
+│ 14 │ mystics-audit         │ default     │ 0.0.0   │ fork    │ 1035800  │ 9D     │ 586  │ online    │ 0%       │ 214.0mb  │ root     │ disabled │
+│ 5  │ mysticscivil-api      │ default     │ N/A     │ fork    │ 1524242  │ 13D    │ 4    │ online    │ 0%       │ 222.3mb  │ root     │ disabled │
+│ 26 │ mysticshr-api         │ default     │ 0.0.0   │ fork    │ 852146   │ 8D     │ 14   │ online    │ 0%       │ 408.6mb  │ root     │ disabled │
+│ 12 │ mysticsinventory      │ default     │ N/A     │ fork    │ 1161429  │ 0s     │ 242… │ online    │ 0%       │ 67.8mb   │ root     │ disabled │
+│ 3  │ people-connect-api    │ default     │ 0.0.0   │ fork    │ 1524209  │ 13D    │ 4    │ online    │ 0%       │ 198.0mb  │ root     │ disabled │
+│ 6  │ solarnexus-api        │ default     │ 0.0.0   │ fork    │ 1524251  │ 13D    │ 4    │ online    │ 0%       │ 129.5mb  │ root     │ disabled │
+│ 4  │ tkprabhu-api          │ default     │ 0.0.0   │ fork    │ 1524217  │ 13D    │ 4    │ online    │ 0%       │ 194.2mb  │ root     │ disabled │
+│ 8  │ ungalrajeev-api       │ default     │ N/A     │ fork    │ 1160829  │ 9s     │ 957… │ online    │ 0%       │ 139.4mb  │ root     │ disabled │
+│ 7  │ ungaludan-sarath      │ default     │ 0.0.0   │ fork    │ 1524287  │ 13D    │ 4    │ online    │ 0%       │ 205.8mb  │ root     │ disabled │
+│ 9  │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1161202  │ 3s     │ 256… │ online    │ 0%       │ 135.8mb  │ root     │ disabled │
+│ 10 │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1524307  │ 13D    │ 199… │ online    │ 0%       │ 97.8mb   │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 99.8% | ram usage: 40.4% | lo: ⇓ 0.022mb/s ⇑ 0.022mb/s | eth0: ⇓ 0.001mb/s ⇑ 0.002mb/s | disk: ⇓ 0mb/s ⇑ 0.602mb/s |
+{"error":"Email and password are requicd /opt/ayyappan-sourcept/ayyappan-source# cd /opt/ayyappan-source
+
+# Fix 1: discard server-side changes, pull latest
+git checkout -- .
+git pull origin main
+
+# Fix 2: approve esbuild then install
+pnpm approve-builds
+pnpm install
+
+# Fix 3: build API
+pnpm --filter @workspace/api-server build
+
+# Deploy API bundle
+rsync -av artifacts/api-server/dist/ /opt/ayyappan-api/dist/
+
+# Restart
+pm2 restart ayyappan-api
+sleep 3
+
+# Test login
+curl -s -X POST http://127.0.0.1:3010/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin@2026$"}'
+remote: Enumerating objects: 18, done.
+remote: Counting objects: 100% (18/18), done.
+remote: Compressing objects: 100% (10/10), done.
+remote: Total 16 (delta 9), reused 13 (delta 6), pack-reused 0 (from 0)
+Unpacking objects: 100% (16/16), 367.12 KiB | 9.92 MiB/s, done.
+From https://github.com/automystics-pvt-ltd/AyyappanTempleWebsite
+ * branch            main       -> FETCH_HEAD
+   12417fb..5082aca  main       -> origin/main
+Updating 12417fb..5082aca
+Fast-forward
+ attached_assets/Pasted-root-srv1609330-home-automystics-ayyappan-htdocs-vadama_1784912109596.txt |  59 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ attached_assets/Pasted-root-srv1609330-opt-ayyappan-source-cd-opt-ayyappan-sou_1784912772273.txt |  77 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ attached_assets/Pasted-root-srv1609330-opt-ayyappan-source-find-name-pnpm-work_1784912609931.txt |  67 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ attached_assets/image_1784912396214.png                                                          | Bin 0 -> 390009 bytes
+ 4 files changed, 203 insertions(+)
+ create mode 100644 attached_assets/Pasted-root-srv1609330-home-automystics-ayyappan-htdocs-vadama_1784912109596.txt
+ create mode 100644 attached_assets/Pasted-root-srv1609330-opt-ayyappan-source-cd-opt-ayyappan-sou_1784912772273.txt
+ create mode 100644 attached_assets/Pasted-root-srv1609330-opt-ayyappan-source-find-name-pnpm-work_1784912609931.txt
+ create mode 100644 attached_assets/image_1784912396214.png
+✔ Choose which packages to build (Press <space> to select, <a> to toggle all, <i> to invert selection) 
+All packages were added to allowBuilds with value false.
+Scope: all 10 workspace projects
+✓ Lockfile passes supply-chain policies (verified 2h ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+└─ Done in 29ms
+Done in 2.8s using pnpm v11.17.0
+$ node ./build.mjs
+
+  dist/index.mjs                      10.1mb ⚠️
+  dist/pino-worker.mjs               153.4kb
+  dist/pino-file.mjs                 142.1kb
+  dist/pino-pretty.mjs               114.4kb
+  dist/thread-stream-worker.mjs        7.3kb
+  dist/index.mjs.map                  16.8mb
+  dist/pino-worker.mjs.map           256.9kb
+  dist/pino-file.mjs.map             229.0kb
+  dist/pino-pretty.mjs.map           203.6kb
+  dist/thread-stream-worker.mjs.map   12.0kb
+
+⚡ Done in 4350ms
+sending incremental file list
+./
+index.mjs
+index.mjs.map
+pino-file.mjs
+pino-file.mjs.map
+pino-pretty.mjs
+pino-pretty.mjs.map
+pino-worker.mjs
+pino-worker.mjs.map
+thread-stream-worker.mjs
+thread-stream-worker.mjs.map
+
+sent 29,415,458 bytes  received 209 bytes  58,831,334.00 bytes/sec
+total size is 29,407,550  speedup is 1.00
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [ayyappan-api](ids: [ 35 ])
+[PM2] [ayyappan-api](35) ✓
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 28 │ automystics-api       │ default     │ 0.0.0   │ fork    │ 1524446  │ 13D    │ 2    │ online    │ 0%       │ 227.9mb  │ root     │ disabled │
+│ 29 │ automystics-api       │ default     │ N/A     │ fork    │ 1169898  │ 0s     │ 178… │ online    │ 0%       │ 34.6mb   │ root     │ disabled │
+│ 35 │ ayyappan-api          │ default     │ N/A     │ cluster │ 1169904  │ 0s     │ 2216 │ online    │ 0%       │ 48.5mb   │ root     │ disabled │
+│ 32 │ docscan-api           │ default     │ 0.0.0   │ fork    │ 542910   │ 28h    │ 8    │ online    │ 0%       │ 146.3mb  │ root     │ disabled │
+│ 11 │ erp-automystics       │ default     │ N/A     │ fork    │ 342673   │ 2h     │ 11   │ online    │ 0%       │ 117.1mb  │ root     │ disabled │
+│ 1  │ fitro360              │ default     │ 1.0.0   │ fork    │ 1524182  │ 13D    │ 4    │ online    │ 0%       │ 110.1mb  │ root     │ disabled │
+│ 2  │ kalvicore-api         │ default     │ 0.0.0   │ fork    │ 198081   │ 29h    │ 8    │ online    │ 0%       │ 122.2mb  │ root     │ disabled │
+│ 13 │ mmwear-erp            │ default     │ 0.0.0   │ fork    │ 3396013  │ 3D     │ 137  │ online    │ 0%       │ 603.0mb  │ root     │ disabled │
+│ 14 │ mystics-audit         │ default     │ 0.0.0   │ fork    │ 1035800  │ 9D     │ 586  │ online    │ 0%       │ 214.0mb  │ root     │ disabled │
+│ 5  │ mysticscivil-api      │ default     │ N/A     │ fork    │ 1524242  │ 13D    │ 4    │ online    │ 0%       │ 222.3mb  │ root     │ disabled │
+│ 26 │ mysticshr-api         │ default     │ 0.0.0   │ fork    │ 852146   │ 8D     │ 14   │ online    │ 0%       │ 408.6mb  │ root     │ disabled │
+│ 12 │ mysticsinventory      │ default     │ N/A     │ fork    │ 1169892  │ 0s     │ 242… │ online    │ 0%       │ 47.8mb   │ root     │ disabled │
+│ 3  │ people-connect-api    │ default     │ 0.0.0   │ fork    │ 1524209  │ 13D    │ 4    │ online    │ 0%       │ 198.0mb  │ root     │ disabled │
+│ 6  │ solarnexus-api        │ default     │ 0.0.0   │ fork    │ 1524251  │ 13D    │ 4    │ online    │ 0%       │ 129.5mb  │ root     │ disabled │
+│ 4  │ tkprabhu-api          │ default     │ 0.0.0   │ fork    │ 1524217  │ 13D    │ 4    │ online    │ 0%       │ 194.2mb  │ root     │ disabled │
+│ 8  │ ungalrajeev-api       │ default     │ N/A     │ fork    │ 1169810  │ 1s     │ 957… │ online    │ 51.7%    │ 113.7mb  │ root     │ disabled │
+│ 7  │ ungaludan-sarath      │ default     │ 0.0.0   │ fork    │ 1524287  │ 13D    │ 4    │ online    │ 0%       │ 205.8mb  │ root     │ disabled │
+│ 9  │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1169868  │ 0s     │ 256… │ online    │ 44.8%    │ 81.6mb   │ root     │ disabled │
+│ 10 │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1524307  │ 13D    │ 199… │ online    │ 0%       │ 97.8mb   │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 99.7% | ram usage: 40.7% | lo: ⇓ 0.02mb/s ⇑ 0.02mb/s | eth0: ⇓ 0.002mb/s ⇑ 0.002mb/s | disk: ⇓ 0mb/s ⇑ 0.396mb/s |
+{"error":"Email and password are requicd /opt/ayyappan-sourcept/ayyappan-source# cd /opt/ayyappan-source
+git checkout -- .
+git pull origin main
+pnpm approve-builds || true
+pnpm install
+pnpm --filter @workspace/ayyappan-temple build
+pnpm --filter @workspace/api-server build
+rsync -av --delete artifacts/ayyappan-temple/dist/public/ \
+  /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech/
+rsync -av artifacts/api-server/dist/ /opt/ayyappan-api/dist/
+pm2 restart ayyappan-api
+sleep 3
+PGPASSWORD='Temple2026secure' psql \
+  "postgresql://ayyappan_user:Temple2026secure@127.0.0.1:5432/ayyappan_temple" \
+  -c "INSERT INTO admins (username,password_hash,role,display_name)
+      VALUES ('admin','\$2b\$12\$MjGaLRSbIHv.lFpEKrtZmu7lVuBpFzDEcNBOwGTl9.WtodRcz2LnG','super_admin','முதன்மை நிர்வாகி')
+      ON CONFLICT (username) DO UPDATE SET password_hash=EXCLUDED.password_hash, role=EXCLUDED.role;"
+curl -s -X POST http://127.0.0.1:3010/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin@2026$"}' && echo " Login OK"
+remote: Enumerating objects: 38, done.
+remote: Counting objects: 100% (38/38), done.
+remote: Compressing objects: 100% (11/11), done.
+remote: Total 27 (delta 16), reused 27 (delta 16), pack-reused 0 (from 0)
+Unpacking objects: 100% (27/27), 88.09 KiB | 3.52 MiB/s, done.
+From https://github.com/automystics-pvt-ltd/AyyappanTempleWebsite
+ * branch            main       -> FETCH_HEAD
+   5082aca..53ec6c8  main       -> origin/main
+Updating 5082aca..53ec6c8
+Fast-forward
+ artifacts/ayyappan-temple/index.html                                  |   6 +++---
+ artifacts/ayyappan-temple/src/components/sections/Hero.tsx            |   2 +-
+ artifacts/ayyappan-temple/src/components/sections/Navbar.tsx          |   4 ++--
+ attached_assets/Screenshot_2026-07-24_at_9.45.40_PM_1784914604464.png | Bin 0 -> 1772990 bytes
+ attached_assets/image_1784914622762.png                               | Bin 0 -> 86622 bytes
+ deploy/deploy.sh                                                      |  51 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 57 insertions(+), 6 deletions(-)
+ create mode 100644 attached_assets/Screenshot_2026-07-24_at_9.45.40_PM_1784914604464.png
+ create mode 100644 attached_assets/image_1784914622762.png
+ create mode 100644 deploy/deploy.sh
+There are no packages awaiting approval
+Scope: all 10 workspace projects
+✓ Lockfile passes supply-chain policies (verified 3h ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+└─ Done in 35ms
+Done in 3.5s using pnpm v11.17.0
+$ vite build --config vite.config.ts
+failed to load config from /opt/ayyappan-source/artifacts/ayyappan-temple/vite.config.ts
+error during build:
+Error: PORT environment variable is required but was not provided.
+    at file:///opt/ayyappan-source/artifacts/ayyappan-temple/node_modules/.vite-temp/vite.config.ts.timestamp-1784915048022-312faa9ff5434.mjs:10:9
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:633:26
+    at async loadConfigFromBundledFile (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35996:12)
+    at async bundleAndLoadConfigFile (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35884:17)
+    at async loadConfigFromFile (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35851:42)
+    at async resolveConfig (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35500:22)
+    at async createBuilder (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:33955:19)
+    at async CAC.<anonymous> (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/cli.js:629:10)
+/opt/ayyappan-source/artifacts/ayyappan-temple:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @workspace/ayyappan-temple@0.0.0 build: `vite build --config vite.config.ts`
+Exit status 1
+$ node ./build.mjs
+
+  dist/index.mjs                      10.1mb ⚠️
+  dist/pino-worker.mjs               153.4kb
+  dist/pino-file.mjs                 142.1kb
+  dist/pino-pretty.mjs               114.4kb
+  dist/thread-stream-worker.mjs        7.3kb
+  dist/index.mjs.map                  16.8mb
+  dist/pino-worker.mjs.map           256.9kb
+  dist/pino-file.mjs.map             229.0kb
+  dist/pino-pretty.mjs.map           203.6kb
+  dist/thread-stream-worker.mjs.map   12.0kb
+
+⚡ Done in 3594ms
+sending incremental file list
+rsync: [sender] change_dir "/opt/ayyappan-source/artifacts/ayyappan-temple/dist/public" failed: No such file or directory (2)
+
+sent 19 bytes  received 19 bytes  76.00 bytes/sec
+total size is 0  speedup is 0.00
+rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1356) [sender=3.2.7]
+sending incremental file list
+./
+index.mjs
+index.mjs.map
+pino-file.mjs
+pino-file.mjs.map
+pino-pretty.mjs
+pino-pretty.mjs.map
+pino-worker.mjs
+pino-worker.mjs.map
+thread-stream-worker.mjs
+thread-stream-worker.mjs.map
+
+sent 29,415,458 bytes  received 209 bytes  58,831,334.00 bytes/sec
+total size is 29,407,550  speedup is 1.00
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [ayyappan-api](ids: [ 35 ])
+[PM2] [ayyappan-api](35) ✓
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 28 │ automystics-api       │ default     │ 0.0.0   │ fork    │ 1524446  │ 13D    │ 2    │ online    │ 0%       │ 227.9mb  │ root     │ disabled │
+│ 29 │ automystics-api       │ default     │ N/A     │ fork    │ 1335819  │ 0s     │ 179… │ online    │ 52.5%    │ 69.2mb   │ root     │ disabled │
+│ 35 │ ayyappan-api          │ default     │ N/A     │ cluster │ 1335850  │ 0s     │ 3180 │ online    │ 0%       │ 46.6mb   │ root     │ disabled │
+│ 32 │ docscan-api           │ default     │ 0.0.0   │ fork    │ 542910   │ 28h    │ 8    │ online    │ 0%       │ 147.2mb  │ root     │ disabled │
+│ 11 │ erp-automystics       │ default     │ N/A     │ fork    │ 342673   │ 3h     │ 11   │ online    │ 0%       │ 117.1mb  │ root     │ disabled │
+│ 1  │ fitro360              │ default     │ 1.0.0   │ fork    │ 1524182  │ 13D    │ 4    │ online    │ 2.5%     │ 110.1mb  │ root     │ disabled │
+│ 2  │ kalvicore-api         │ default     │ 0.0.0   │ fork    │ 198081   │ 30h    │ 8    │ online    │ 2.5%     │ 122.2mb  │ root     │ disabled │
+│ 13 │ mmwear-erp            │ default     │ 0.0.0   │ fork    │ 3396013  │ 3D     │ 137  │ online    │ 0%       │ 591.6mb  │ root     │ disabled │
+│ 14 │ mystics-audit         │ default     │ 0.0.0   │ fork    │ 1035800  │ 9D     │ 586  │ online    │ 2.5%     │ 214.8mb  │ root     │ disabled │
+│ 5  │ mysticscivil-api      │ default     │ N/A     │ fork    │ 1524242  │ 13D    │ 4    │ online    │ 0%       │ 222.3mb  │ root     │ disabled │
+│ 26 │ mysticshr-api         │ default     │ 0.0.0   │ fork    │ 852146   │ 8D     │ 14   │ online    │ 0%       │ 408.6mb  │ root     │ disabled │
+│ 12 │ mysticsinventory      │ default     │ N/A     │ fork    │ 1335844  │ 0s     │ 242… │ online    │ 0%       │ 58.1mb   │ root     │ disabled │
+│ 3  │ people-connect-api    │ default     │ 0.0.0   │ fork    │ 1524209  │ 13D    │ 4    │ online    │ 0%       │ 198.0mb  │ root     │ disabled │
+│ 6  │ solarnexus-api        │ default     │ 0.0.0   │ fork    │ 1524251  │ 13D    │ 4    │ online    │ 0%       │ 129.5mb  │ root     │ disabled │
+│ 4  │ tkprabhu-api          │ default     │ 0.0.0   │ fork    │ 1524217  │ 13D    │ 4    │ online    │ 0%       │ 194.2mb  │ root     │ disabled │
+│ 8  │ ungalrajeev-api       │ default     │ N/A     │ fork    │ 1335052  │ 13s    │ 957… │ online    │ 0%       │ 139.2mb  │ root     │ disabled │
+│ 7  │ ungaludan-sarath      │ default     │ 0.0.0   │ fork    │ 1524287  │ 13D    │ 4    │ online    │ 0%       │ 205.8mb  │ root     │ disabled │
+│ 9  │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1335627  │ 4s     │ 256… │ online    │ 0%       │ 136.8mb  │ root     │ disabled │
+│ 10 │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1524307  │ 13D    │ 199… │ online    │ 0%       │ 97.8mb   │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 99.9% | ram usage: 42.3% | lo: ⇓ 0.018mb/s ⇑ 0.018mb/s | eth0: ⇓ 0.004mb/s ⇑ 0.003mb/s | disk: ⇓ 1.2mb/s ⇑ 0.293mb/s |
+INSERT 0 1
+{"error":"Email and password are required"} Login OK
+root@srv1609330:/opt/ayyappan-source# 
