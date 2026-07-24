@@ -24,8 +24,6 @@ export function NewsSection() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (!loading && posts.length === 0) return null;
-
   return (
     <section id="news" className="py-20 bg-white">
       <div className="container mx-auto px-4 md:px-6 max-w-5xl">
@@ -50,6 +48,11 @@ export function NewsSection() {
             {[1, 2, 3].map((i) => (
               <div key={i} className="bg-[#F9F7F1] rounded-2xl h-48 animate-pulse" />
             ))}
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground">
+            <Newspaper className="w-10 h-10 mx-auto mb-3 opacity-30" />
+            <p className="text-sm">விரைவில் செய்திகள் வெளியிடப்படும்</p>
           </div>
         ) : (
           <motion.div

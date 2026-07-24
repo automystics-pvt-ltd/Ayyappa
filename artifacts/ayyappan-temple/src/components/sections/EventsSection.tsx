@@ -25,8 +25,6 @@ export function EventsSection() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (!loading && events.length === 0) return null;
-
   return (
     <section id="events" className="py-20 bg-[#F9F7F1]">
       <div className="container mx-auto px-4 md:px-6 max-w-5xl">
@@ -51,6 +49,11 @@ export function EventsSection() {
             {[1, 2, 3].map((i) => (
               <div key={i} className="bg-white rounded-2xl h-28 animate-pulse border border-border" />
             ))}
+          </div>
+        ) : events.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground">
+            <CalendarDays className="w-10 h-10 mx-auto mb-3 opacity-30" />
+            <p className="text-sm">விரைவில் நிகழ்வுகள் அறிவிக்கப்படும்</p>
           </div>
         ) : (
           <motion.div
