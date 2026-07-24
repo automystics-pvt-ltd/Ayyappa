@@ -1,1 +1,2 @@
 zipFile.zip filter=lfs diff=lfs merge=lfs -text
+deploy/ayyappan-temple-deploy.tar.gz filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "O6_8ID4ahu7NWo9wfIDwY"
+uri = "file://deploy/ayyappan-temple-deploy.tar.gz"
+type = "unspecified"
+title = "Ayyappan Temple — Deployment Package (54 MB)"
