@@ -183,18 +183,19 @@ export function Navbar() {
       <Ticker items={publishedNews} />
 
       {/* ── Automystics credit bar ── */}
-      <div className="bg-gray-900 text-white text-[11px] py-1 px-4">
-        <div className="container mx-auto flex items-center justify-center gap-3 flex-wrap text-center">
-          <span className="text-gray-400">
+      <div className="bg-gray-900 text-white text-[10px] sm:text-[11px] py-1 px-3 sm:px-4">
+        <div className="container mx-auto flex items-center justify-center gap-2 sm:gap-3 flex-wrap text-center">
+          <span className="text-gray-400 hidden sm:inline">
             Website · App · ERP?
             <span className="text-yellow-400 font-semibold ml-1">Automystics Technologies Pvt. Ltd.</span>
           </span>
-          <div className="flex items-center gap-3">
+          <span className="text-yellow-400 font-semibold sm:hidden">Automystics Technologies</span>
+          <div className="flex items-center gap-2 sm:gap-3">
             <a href="tel:9345127734" className="flex items-center gap-1 text-yellow-400 hover:text-yellow-300 font-medium">
               <Phone className="w-3 h-3" />9345127734
             </a>
-            <span className="text-gray-600 hidden sm:inline">|</span>
-            <a href="mailto:info@automystics.com" className="flex items-center gap-1 text-yellow-400 hover:text-yellow-300 font-medium">
+            <span className="text-gray-600">|</span>
+            <a href="mailto:info@automystics.com" className="hidden sm:flex items-center gap-1 text-yellow-400 hover:text-yellow-300 font-medium">
               <Mail className="w-3 h-3" />info@automystics.com
             </a>
           </div>
@@ -213,20 +214,20 @@ export function Navbar() {
             {/* Logo */}
             <button
               onClick={() => scrollTo('#home')}
-              className="flex items-center gap-2.5 shrink-0 group"
+              className="flex items-center gap-2 shrink-0 min-w-0 group"
             >
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors overflow-hidden shrink-0 ${
+              <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md transition-colors overflow-hidden shrink-0 ${
                 scrolled ? 'bg-orange-50 ring-2 ring-orange-300' : 'bg-white/20 backdrop-blur-sm ring-2 ring-white/40'
               }`}>
-                <img src="/iyyappan-logo.png" alt="ஐயப்பன்" className="w-9 h-9 object-contain drop-shadow" />
+                <img src="/iyyappan-logo.png" alt="ஐயப்பன்" className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow" />
               </div>
-              <div className="text-left">
-                <div className={`font-serif text-sm md:text-base font-bold leading-tight transition-colors ${
+              <div className="text-left min-w-0">
+                <div className={`font-serif text-xs sm:text-sm md:text-base font-bold leading-tight transition-colors truncate max-w-[140px] sm:max-w-none ${
                   scrolled ? 'text-primary' : 'text-white drop-shadow-md'
                 }`}>
                   ஸ்ரீ ஐயப்பன் திருக்கோவில்
                 </div>
-                <div className={`text-[10px] leading-tight transition-colors ${
+                <div className={`text-[9px] sm:text-[10px] leading-tight transition-colors hidden xs:block sm:block ${
                   scrolled ? 'text-muted-foreground' : 'text-white/70'
                 }`}>
                   வடமதுரை, திண்டுக்கல்
@@ -289,20 +290,22 @@ export function Navbar() {
             </nav>
 
             {/* ── Mobile: donate + hamburger ── */}
-            <div className="lg:hidden flex items-center gap-2">
+            <div className="lg:hidden flex items-center gap-2 shrink-0">
               <button
                 onClick={() => scrollTo('#donate')}
-                className="flex items-center gap-1 bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-xs font-semibold shadow-md"
+                className="flex items-center gap-1 bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-xs font-semibold shadow-md whitespace-nowrap"
               >
                 <HandCoins className="w-3.5 h-3.5" />
-                நன்கொடை
+                <span className="hidden xs:inline">நன்கொடை</span>
               </button>
               <button
                 onClick={() => setDrawerOpen(true)}
-                className={`p-2 rounded-lg transition-colors ${
-                  scrolled ? 'text-foreground hover:bg-muted' : 'text-white hover:bg-white/10'
+                className={`p-2.5 rounded-xl transition-colors border ${
+                  scrolled
+                    ? 'text-foreground bg-muted hover:bg-muted/80 border-border'
+                    : 'text-white bg-white/15 hover:bg-white/25 border-white/20'
                 }`}
-                aria-label="Menu"
+                aria-label="Menu திற"
               >
                 <Menu className="w-5 h-5" />
               </button>

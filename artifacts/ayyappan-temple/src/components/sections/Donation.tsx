@@ -682,7 +682,7 @@ export function Donation() {
         {stats && (
           <motion.div className="bg-card border border-card-border rounded-2xl p-6 md:p-8 shadow-lg mb-8"
             initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant}>
-            <div className="grid grid-cols-3 gap-4 mb-6 text-center">
+            <div className="grid grid-cols-1 xs:grid-cols-3 sm:grid-cols-3 gap-3 mb-6 text-center">
               {[
                 { value: fmt(stats.totalRaised), label: 'திரட்டப்பட்டது' },
                 { value: fmt(stats.goal),        label: 'நமது இலக்கு' },

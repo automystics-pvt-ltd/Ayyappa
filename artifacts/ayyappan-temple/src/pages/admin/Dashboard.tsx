@@ -101,9 +101,9 @@ export default function Dashboard() {
             )}
 
             {/* ── Chart + Progress ── */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Bar chart */}
-              <div className="col-span-2 bg-white rounded-2xl border border-orange-100 p-5 shadow-sm">
+              <div className="col-span-1 md:col-span-2 bg-white rounded-2xl border border-orange-100 p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-sm font-bold text-orange-900">மாதாந்திர நன்கொடைகள்</p>

@@ -37,7 +37,7 @@ export function About() {
             <p className="text-lg md:text-xl text-foreground/80 leading-relaxed mb-10 font-medium whitespace-pre-line">
               {history}
             </p>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
                 { Icon: Calendar, label: 'வருட வரலாறு', value: years },
                 { Icon: Clock,    label: 'தினசரி பூஜைகள்', value: pujas },

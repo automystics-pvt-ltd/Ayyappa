@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import templeHero from '@assets/temple_actual_photo.png';
+import templeHero from '@assets/temple_clean_v2.png';
 import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { NewsTicker } from './NewsTicker';
@@ -43,7 +43,7 @@ export function Hero() {
         <motion.div variants={staggerContainer} initial="hidden" animate="visible"
           className="flex flex-col items-center">
           <motion.div variants={fadeUpVariant} className="mb-6">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
               <span className="bg-gradient-to-b from-secondary via-secondary to-yellow-600 bg-clip-text text-transparent">
                 {title}
               </span>

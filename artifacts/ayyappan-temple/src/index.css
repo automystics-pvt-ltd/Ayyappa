@@ -6,6 +6,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Custom xs breakpoint: 480 px — fills the gap between bare mobile (0) and sm (640) */
+  --breakpoint-xs: 30rem; /* 480px */
+
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-border: hsl(var(--border));
