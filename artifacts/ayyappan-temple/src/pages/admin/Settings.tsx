@@ -51,8 +51,9 @@ const SECTIONS = [
     color: "from-blue-500 to-cyan-400",
     fields: [
       { key: "temple_address", label: "கோவில் முகவரி",  placeholder: "வடமதுரை, திண்டுக்கல்..." },
-      { key: "temple_phone",   label: "தொலைபேசி",       placeholder: "+91 98765 43210" },
-      { key: "temple_email",   label: "மின்னஞ்சல்",      placeholder: "temple@example.com" },
+      { key: "temple_phone",    label: "தொலைபேசி",                placeholder: "+91 98765 43210" },
+      { key: "temple_email",    label: "மின்னஞ்சல்",               placeholder: "temple@example.com" },
+      { key: "support_phone",   label: "உதவி மைய எண் (Helpline)", placeholder: "+91 XXXXXXXXXX" },
     ],
   },
 ];

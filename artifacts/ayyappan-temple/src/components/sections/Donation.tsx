@@ -5,7 +5,7 @@ import {
   Building, HeartHandshake, QrCode, ShieldCheck,
   CheckCircle2, Users, Upload, X, Image as ImageIcon,
   AlertCircle, MapPin, RefreshCw, ScanLine, IndianRupee,
-  ClipboardCheck, SendHorizonal,
+  ClipboardCheck, SendHorizonal, Phone, Megaphone, Clock,
 } from 'lucide-react';
 import { api, uploadScreenshot } from '@/lib/api';
 import { DonorWall, type Donor } from '@/components/sections/DonorWall';
@@ -728,6 +728,91 @@ export function Donation() {
             </motion.div>
           </motion.div>
         </div>
+
+        {/* ── Important Announcement Banner ── */}
+        <motion.div
+          className="mt-14"
+          initial="hidden" whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+          variants={fadeUpVariant}
+        >
+          <div className="relative overflow-hidden rounded-3xl border-2 border-amber-400/60 shadow-xl shadow-amber-100">
+            {/* Saffron gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50" />
+            {/* Decorative top strip */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-amber-400 to-orange-500" />
+            {/* Decorative Om watermark */}
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[120px] leading-none text-amber-200/40 font-serif select-none pointer-events-none hidden md:block">
+              ॐ
+            </div>
+
+            <div className="relative px-6 py-7 md:px-10 md:py-8">
+              {/* Header row */}
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 shadow-md shrink-0">
+                  <Megaphone className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">முக்கிய அறிவிப்பு</p>
+                  <h3 className="text-base md:text-lg font-bold text-orange-900 leading-tight">
+                    நன்கொடை பதிவு தொடர்பான அறிவிப்பு
+                  </h3>
+                </div>
+              </div>
+
+              {/* Body text */}
+              <div className="space-y-3 text-sm md:text-[15px] text-orange-900/85 leading-relaxed max-w-3xl">
+                <div className="flex items-start gap-2.5">
+                  <Clock className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                  <p>
+                    QR Code / UPI மூலம் நன்கொடை வழங்கிய பிறகு, உங்கள் நன்கொடை விவரம் இணையதளத்தில்
+                    புதுப்பிக்க <strong className="text-orange-700">சிறிது நேரம் ஆகலாம்.</strong>
+                  </p>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                  <p>
+                    நன்கொடை பதிவு செய்யப்படாதது, தவறான தகவல் காட்டப்படுவது அல்லது வேறு ஏதேனும் சிக்கல்
+                    ஏற்பட்டால், தயவுசெய்து கீழே குறிப்பிடப்பட்டுள்ள எண்ணை தொடர்புகொண்டு உங்கள்
+                    விவரங்களை சரிபார்த்து பதிவு செய்து கொள்ளவும்.
+                  </p>
+                </div>
+              </div>
+
+              {/* Helpline number */}
+              <div className="mt-5 inline-flex items-center gap-3 bg-white/80 border border-amber-300 rounded-2xl px-5 py-3 shadow-sm">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shrink-0">
+                  <Phone className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">உதவி மைய தொடர்பு எண்</p>
+                  {settings.support_phone || settings.temple_phone ? (
+                    <a
+                      href={`tel:${(settings.support_phone || settings.temple_phone).replace(/\s+/g, '')}`}
+                      className="text-lg font-bold text-orange-700 hover:text-orange-500 transition-colors tracking-wide"
+                    >
+                      {settings.support_phone || settings.temple_phone}
+                    </a>
+                  ) : (
+                    <span className="text-sm text-amber-700 font-semibold italic">விரைவில் புதுப்பிக்கப்படும்</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="mt-6 border-t border-amber-200" />
+
+              {/* Closing message */}
+              <p className="mt-4 text-sm md:text-[15px] text-orange-800/80 leading-relaxed max-w-3xl">
+                🙏 <strong>தங்களின் நன்கொடையும் ஆதரவும்,</strong> வடமதுரை அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவிலின்
+                திருப்பணி மற்றும் மகா கும்பாபிஷேகப் பணிகளுக்கு பேருதவியாக அமையும்.
+              </p>
+              <p className="mt-3 text-base font-bold text-orange-600 tracking-wide">
+                ஸ்வாமியே சரணம் ஐயப்பா 🙏
+              </p>
+            </div>
+          </div>
+        </motion.div>
 
         {/* ── Honor Roll ── */}
         <motion.div id="donors" className="mt-20 scroll-mt-24" initial="hidden" whileInView="visible"
