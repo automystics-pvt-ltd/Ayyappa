@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import templeHero from '@assets/image_1784865302842.png';
 import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { NewsTicker } from './NewsTicker';
 
 export function Hero() {
   const s = useSiteSettings();
@@ -44,9 +45,13 @@ export function Hero() {
           </motion.div>
 
           <motion.div variants={fadeUpVariant}
-            className="bg-black/40 backdrop-blur-sm border border-secondary/30 rounded-2xl py-4 px-6 md:px-10 max-w-3xl mb-12">
+            className="bg-black/40 backdrop-blur-sm border border-secondary/30 rounded-2xl py-4 px-6 md:px-10 max-w-3xl mb-4">
             <p className="text-lg md:text-xl text-secondary font-medium mb-2">{tagline}</p>
             <p className="text-base md:text-lg text-white/80 italic">{quote}</p>
+          </motion.div>
+
+          <motion.div variants={fadeUpVariant} className="mb-8 w-full flex justify-center">
+            <NewsTicker />
           </motion.div>
 
           <motion.button variants={fadeUpVariant} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
