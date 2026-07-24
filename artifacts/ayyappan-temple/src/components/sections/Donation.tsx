@@ -582,6 +582,12 @@ export function Donation() {
           </div>
         </motion.div>
 
+        {/* Step-by-step guide */}
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant}
+          className="bg-card border border-card-border rounded-2xl p-6 md:p-8 shadow-md mb-8">
+          <HowToSteps />
+        </motion.div>
+
         {/* ── Prominent QR Hero ── */}
         <motion.div className="flex justify-center mb-10" initial="hidden" whileInView="visible"
           viewport={{ once: true }} variants={fadeUpVariant}>
@@ -667,12 +673,6 @@ export function Donation() {
             </div>
           </motion.div>
         )}
-
-        {/* Step-by-step guide */}
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant}
-          className="bg-card border border-card-border rounded-2xl p-6 md:p-8 shadow-md mb-8">
-          <HowToSteps />
-        </motion.div>
 
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
 
