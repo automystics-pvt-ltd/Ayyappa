@@ -41,8 +41,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         {/* Logo */}
         <div className="px-5 py-5 border-b border-white/15">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl shrink-0 shadow-inner">
-              🕉
+            <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shrink-0 shadow-inner overflow-hidden">
+              <img src="/iyyappan-logo.png" alt="ஐயப்பன்" className="w-10 h-10 object-contain drop-shadow" />
             </div>
             <div className="min-w-0">
               <p className="text-white text-sm font-bold leading-tight truncate">ஐயப்பன் கோவில்</p>

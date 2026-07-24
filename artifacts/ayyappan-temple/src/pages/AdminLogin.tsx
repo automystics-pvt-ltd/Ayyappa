@@ -28,7 +28,9 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🛕</div>
+          <div className="flex justify-center mb-3">
+            <img src="/iyyappan-logo.png" alt="ஐயப்பன்" className="w-20 h-20 object-contain drop-shadow-lg" />
+          </div>
           <h1 className="text-2xl font-bold text-gray-800">நிர்வாக உள்நுழைவு</h1>
           <p className="text-gray-500 text-sm mt-1">Admin Login</p>
         </div>

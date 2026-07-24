@@ -205,10 +205,10 @@ export function Navbar() {
               onClick={() => scrollTo('#home')}
               className="flex items-center gap-2.5 shrink-0 group"
             >
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-lg font-bold shadow-md transition-colors ${
-                scrolled ? 'bg-primary text-primary-foreground' : 'bg-white/20 text-white backdrop-blur-sm'
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors overflow-hidden shrink-0 ${
+                scrolled ? 'bg-orange-50 ring-2 ring-orange-300' : 'bg-white/20 backdrop-blur-sm ring-2 ring-white/40'
               }`}>
-                🕉
+                <img src="/iyyappan-logo.png" alt="ஐயப்பன்" className="w-9 h-9 object-contain drop-shadow" />
               </div>
               <div className="text-left">
                 <div className={`font-serif text-sm md:text-base font-bold leading-tight transition-colors ${
