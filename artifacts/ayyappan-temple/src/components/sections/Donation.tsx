@@ -479,7 +479,7 @@ export function Donation() {
       <div className="container mx-auto px-4 md:px-6 max-w-6xl">
 
         {/* Header */}
-        <motion.div className="text-center mb-16" initial="hidden" whileInView="visible"
+        <motion.div className="text-center mb-10" initial="hidden" whileInView="visible"
           viewport={{ once: true, margin: '-100px' }} variants={fadeUpVariant}>
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
             <HeartHandshake className="w-8 h-8 text-primary" />
@@ -488,6 +488,65 @@ export function Donation() {
           <div className="bg-secondary/20 border border-secondary/40 rounded-full px-6 py-3 inline-block">
             <p className="text-lg md:text-xl text-foreground font-serif italic font-medium">
               "கோவில் கட்டும் பாக்கியம் எல்லோருக்கும் கிடைப்பதில்லை."
+            </p>
+          </div>
+        </motion.div>
+
+        {/* ── Prominent QR Hero ── */}
+        <motion.div className="flex justify-center mb-10" initial="hidden" whileInView="visible"
+          viewport={{ once: true }} variants={fadeUpVariant}>
+          <div className="bg-card border-2 border-primary/20 rounded-3xl p-6 md:p-8 shadow-xl text-center max-w-sm w-full">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full mb-4">
+              <QrCode className="w-3.5 h-3.5" />
+              Scan &amp; Pay — இப்போதே நன்கொடை வழங்கலாம்
+            </div>
+
+            {/* QR Code */}
+            <div className="flex justify-center mb-4">
+              {settings.qr_code_url ? (
+                <div className="relative">
+                  <img
+                    src={settings.qr_code_url}
+                    alt="Payment QR Code"
+                    className="w-56 h-56 md:w-64 md:h-64 object-contain rounded-2xl border-4 border-primary/20 bg-white p-2 shadow-md"
+                  />
+                  {/* Corner marks for visual scan-friendliness */}
+                  <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg" />
+                  <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg" />
+                  <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg" />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg" />
+                </div>
+              ) : (
+                <div className="w-56 h-56 md:w-64 md:h-64 rounded-2xl border-4 border-dashed border-primary/30 bg-muted/40 flex flex-col items-center justify-center gap-3">
+                  <QrCode className="w-16 h-16 text-primary/30" />
+                  <span className="text-xs text-muted-foreground text-center px-4">
+                    Admin → அமைப்புகள்-ல் QR Code URL சேர்க்கவும்
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* UPI ID */}
+            {settings.bank_upi_id && (
+              <div className="bg-muted rounded-xl px-4 py-2.5 mb-4 flex items-center justify-center gap-2">
+                <span className="text-xs text-muted-foreground font-medium">UPI ID:</span>
+                <span className="font-mono font-bold text-foreground text-sm">{settings.bank_upi_id}</span>
+              </div>
+            )}
+
+            {/* App badges */}
+            <div className="flex items-center justify-center gap-2 flex-wrap">
+              {['PhonePe', 'Google Pay', 'Paytm', 'BHIM'].map((app) => (
+                <span key={app}
+                  className="text-[11px] font-semibold bg-background border border-border text-muted-foreground px-2.5 py-1 rounded-full">
+                  {app}
+                </span>
+              ))}
+            </div>
+
+            <p className="text-xs text-muted-foreground mt-3">
+              📱 மொபைலில் Camera / UPI App திறந்து QR Scan செய்யவும்
             </p>
           </div>
         </motion.div>

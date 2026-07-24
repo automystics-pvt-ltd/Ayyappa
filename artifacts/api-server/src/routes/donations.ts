@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
-import { donationsTable } from "@workspace/db/schema";
+import { donationsTable, siteSettingsTable } from "@workspace/db/schema";
 import { eq, desc, sum, count } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { ObjectStorageService } from "../lib/objectStorage";
@@ -99,7 +99,14 @@ router.get("/stats", async (_req, res) => {
       .where(eq(donationsTable.status, "pending"));
 
     const total = Number(totalResult?.total ?? 0);
-    const goal = 5000000;
+
+    // Read goal from site_settings, fall back to 50 lakh if not set
+    const goalRow = await db
+      .select({ value: siteSettingsTable.value })
+      .from(siteSettingsTable)
+      .where(eq(siteSettingsTable.key, "donation_goal"))
+      .limit(1);
+    const goal = Number(goalRow[0]?.value ?? 5_000_000) || 5_000_000;
 
     res.json({
       totalRaised: total,
