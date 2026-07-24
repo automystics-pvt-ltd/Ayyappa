@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import { motion } from 'framer-motion';
 import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import {
@@ -18,7 +19,12 @@ const RECEIPT_TIMEOUT = 30; // seconds
 
 /* ─── Types ─── */
 interface Stats   { totalRaised: number; donorCount: number; goal: number; progressPercent: number }
-interface Settings { bank_name?: string; bank_account_name?: string; bank_account_number?: string; bank_ifsc?: string; bank_upi_id?: string; qr_code_url?: string }
+interface Settings { bank_name?: string; bank_account_name?: string; bank_account_number?: string; bank_ifsc?: string; bank_upi_id?: string; qr_code_url?: string; gpay_number?: string }
+
+/** Build a UPI payment deep-link QR value from a UPI ID */
+function buildUpiQrValue(upiId: string, name = 'Sri Ayyappan Temple') {
+  return `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&cu=INR`;
+}
 
 interface ReceiptData {
   id: number;
@@ -598,16 +604,32 @@ export function Donation() {
               Scan &amp; Pay — இப்போதே நன்கொடை வழங்கலாம்
             </div>
 
-            {/* QR Code */}
+            {/* QR Code — generated from UPI ID, fallback to uploaded image */}
             <div className="flex justify-center mb-4">
-              {settings.qr_code_url ? (
+              {settings.bank_upi_id ? (
+                <div className="relative">
+                  <div className="rounded-2xl border-4 border-primary/20 bg-white p-3 shadow-md">
+                    <QRCodeSVG
+                      value={buildUpiQrValue(settings.bank_upi_id, settings.bank_name)}
+                      size={216}
+                      bgColor="#ffffff"
+                      fgColor="#1a1a1a"
+                      level="M"
+                    />
+                  </div>
+                  {/* Corner marks for visual scan-friendliness */}
+                  <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg" />
+                  <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg" />
+                  <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg" />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg" />
+                </div>
+              ) : settings.qr_code_url ? (
                 <div className="relative">
                   <img
                     src={settings.qr_code_url}
                     alt="Payment QR Code"
                     className="w-56 h-56 md:w-64 md:h-64 object-contain rounded-2xl border-4 border-primary/20 bg-white p-2 shadow-md"
                   />
-                  {/* Corner marks for visual scan-friendliness */}
                   <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg" />
                   <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg" />
                   <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg" />
@@ -617,7 +639,7 @@ export function Donation() {
                 <div className="w-56 h-56 md:w-64 md:h-64 rounded-2xl border-4 border-dashed border-primary/30 bg-muted/40 flex flex-col items-center justify-center gap-3">
                   <QrCode className="w-16 h-16 text-primary/30" />
                   <span className="text-xs text-muted-foreground text-center px-4">
-                    Admin → அமைப்புகள்-ல் QR Code URL சேர்க்கவும்
+                    Admin → அமைப்புகள்-ல் UPI ID சேர்க்கவும்
                   </span>
                 </div>
               )}
@@ -776,7 +798,17 @@ export function Donation() {
               <h4 className="text-xl font-bold text-foreground mb-4 flex items-center justify-center gap-2">
                 <QrCode className="w-5 h-5 text-primary" />UPI Payment
               </h4>
-              {settings.qr_code_url ? (
+              {settings.bank_upi_id ? (
+                <div className="mx-auto inline-block rounded-xl border border-border bg-white p-2">
+                  <QRCodeSVG
+                    value={buildUpiQrValue(settings.bank_upi_id, settings.bank_name)}
+                    size={176}
+                    bgColor="#ffffff"
+                    fgColor="#1a1a1a"
+                    level="M"
+                  />
+                </div>
+              ) : settings.qr_code_url ? (
                 <img src={settings.qr_code_url} alt="QR Code"
                   className="w-48 h-48 mx-auto rounded-xl object-contain border border-border" />
               ) : (
