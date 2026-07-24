@@ -1,28 +1,43 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import {
   Building, HeartHandshake, QrCode, ShieldCheck,
   CheckCircle2, Users, Upload, X, Image as ImageIcon,
-  AlertCircle, MapPin
+  AlertCircle, MapPin, RefreshCw,
 } from 'lucide-react';
 import { api, uploadScreenshot } from '@/lib/api';
 
 const AMOUNTS = [501, 1001, 5001, 10001];
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const RECEIPT_TIMEOUT = 30; // seconds
 
-/* ─── Validation helpers ─── */
+/* ─── Types ─── */
+interface Stats   { totalRaised: number; donorCount: number; goal: number; progressPercent: number }
+interface Donor   { id: number; donorName: string; place?: string; amount: string; anonymous: boolean; reviewedAt: string }
+interface Settings { bank_name?: string; bank_account_name?: string; bank_account_number?: string; bank_ifsc?: string; bank_upi_id?: string; qr_code_url?: string }
+
+interface ReceiptData {
+  id: number;
+  donorName: string;
+  place: string;
+  amount: number;
+  transactionId: string;
+  anonymous: boolean;
+  submittedAt: string;
+}
+
 type FormErrors = Partial<Record<
   'donorName' | 'mobile' | 'place' | 'amount' | 'transactionId' | 'screenshot',
   string
 >>;
 
+/* ─── Validation ─── */
 function validate(
-  form: { donorName: string; mobile: string; place: string; transactionId: string; message: string; anonymous: boolean },
+  form: { donorName: string; mobile: string; place: string; transactionId: string },
   amount: number,
   screenshotFile: File | null,
-  screenshotRequired: boolean,
 ): FormErrors {
   const errors: FormErrors = {};
 
@@ -39,10 +54,12 @@ function validate(
   if (!form.place.trim())
     errors.place = 'ஊர் / இடம் தேவை';
 
-  if (!amount || amount < 1)
+  if (!amount || isNaN(amount) || amount <= 0)
     errors.amount = 'நன்கொடை தொகை தேர்ந்தெடுக்கவும்';
   else if (amount < 10)
     errors.amount = 'குறைந்தது ₹10 தேவை';
+  else if (amount > 10_000_000)
+    errors.amount = 'தொகை அதிகமாக உள்ளது';
 
   if (!form.transactionId.trim())
     errors.transactionId = 'Transaction ID தேவை';
@@ -59,12 +76,7 @@ function validate(
   return errors;
 }
 
-/* ─── Types ─── */
-interface Stats { totalRaised: number; donorCount: number; goal: number; progressPercent: number }
-interface Donor { id: number; donorName: string; place?: string; amount: string; anonymous: boolean; reviewedAt: string }
-interface Settings { bank_name?: string; bank_account_name?: string; bank_account_number?: string; bank_ifsc?: string; bank_upi_id?: string; qr_code_url?: string }
-
-/* ─── Field component ─── */
+/* ─── Field wrapper ─── */
 function Field({ label, error, required, children }: { label: string; error?: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div>
@@ -74,8 +86,7 @@ function Field({ label, error, required, children }: { label: string; error?: st
       {children}
       {error && (
         <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
-          <AlertCircle className="w-3 h-3 flex-shrink-0" />
-          {error}
+          <AlertCircle className="w-3 h-3 flex-shrink-0" />{error}
         </p>
       )}
     </div>
@@ -88,41 +99,29 @@ const inputCls = (err?: string) =>
   }`;
 
 /* ─── Screenshot uploader ─── */
-function ScreenshotUploader({
-  file, onFileChange, error,
-}: { file: File | null; onFileChange: (f: File | null) => void; error?: string }) {
+function ScreenshotUploader({ file, onFileChange, error }: { file: File | null; onFileChange: (f: File | null) => void; error?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const preview = file ? URL.createObjectURL(file) : null;
 
   return (
     <div>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
-        className="hidden"
-        onChange={(e) => onFileChange(e.target.files?.[0] ?? null)}
-      />
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+        className="hidden" onChange={(e) => onFileChange(e.target.files?.[0] ?? null)} />
       {preview ? (
         <div className="relative rounded-xl overflow-hidden border border-border">
           <img src={preview} alt="Screenshot preview" className="w-full max-h-48 object-contain bg-muted" />
-          <button
-            type="button"
+          <button type="button"
             onClick={() => { onFileChange(null); if (inputRef.current) inputRef.current.value = ''; }}
-            className="absolute top-2 right-2 bg-background/90 rounded-full p-1 hover:bg-red-50"
-          >
+            className="absolute top-2 right-2 bg-background/90 rounded-full p-1 hover:bg-red-50">
             <X className="w-4 h-4 text-red-500" />
           </button>
           <div className="px-3 py-2 text-xs text-muted-foreground truncate">{file?.name}</div>
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
+        <button type="button" onClick={() => inputRef.current?.click()}
           className={`w-full border-2 border-dashed rounded-xl px-4 py-6 flex flex-col items-center gap-2 transition-colors ${
             error ? 'border-red-300 bg-red-50/30' : 'border-border hover:border-primary/50 hover:bg-primary/5'
-          }`}
-        >
+          }`}>
           <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
             <ImageIcon className="w-5 h-5 text-muted-foreground" />
           </div>
@@ -135,31 +134,144 @@ function ScreenshotUploader({
       )}
       {error && (
         <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
-          <AlertCircle className="w-3 h-3 flex-shrink-0" /> {error}
+          <AlertCircle className="w-3 h-3 flex-shrink-0" />{error}
         </p>
       )}
     </div>
   );
 }
 
+/* ─── Submission Receipt Modal ─── */
+const RING_R = 44;
+const RING_CIRC = 2 * Math.PI * RING_R;
+
+function SubmissionReceipt({ receipt, onDone }: { receipt: ReceiptData; onDone: () => void }) {
+  const [remaining, setRemaining] = useState(RECEIPT_TIMEOUT);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setRemaining((r) => {
+        if (r <= 1) { clearInterval(id); onDone(); return 0; }
+        return r - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [onDone]);
+
+  const fmt = (n: number) =>
+    new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n);
+
+  const strokeDash = RING_CIRC * (1 - remaining / RECEIPT_TIMEOUT);
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <motion.div
+        initial={{ scale: 0.85, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className="bg-background rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
+      >
+        {/* Green header */}
+        <div className="bg-gradient-to-br from-green-500 to-emerald-600 px-6 py-8 text-white text-center relative">
+          <button onClick={onDone}
+            className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+          <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
+            <CheckCircle2 className="w-9 h-9 text-white" />
+          </div>
+          <h3 className="text-xl font-bold mb-1">நன்கொடை சமர்ப்பிக்கப்பட்டது!</h3>
+          <p className="text-green-100 text-sm">ஸ்வாமியே சரணம் ஐயப்பா 🙏</p>
+        </div>
+
+        {/* Receipt body */}
+        <div className="px-6 py-5 space-y-3">
+          {/* Reference number */}
+          <div className="bg-muted rounded-xl px-4 py-3 text-center">
+            <div className="text-xs text-muted-foreground mb-0.5">Reference Number</div>
+            <div className="font-mono font-bold text-foreground tracking-widest">
+              DON-{String(receipt.id).padStart(6, '0')}
+            </div>
+          </div>
+
+          {/* Details grid */}
+          <div className="divide-y divide-border/60">
+            {[
+              { label: 'நன்கொடையாளர்',  val: receipt.anonymous ? 'அடையாளம் தெரியாதவர்' : receipt.donorName },
+              { label: 'ஊர் / இடம்',     val: receipt.anonymous ? '—' : receipt.place },
+              { label: 'தொகை',           val: fmt(receipt.amount) },
+              { label: 'Transaction ID', val: receipt.transactionId },
+              { label: 'சமர்ப்பிக்கப்பட்ட நேரம்', val: new Date(receipt.submittedAt).toLocaleString('ta-IN') },
+            ].map((row) => (
+              <div key={row.label} className="flex justify-between items-center py-2 text-sm">
+                <span className="text-muted-foreground">{row.label}</span>
+                <span className="font-semibold text-foreground text-right max-w-[55%] break-all">{row.val}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 text-center">
+            நிர்வாகி சரிபார்த்த பிறகே உங்கள் பெயர் நன்கொடையாளர் பட்டியலில் சேர்க்கப்படும்.
+          </div>
+
+          {/* Countdown + buttons */}
+          <div className="flex items-center justify-between pt-1 gap-3">
+            {/* Countdown ring */}
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="relative w-12 h-12 flex-shrink-0">
+                <svg className="w-12 h-12 -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r={RING_R} fill="none" stroke="currentColor"
+                    strokeWidth="8" className="text-muted/40" />
+                  <circle cx="50" cy="50" r={RING_R} fill="none" stroke="currentColor"
+                    strokeWidth="8" className="text-primary transition-all duration-1000"
+                    strokeDasharray={RING_CIRC}
+                    strokeDashoffset={strokeDash}
+                    strokeLinecap="round" />
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-foreground">
+                  {remaining}
+                </span>
+              </div>
+              <span className="text-xs leading-tight">நொடிகளில்<br />மூடும்</span>
+            </div>
+
+            <div className="flex gap-2 flex-1 justify-end">
+              <button onClick={onDone}
+                className="flex items-center gap-1.5 bg-primary text-primary-foreground font-semibold px-4 py-2.5 rounded-xl hover:bg-primary/90 transition-colors text-sm">
+                <RefreshCw className="w-4 h-4" />
+                மீண்டும் வழங்க
+              </button>
+              <button onClick={onDone}
+                className="px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-medium hover:bg-muted transition-colors">
+                மூடு
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ─── Blank form state ─── */
+const BLANK_FORM = { donorName: '', mobile: '', place: '', transactionId: '', message: '', anonymous: false };
+
 /* ─── Main component ─── */
 export function Donation() {
   const [selectedAmount, setSelectedAmount] = useState<number | 'custom' | null>(null);
-  const [customAmount, setCustomAmount] = useState('');
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [donors, setDonors] = useState<Donor[]>([]);
-  const [settings, setSettings] = useState<Settings>({});
-  const [showForm, setShowForm] = useState(false);
+  const [customAmount, setCustomAmount]     = useState('');
+  const [stats, setStats]                   = useState<Stats | null>(null);
+  const [donors, setDonors]                 = useState<Donor[]>([]);
+  const [settings, setSettings]             = useState<Settings>({});
+  const [showForm, setShowForm]             = useState(false);
+  const [receipt, setReceipt]               = useState<ReceiptData | null>(null);
 
-  const [form, setForm] = useState({
-    donorName: '', mobile: '', place: '', transactionId: '', message: '', anonymous: false,
-  });
+  const [form, setForm]                     = useState(BLANK_FORM);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Set<string>>(new Set());
-  const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors]                 = useState<FormErrors>({});
+  const [touched, setTouched]               = useState<Set<string>>(new Set());
+  const [submitting, setSubmitting]         = useState(false);
   const [uploadProgress, setUploadProgress] = useState<'idle' | 'uploading' | 'done'>('idle');
-  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     api.getDonationStats().then((d) => setStats(d as Stats)).catch(() => {});
@@ -172,41 +284,58 @@ export function Donation() {
 
   const getAmount = () => (selectedAmount === 'custom' ? Number(customAmount) : selectedAmount ?? 0);
 
-  /* Touch a field for live validation */
   const touch = (name: string) => setTouched((prev) => new Set(prev).add(name));
 
-  /* Revalidate live whenever form/amount/file changes */
+  /* Live revalidation */
   useEffect(() => {
-    if (touched.size > 0) {
-      setErrors(validate(form, getAmount(), screenshotFile, false));
-    }
+    if (touched.size > 0)
+      setErrors(validate(form, getAmount(), screenshotFile));
   }, [form, selectedAmount, customAmount, screenshotFile, touched]);
+
+  /* Full reset — called after receipt is dismissed */
+  const resetAll = useCallback(() => {
+    setReceipt(null);
+    setShowForm(false);
+    setSelectedAmount(null);
+    setCustomAmount('');
+    setForm(BLANK_FORM);
+    setScreenshotFile(null);
+    setErrors({});
+    setTouched(new Set());
+    setUploadProgress('idle');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const amount = getAmount();
 
-    // Full validation on submit
-    const allErrors = validate(form, amount, screenshotFile, false);
+    const allErrors = validate(form, amount, screenshotFile);
     setErrors(allErrors);
     setTouched(new Set(['donorName', 'mobile', 'place', 'amount', 'transactionId']));
-
     if (Object.keys(allErrors).length > 0) return;
 
     setSubmitting(true);
     let screenshotUrl: string | undefined;
 
     try {
-      // Upload screenshot if provided
       if (screenshotFile) {
         setUploadProgress('uploading');
         screenshotUrl = await uploadScreenshot(screenshotFile);
         setUploadProgress('done');
       }
 
-      await api.submitDonation({ ...form, amount, screenshotUrl });
-      setSubmitted(true);
+      const result = await api.submitDonation({ ...form, amount, screenshotUrl }) as any;
+
       setShowForm(false);
+      setReceipt({
+        id:            result.id,
+        donorName:     form.donorName,
+        place:         form.place,
+        amount,
+        transactionId: form.transactionId,
+        anonymous:     form.anonymous,
+        submittedAt:   result.createdAt ?? new Date().toISOString(),
+      });
     } catch (err: any) {
       setErrors({ transactionId: err.message || 'சமர்ப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.' });
     } finally {
@@ -216,14 +345,29 @@ export function Donation() {
   };
 
   const openForm = () => {
-    if (!getAmount()) {
+    const amount = getAmount();
+    if (!amount || amount <= 0) {
       setErrors({ amount: 'நன்கொடை தொகை தேர்ந்தெடுக்கவும்' });
+      setTouched(new Set(['amount']));
+      return;
+    }
+    if (amount < 10) {
+      setErrors({ amount: 'குறைந்தது ₹10 தேவை' });
       setTouched(new Set(['amount']));
       return;
     }
     setErrors({});
     setTouched(new Set());
     setShowForm(true);
+  };
+
+  /* Custom amount — strip negatives and non-digits inline */
+  const handleCustomAmountChange = (raw: string) => {
+    // Remove minus signs and anything that makes it negative
+    const cleaned = raw.replace(/[^0-9.]/g, '').replace(/^0+(?=\d)/, '');
+    setCustomAmount(cleaned);
+    setSelectedAmount('custom');
+    touch('amount');
   };
 
   return (
@@ -251,8 +395,8 @@ export function Donation() {
             <div className="grid grid-cols-3 gap-4 mb-6 text-center">
               {[
                 { value: fmt(stats.totalRaised), label: 'திரட்டப்பட்டது' },
-                { value: fmt(stats.goal), label: 'நமது இலக்கு' },
-                { value: `${stats.donorCount}`, label: 'நன்கொடையாளர்கள்' },
+                { value: fmt(stats.goal),        label: 'நமது இலக்கு' },
+                { value: `${stats.donorCount}`,  label: 'நன்கொடையாளர்கள்' },
               ].map((s) => (
                 <div key={s.label}>
                   <div className="text-xl md:text-3xl font-bold text-primary">{s.value}</div>
@@ -272,6 +416,7 @@ export function Donation() {
         )}
 
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+
           {/* Amount Selection */}
           <motion.div className="lg:col-span-7 space-y-8" initial="hidden" whileInView="visible"
             viewport={{ once: true }} variants={staggerContainer}>
@@ -280,7 +425,8 @@ export function Donation() {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 {AMOUNTS.map((amt) => (
-                  <button key={amt} onClick={() => { setSelectedAmount(amt); setCustomAmount(''); touch('amount'); }}
+                  <button key={amt}
+                    onClick={() => { setSelectedAmount(amt); setCustomAmount(''); touch('amount'); }}
                     className={`py-4 rounded-xl border-2 text-lg font-bold transition-all ${
                       selectedAmount === amt
                         ? 'border-primary bg-primary/5 text-primary shadow-sm'
@@ -291,39 +437,33 @@ export function Donation() {
                 ))}
               </div>
 
-              <div className="relative mb-2">
+              <div className="relative mb-1">
                 <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-xl font-bold text-muted-foreground pointer-events-none">₹</span>
                 <input
                   type="number"
+                  min="10"
                   placeholder="பிற தொகை (Custom Amount)"
                   value={customAmount}
-                  onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount('custom'); touch('amount'); }}
+                  onChange={(e) => handleCustomAmountChange(e.target.value)}
                   onFocus={() => { setSelectedAmount('custom'); touch('amount'); }}
+                  onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
                   className={`w-full pl-10 pr-4 py-4 rounded-xl border-2 text-lg font-bold outline-none transition-all ${
                     selectedAmount === 'custom'
-                      ? errors.amount ? 'border-red-400' : 'border-primary bg-primary/5 text-foreground'
+                      ? errors.amount ? 'border-red-400 bg-red-50/30' : 'border-primary bg-primary/5 text-foreground'
                       : 'border-border focus:border-primary/50 text-foreground bg-background'
                   }`}
                 />
               </div>
               {errors.amount && touched.has('amount') && (
-                <p className="flex items-center gap-1 text-xs text-red-500 mb-4">
-                  <AlertCircle className="w-3 h-3 flex-shrink-0" /> {errors.amount}
+                <p className="flex items-center gap-1 text-xs text-red-500 mb-3 mt-1">
+                  <AlertCircle className="w-3 h-3 flex-shrink-0" />{errors.amount}
                 </p>
               )}
 
-              {submitted ? (
-                <div className="bg-green-50 border border-green-200 rounded-xl p-5 text-center mt-4">
-                  <CheckCircle2 className="w-10 h-10 text-green-500 mx-auto mb-2" />
-                  <h4 className="font-bold text-green-800 mb-1">நன்றி! நன்கொடை சமர்ப்பிக்கப்பட்டது.</h4>
-                  <p className="text-green-700 text-sm">நிர்வாகி சரிபார்த்த பிறகு உங்கள் பெயர் பட்டியலில் சேர்க்கப்படும்.</p>
-                </div>
-              ) : (
-                <button onClick={openForm}
-                  className="w-full bg-primary text-primary-foreground font-bold py-4 rounded-xl text-lg hover:bg-primary/90 transition-colors mt-4">
-                  நன்கொடை வழங்க
-                </button>
-              )}
+              <button onClick={openForm}
+                className="w-full bg-primary text-primary-foreground font-bold py-4 rounded-xl text-lg hover:bg-primary/90 transition-colors mt-3">
+                நன்கொடை வழங்க
+              </button>
 
               <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-3 mt-4">
                 <ShieldCheck className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
@@ -343,16 +483,15 @@ export function Donation() {
                 <Building className="w-24 h-24" />
               </div>
               <h4 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                <Building className="w-5 h-5 text-primary" />
-                வங்கி விவரங்கள்
+                <Building className="w-5 h-5 text-primary" />வங்கி விவரங்கள்
               </h4>
               <div className="space-y-4">
                 {[
-                  { label: 'வங்கி பெயர்', val: settings.bank_name },
-                  { label: 'கணக்கு பெயர்', val: settings.bank_account_name },
-                  { label: 'கணக்கு எண்', val: settings.bank_account_number },
-                  { label: 'IFSC', val: settings.bank_ifsc },
-                  { label: 'UPI ID', val: settings.bank_upi_id },
+                  { label: 'வங்கி பெயர்',   val: settings.bank_name },
+                  { label: 'கணக்கு பெயர்',  val: settings.bank_account_name },
+                  { label: 'கணக்கு எண்',    val: settings.bank_account_number },
+                  { label: 'IFSC',           val: settings.bank_ifsc },
+                  { label: 'UPI ID',         val: settings.bank_upi_id },
                 ].map((item, i) => (
                   <div key={i} className="flex flex-col gap-0.5 border-b border-border/50 pb-3 last:border-0 last:pb-0">
                     <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">{item.label}</span>
@@ -367,40 +506,48 @@ export function Donation() {
             <motion.div variants={fadeUpVariant}
               className="bg-card border border-card-border rounded-2xl p-6 shadow-md text-center">
               <h4 className="text-xl font-bold text-foreground mb-4 flex items-center justify-center gap-2">
-                <QrCode className="w-5 h-5 text-primary" />
-                UPI Payment
+                <QrCode className="w-5 h-5 text-primary" />UPI Payment
               </h4>
               {settings.qr_code_url ? (
-                <img src={settings.qr_code_url} alt="QR Code" className="w-48 h-48 mx-auto rounded-xl object-contain border border-border" />
+                <img src={settings.qr_code_url} alt="QR Code"
+                  className="w-48 h-48 mx-auto rounded-xl object-contain border border-border" />
               ) : (
                 <div className="bg-muted w-48 h-48 mx-auto rounded-xl flex items-center justify-center border border-border">
                   <QrCode className="w-24 h-24 text-muted-foreground/30" />
                 </div>
               )}
-              <p className="text-muted-foreground font-medium mt-3 text-sm">QR Code Scan செய்து எளிதாக நன்கொடை வழங்கலாம்</p>
+              <p className="text-muted-foreground font-medium mt-3 text-sm">
+                QR Code Scan செய்து எளிதாக நன்கொடை வழங்கலாம்
+              </p>
             </motion.div>
           </motion.div>
         </div>
 
         {/* Approved Donors */}
         {donors.length > 0 && (
-          <motion.div className="mt-16" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant}>
+          <motion.div className="mt-16" initial="hidden" whileInView="visible"
+            viewport={{ once: true }} variants={fadeUpVariant}>
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 mb-3">
                 <Users className="w-6 h-6 text-primary" />
-                <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">இதுவரை நன்கொடை வழங்கியோர்</h3>
+                <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+                  இதுவரை நன்கொடை வழங்கியோர்
+                </h3>
               </div>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {donors.map((d) => (
-                <div key={d.id} className="bg-card border border-card-border rounded-xl px-5 py-4 flex items-center gap-3">
+                <div key={d.id}
+                  className="bg-card border border-card-border rounded-xl px-5 py-4 flex items-center gap-3">
                   <span className="text-2xl">🙏</span>
                   <div className="min-w-0">
                     <div className="font-bold text-foreground truncate">
                       {d.anonymous ? 'அடையாளம் தெரியாதவர்' : d.donorName}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-primary font-bold text-sm">₹{Number(d.amount).toLocaleString('en-IN')}</span>
+                      <span className="text-primary font-bold text-sm">
+                        ₹{Number(d.amount).toLocaleString('en-IN')}
+                      </span>
                       {d.place && !d.anonymous && (
                         <span className="text-xs text-muted-foreground flex items-center gap-0.5">
                           <MapPin className="w-3 h-3" />{d.place}
@@ -420,7 +567,6 @@ export function Donation() {
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-background rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl">
             <div className="p-6">
-              {/* Header */}
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-foreground">நன்கொடை விவரங்கள்</h3>
                 <button onClick={() => setShowForm(false)}
@@ -429,14 +575,12 @@ export function Donation() {
                 </button>
               </div>
 
-              {/* Amount pill */}
               <div className="bg-primary/10 rounded-xl p-3 mb-5 text-center">
                 <div className="text-3xl font-bold text-primary">₹{getAmount().toLocaleString('en-IN')}</div>
                 <div className="text-sm text-muted-foreground">நன்கொடை தொகை</div>
               </div>
 
               <form onSubmit={handleSubmit} noValidate className="space-y-4">
-                {/* Name */}
                 <Field label="உங்கள் பெயர்" required error={touched.has('donorName') ? errors.donorName : undefined}>
                   <input value={form.donorName}
                     onChange={(e) => setForm({ ...form, donorName: e.target.value })}
@@ -445,7 +589,6 @@ export function Donation() {
                     placeholder="திரு. / திருமதி." />
                 </Field>
 
-                {/* Mobile */}
                 <Field label="மொபைல் எண்" required error={touched.has('mobile') ? errors.mobile : undefined}>
                   <input type="tel" value={form.mobile}
                     onChange={(e) => setForm({ ...form, mobile: e.target.value.replace(/\D/g, '').slice(0, 10) })}
@@ -454,7 +597,6 @@ export function Donation() {
                     placeholder="9XXXXXXXXX" maxLength={10} />
                 </Field>
 
-                {/* Place */}
                 <Field label="ஊர் / இடம்" required error={touched.has('place') ? errors.place : undefined}>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -466,16 +608,14 @@ export function Donation() {
                   </div>
                 </Field>
 
-                {/* Transaction ID */}
                 <Field label="UPI / Transaction ID" required error={touched.has('transactionId') ? errors.transactionId : undefined}>
                   <input value={form.transactionId}
                     onChange={(e) => setForm({ ...form, transactionId: e.target.value })}
                     onBlur={() => touch('transactionId')}
                     className={inputCls(touched.has('transactionId') ? errors.transactionId : undefined)}
-                    placeholder="Transaction ID" />
+                    placeholder="Transaction Reference ID" />
                 </Field>
 
-                {/* Screenshot upload */}
                 <Field label="Payment Screenshot" error={errors.screenshot}>
                   <ScreenshotUploader file={screenshotFile} onFileChange={setScreenshotFile} error={errors.screenshot} />
                   {uploadProgress === 'uploading' && (
@@ -485,15 +625,13 @@ export function Donation() {
                   )}
                 </Field>
 
-                {/* Message */}
-                <Field label="செய்தி">
+                <Field label="செய்தி / Message">
                   <textarea value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                     className={`${inputCls()} resize-none h-20`}
                     placeholder="ஸ்வாமியே சரணம் ஐயப்பா..." />
                 </Field>
 
-                {/* Anonymous */}
                 <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
                   <input type="checkbox" checked={form.anonymous}
                     onChange={(e) => setForm({ ...form, anonymous: e.target.checked })}
@@ -501,9 +639,9 @@ export function Donation() {
                   அடையாளம் வெளியிட விரும்பவில்லை (Anonymous)
                 </label>
 
-                {/* Info note */}
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
-                  QR Code மூலம் பணம் செலுத்திய பின் Transaction ID மற்றும் Screenshot சமர்ப்பிக்கவும். நிர்வாகி சரிபார்த்த பிறகே உங்கள் பெயர் பட்டியலில் சேர்க்கப்படும்.
+                  QR Code மூலம் பணம் செலுத்திய பின் Transaction ID மற்றும் Screenshot சமர்ப்பிக்கவும்.
+                  நிர்வாகி சரிபார்த்த பிறகே உங்கள் பெயர் பட்டியலில் சேர்க்கப்படும்.
                 </div>
 
                 <button type="submit" disabled={submitting}
@@ -520,6 +658,9 @@ export function Donation() {
           </div>
         </div>
       )}
+
+      {/* ── Submission Receipt ── */}
+      {receipt && <SubmissionReceipt receipt={receipt} onDone={resetAll} />}
     </section>
   );
 }

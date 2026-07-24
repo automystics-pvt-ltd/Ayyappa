@@ -55,6 +55,16 @@ router.post("/", async (req, res) => {
     return;
   }
 
+  const parsedAmount = Number(amount);
+  if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    res.status(400).json({ error: "தொகை சரியாக இல்லை — positive value தேவை" });
+    return;
+  }
+  if (parsedAmount > 10_000_000) {
+    res.status(400).json({ error: "தொகை அதிகமாக உள்ளது" });
+    return;
+  }
+
   try {
     const [donation] = await db
       .insert(donationsTable)
