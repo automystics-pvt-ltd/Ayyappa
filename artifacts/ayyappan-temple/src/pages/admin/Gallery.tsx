@@ -60,6 +60,15 @@ export default function GalleryAdmin() {
   const dragIndexRef = useRef<number | null>(null);
   const dragOverIndexRef = useRef<number | null>(null);
 
+  // Touch drag state (photos)
+  const touchDragIndexRef = useRef<number | null>(null);
+  const touchDragOverIndexRef = useRef<number | null>(null);
+  const [draggingPhotoIndex, setDraggingPhotoIndex] = useState<number | null>(null);
+  const [dragOverPhotoIndex, setDragOverPhotoIndex] = useState<number | null>(null);
+  const photoGridRef = useRef<HTMLDivElement>(null);
+  // Set to true when a touch drag (not a tap) completes, so the subsequent click is ignored
+  const touchDragOccurredRef = useRef(false);
+
   // Drag-and-drop reorder state (albums)
   const [orderedAlbums, setOrderedAlbums] = useState<GalleryAlbum[]>([]);
   const [isAlbumsDirty, setIsAlbumsDirty] = useState(false);
@@ -124,7 +133,7 @@ export default function GalleryAdmin() {
     }
   };
 
-  // Photo drag handlers
+  // Photo drag handlers (mouse/desktop)
   const handleDragStart = (index: number) => {
     dragIndexRef.current = index;
   };
@@ -147,6 +156,57 @@ export default function GalleryAdmin() {
     dragIndexRef.current = null;
     dragOverIndexRef.current = null;
   };
+
+  // Photo touch handlers (mobile)
+  const handlePhotoTouchStart = (index: number) => {
+    touchDragIndexRef.current = index;
+    setDraggingPhotoIndex(index);
+  };
+
+  const handlePhotoTouchEnd = (photoUrl: string) => {
+    const from = touchDragIndexRef.current;
+    const to = touchDragOverIndexRef.current;
+    touchDragIndexRef.current = null;
+    touchDragOverIndexRef.current = null;
+    setDraggingPhotoIndex(null);
+    setDragOverPhotoIndex(null);
+    // Drag: reorder
+    if (from !== null && to !== null && from !== to) {
+      touchDragOccurredRef.current = true;
+      const reordered = [...orderedPhotos];
+      const [moved] = reordered.splice(from, 1);
+      reordered.splice(to, 0, moved);
+      setOrderedPhotos(reordered);
+      setIsDirty(true);
+    } else {
+      // Tap: open lightbox (from === to means finger didn't move to another card)
+      touchDragOccurredRef.current = false;
+      setLightboxUrl(photoSrc(photoUrl));
+    }
+  };
+
+  // Non-passive touchmove handler on the photo grid to allow preventDefault (stops page scroll during drag)
+  useEffect(() => {
+    const grid = photoGridRef.current;
+    if (!grid) return;
+    const onTouchMove = (e: TouchEvent) => {
+      if (touchDragIndexRef.current === null) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement | null;
+      if (!el) return;
+      const item = el.closest("[data-photo-index]") as HTMLElement | null;
+      if (item) {
+        const idx = parseInt(item.dataset.photoIndex ?? "-1", 10);
+        if (idx >= 0 && idx !== touchDragOverIndexRef.current) {
+          touchDragOverIndexRef.current = idx;
+          setDragOverPhotoIndex(idx);
+        }
+      }
+    };
+    grid.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => grid.removeEventListener("touchmove", onTouchMove);
+  }, [orderedPhotos]);
 
   const savePhotoOrder = async () => {
     setSavingOrder(true);
@@ -391,53 +451,72 @@ export default function GalleryAdmin() {
               <p>இன்னும் படங்கள் இல்லை. மேலே பதிவேற்றுங்கள்.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {orderedPhotos.map((photo, idx) => (
-                <div
-                  key={photo.id}
-                  draggable
-                  onDragStart={() => handleDragStart(idx)}
-                  onDragOver={(e) => handleDragOver(e, idx)}
-                  onDrop={handleDrop}
-                  className="group relative rounded-xl overflow-hidden bg-gray-100 aspect-square shadow-sm cursor-grab active:cursor-grabbing"
-                >
-                  <img
-                    src={photoSrc(photo.url)}
-                    alt={photo.caption ?? ""}
-                    className="w-full h-full object-cover"
-                    onClick={() => setLightboxUrl(photoSrc(photo.url))}
-                    draggable={false}
-                  />
+            <div ref={photoGridRef} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {orderedPhotos.map((photo, idx) => {
+                const isDraggingThis = draggingPhotoIndex === idx;
+                const isDropTarget = dragOverPhotoIndex === idx && draggingPhotoIndex !== null && draggingPhotoIndex !== idx;
+                return (
+                  <div
+                    key={photo.id}
+                    data-photo-index={idx}
+                    draggable
+                    onDragStart={() => handleDragStart(idx)}
+                    onDragOver={(e) => handleDragOver(e, idx)}
+                    onDrop={handleDrop}
+                    onTouchStart={() => handlePhotoTouchStart(idx)}
+                    onTouchEnd={() => handlePhotoTouchEnd(photo.url)}
+                    onClick={() => {
+                      // Ignore click if it was preceded by a touch drag
+                      if (touchDragOccurredRef.current) { touchDragOccurredRef.current = false; return; }
+                      setLightboxUrl(photoSrc(photo.url));
+                    }}
+                    className={[
+                      "group relative rounded-xl overflow-hidden bg-gray-100 aspect-square shadow-sm cursor-grab active:cursor-grabbing transition-all duration-150 select-none",
+                      isDraggingThis ? "opacity-40 scale-95 ring-2 ring-orange-400" : "",
+                      isDropTarget ? "ring-2 ring-orange-500 scale-105 shadow-lg" : "",
+                    ].join(" ")}
+                  >
+                    <img
+                      src={photoSrc(photo.url)}
+                      alt={photo.caption ?? ""}
+                      className="w-full h-full object-cover pointer-events-none"
+                      draggable={false}
+                    />
 
-                  {/* Drag handle */}
-                  <div className="absolute top-2 left-2 bg-black/40 text-white p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <GripVertical className="w-3.5 h-3.5" />
-                  </div>
-
-                  {/* Overlay controls */}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
-                    <div className="flex justify-end gap-1">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setEditCaptionId(photo.id); setEditCaption(photo.caption ?? ""); }}
-                        className="bg-white/20 hover:bg-white/40 text-white p-1.5 rounded-lg transition-colors"
-                        title="Caption திருத்து"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); deletePhoto(photo); }}
-                        className="bg-red-500/80 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors"
-                        title="நீக்கு"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                    {/* Drag handle — always visible on touch devices, hover-only on desktop */}
+                    <div className="absolute top-2 left-2 bg-black/40 text-white p-1 rounded-md opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity pointer-events-none">
+                      <GripVertical className="w-3.5 h-3.5" />
                     </div>
-                    {photo.caption && (
-                      <p className="text-white text-xs leading-snug line-clamp-2">{photo.caption}</p>
+
+                    {/* Overlay controls — only show when not actively dragging */}
+                    {!isDraggingThis && (
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
+                        <div className="flex justify-end gap-1">
+                          <button
+                            onTouchEnd={(e) => { e.stopPropagation(); setEditCaptionId(photo.id); setEditCaption(photo.caption ?? ""); }}
+                            onClick={(e) => { e.stopPropagation(); setEditCaptionId(photo.id); setEditCaption(photo.caption ?? ""); }}
+                            className="bg-white/20 hover:bg-white/40 text-white p-1.5 rounded-lg transition-colors"
+                            title="Caption திருத்து"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onTouchEnd={(e) => { e.stopPropagation(); deletePhoto(photo); }}
+                            onClick={(e) => { e.stopPropagation(); deletePhoto(photo); }}
+                            className="bg-red-500/80 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors"
+                            title="நீக்கு"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        {photo.caption && (
+                          <p className="text-white text-xs leading-snug line-clamp-2">{photo.caption}</p>
+                        )}
+                      </div>
                     )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
