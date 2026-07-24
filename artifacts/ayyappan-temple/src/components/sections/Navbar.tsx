@@ -8,6 +8,7 @@ const navLinks = [
   { label: 'குருநாதர்கள்', href: '#gurus' },
   { label: 'திருப்பணி', href: '#renovation' },
   { label: 'கும்பாபிஷேகம்', href: '#kumbhabhishekam' },
+  { label: 'படங்கள்', href: '#gallery' },
   { label: 'நன்கொடை', href: '#donate' },
   { label: 'தொடர்புக்கு', href: '#contact' },
 ];

@@ -6,6 +6,7 @@ import { Renovation } from '@/components/sections/Renovation';
 import { Kumbhabhishekam } from '@/components/sections/Kumbhabhishekam';
 import { Donation } from '@/components/sections/Donation';
 import { SpecialPujas } from '@/components/sections/SpecialPujas';
+import { Gallery } from '@/components/sections/Gallery';
 import { Faq } from '@/components/sections/Faq';
 import { Appeal } from '@/components/sections/Appeal';
 import { Footer } from '@/components/sections/Footer';
@@ -21,6 +22,7 @@ export default function Home() {
         <Renovation />
         <Kumbhabhishekam />
         <Donation />
+        <Gallery />
         <SpecialPujas />
         <Faq />
         <Appeal />
