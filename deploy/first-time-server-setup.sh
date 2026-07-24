@@ -50,8 +50,12 @@ USE_LOCAL_PG="${USE_LOCAL_PG:-y}"
 if [[ "$USE_LOCAL_PG" =~ ^[Yy] ]]; then
   read -rp "Database name [ayyappan_temple]: " DB_NAME;  DB_NAME="${DB_NAME:-ayyappan_temple}"
   read -rp "Database user [ayyappan_user]: "  DB_USER;  DB_USER="${DB_USER:-ayyappan_user}"
-  read -rsp "Database password: " DB_PASS; echo ""
-  [[ -n "$DB_PASS" ]] || error "Password required."
+  while true; do
+    echo -n "Database password (typing is hidden): "
+    read -rsp "" DB_PASS; echo ""
+    [[ -n "$DB_PASS" ]] && break
+    echo "  ⚠  Password cannot be empty — please type something and press Enter."
+  done
   DATABASE_URL="postgresql://${DB_USER}:${DB_PASS}@127.0.0.1:5432/${DB_NAME}"
 else
   read -rp "PostgreSQL URL (postgresql://user:pass@host:5432/db): " DATABASE_URL
