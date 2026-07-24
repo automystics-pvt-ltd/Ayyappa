@@ -18,8 +18,8 @@ const ALLOWED_IMAGE_TYPES = new Set([
   "image/gif",
 ]);
 
-// Max screenshot file size: 10 MB
-const MAX_SCREENSHOT_SIZE = 10 * 1024 * 1024;
+// Max screenshot file size: 5 MB
+const MAX_SCREENSHOT_SIZE = 5 * 1024 * 1024;
 
 /**
  * POST /api/donations/upload-screenshot-url
@@ -34,7 +34,7 @@ router.post("/upload-screenshot-url", async (req, res) => {
     return;
   }
   if (typeof size !== "number" || size <= 0 || size > MAX_SCREENSHOT_SIZE) {
-    res.status(400).json({ error: "File size must be between 1 byte and 10 MB" });
+    res.status(400).json({ error: "File size must be between 1 byte and 5 MB" });
     return;
   }
 

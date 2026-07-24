@@ -12,7 +12,7 @@ import { DonorWall, type Donor } from '@/components/sections/DonorWall';
 
 const AMOUNTS = [501, 1001, 5001, 10001];
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const RECEIPT_TIMEOUT = 30; // seconds
 
 /* ─── Types ─── */
@@ -72,7 +72,7 @@ function validate(
     if (!ALLOWED_TYPES.includes(screenshotFile.type))
       errors.screenshot = 'JPEG, PNG, WebP அல்லது GIF படம் மட்டும் ஏற்றுக்கொள்ளப்படும்';
     else if (screenshotFile.size > MAX_FILE_SIZE)
-      errors.screenshot = 'படத்தின் அளவு 10 MB-க்கு கீழ் இருக்க வேண்டும்';
+      errors.screenshot = 'படத்தின் அளவு 5 MB-க்கு கீழ் இருக்க வேண்டும்';
   }
 
   return errors;
@@ -131,7 +131,7 @@ function ScreenshotUploader({ file, onFileChange, error }: { file: File | null; 
             <span className="text-primary font-medium">படம் தேர்ந்தெடுக்க</span>
             <span className="text-muted-foreground"> அல்லது இங்கே இழுக்கவும்</span>
           </div>
-          <p className="text-xs text-muted-foreground">JPEG, PNG, WebP, GIF · அதிகபட்சம் 10 MB</p>
+          <p className="text-xs text-muted-foreground">JPEG, PNG, WebP, GIF · அதிகபட்சம் 5 MB</p>
         </button>
       )}
       {error && (
@@ -423,6 +423,27 @@ export function Donation() {
     setTouched(new Set());
     setUploadProgress('idle');
   }, []);
+
+  /* Screenshot change — validate immediately on selection, reject invalid files */
+  const handleScreenshotChange = (file: File | null) => {
+    if (file === null) {
+      setScreenshotFile(null);
+      setErrors((prev) => { const next = { ...prev }; delete next.screenshot; return next; });
+      return;
+    }
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setErrors((prev) => ({ ...prev, screenshot: 'JPEG, PNG, WebP அல்லது GIF படம் மட்டும் ஏற்றுக்கொள்ளப்படும்' }));
+      setTouched((prev) => new Set(prev).add('screenshot'));
+      return; // reject — do not store the file
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      setErrors((prev) => ({ ...prev, screenshot: 'படத்தின் அளவு 5 MB-க்கு கீழ் இருக்க வேண்டும்' }));
+      setTouched((prev) => new Set(prev).add('screenshot'));
+      return; // reject — do not store the file
+    }
+    setScreenshotFile(file);
+    setErrors((prev) => { const next = { ...prev }; delete next.screenshot; return next; });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -784,7 +805,7 @@ export function Donation() {
                 </Field>
 
                 <Field label="Payment Screenshot" error={errors.screenshot}>
-                  <ScreenshotUploader file={screenshotFile} onFileChange={setScreenshotFile} error={errors.screenshot} />
+                  <ScreenshotUploader file={screenshotFile} onFileChange={handleScreenshotChange} error={errors.screenshot} />
                   {uploadProgress === 'uploading' && (
                     <p className="text-xs text-primary mt-1 flex items-center gap-1">
                       <Upload className="w-3 h-3 animate-bounce" /> படம் பதிவேற்றுகிறது...
