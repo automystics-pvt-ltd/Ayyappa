@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import templeHero from '@assets/temple_hero_hd_2.png';
+import templeHero from '@assets/temple_actual_photo.png';
 import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { NewsTicker } from './NewsTicker';
@@ -16,12 +16,25 @@ export function Hero() {
   return (
     <section id="home" className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
       <motion.div className="absolute inset-0 z-0"
-        initial={{ scale: 1.1 }} animate={{ scale: 1 }}
-        transition={{ duration: 1.5, ease: 'easeOut' }}>
-        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${templeHero})` }} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
-        <div className="absolute inset-0 bg-black/15" />
+        initial={{ scale: 1.08 }} animate={{ scale: 1 }}
+        transition={{ duration: 1.8, ease: 'easeOut' }}>
+        {/* Real temple photo — object-position focuses on the gopuram */}
+        <img
+          src={templeHero}
+          alt="அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            objectPosition: 'center 22%',
+            imageRendering: 'high-quality',
+            filter: 'contrast(1.12) saturate(1.25) brightness(0.95) sharpen(1)',
+          }}
+          fetchPriority="high"
+          decoding="sync"
+        />
+        {/* Bottom-heavy dark gradient so text is always readable */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/5" />
+        {/* Subtle vignette on sides */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_50%,_rgba(0,0,0,0.45)_100%)]" />
       </motion.div>
 
       <div className="absolute inset-0 z-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-secondary/40 via-transparent to-transparent pointer-events-none mix-blend-overlay" />
