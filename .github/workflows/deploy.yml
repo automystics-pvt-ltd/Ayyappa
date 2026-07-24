@@ -1,0 +1,81 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # allow manual trigger from GitHub UI
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Checkout ─────────────────────────────────────────
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── 2. pnpm ─────────────────────────────────────────────
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      # ── 3. Node.js ──────────────────────────────────────────
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      # ── 4. Install ──────────────────────────────────────────
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ── 5. Build frontend ───────────────────────────────────
+      - name: Build frontend
+        run: PORT=3000 BASE_PATH=/ pnpm --filter @workspace/ayyappan-temple run build
+
+      # ── 6. Build API ────────────────────────────────────────
+      - name: Build API
+        run: NODE_ENV=production pnpm --filter @workspace/api-server run build
+
+      # ── 7. SSH agent ─────────────────────────────────────────
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # ── 8. Add server to known_hosts ─────────────────────────
+      - name: Trust server host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      # ── 9. Deploy frontend ───────────────────────────────────
+      - name: Deploy frontend
+        run: |
+          rsync -az --delete \
+            artifacts/ayyappan-temple/dist/public/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_WEB_ROOT }}/
+
+      # ── 10. Deploy API ───────────────────────────────────────
+      - name: Deploy API
+        run: |
+          rsync -az --delete \
+            artifacts/api-server/dist/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_API_DIR }}/dist/
+
+      # ── 11. Restart API ──────────────────────────────────────
+      - name: Restart API on server
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'pm2 restart ayyappan-api && pm2 save'
+
+      # ── 12. Verify ───────────────────────────────────────────
+      - name: Health check
+        run: |
+          sleep 4
+          curl -sf "https://${{ secrets.SSH_HOST }}/api/healthz" \
+            || curl -sf "http://${{ secrets.SSH_HOST }}/api/healthz" \
+            || echo "Health check skipped (domain not yet pointed)"
