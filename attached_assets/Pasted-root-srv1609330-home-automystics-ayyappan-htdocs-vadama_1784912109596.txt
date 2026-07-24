@@ -1,0 +1,59 @@
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# cd /opt/ayyappan-source && git pull origin main \
+&& pnpm install --frozen-lockfile \
+&& pnpm --filter @workspace/ayyappan-temple build \
+&& pnpm --filter @workspace/api-server build \
+&& rsync -av --delete artifacts/ayyappan-temple/dist/public/ \
+    /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech/ \
+&& rsync -av artifacts/api-server/dist/ /opt/ayyappan-api/dist/ \
+&& pm2 restart ayyappan-api && pm2 save \
+&& PGPASSWORD='Temple2026secure' psql \
+    "postgresql://ayyappan_user:Temple2026secure@127.0.0.1:5432/ayyappan_temple" \
+    -c "INSERT INTO admins (username,password_hash,role,display_name) VALUES ('admin','\$2b\$12\$MjGaLRSbIHv.lFpEKrtZmu7lVuBpFzDEcNBOwGTl9.WtodRcz2LnG','super_admin','முதன்மை நிர்வாகி') ON CONFLICT (username) DO UPDATE SET password_hash=EXCLUDED.password_hash;" \
+&& curl -s http://127.0.0.1:3010/api/healthz \
+&& echo " Done"
+-bash: cd: /opt/ayyappan-source: No such file or directory
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# bash deploy.sh
+bash: deploy.sh: No such file or directory
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# cat > /root/deploy.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "=== Pulling latest code ==="
+cd /opt/ayyappan-source
+git pull origin main
+
+echo "=== Installing dependencies ==="
+pnpm install --frozen-lockfile
+
+echo "=== Building ==="
+pnpm --filter @workspace/ayyappan-temple build
+pnpm --filter @workspace/api-server build
+
+echo "=== Deploying frontend ==="
+rsync -av --delete artifacts/ayyappan-temple/dist/public/ \
+  /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech/
+
+echo "=== Deploying API ==="
+rsync -av artifacts/api-server/dist/ /opt/ayyappan-api/dist/
+
+echo "=== Restarting API ==="
+pm2 restart ayyappan-api
+pm2 save
+
+echo "=== Updating admin password ==="
+PGPASSWORD='Temple2026secure' psql \
+  "postgresql://ayyappan_user:Temple2026secure@127.0.0.1:5432/ayyappan_temple" \
+  -c "INSERT INTO admins (username,password_hash,role,display_name)
+      VALUES ('admin','\$2b\$12\$MjGaLRSbIHv.lFpEKrtZmu7lVuBpFzDEcNBOwGTl9.WtodRcz2LnG','super_admin','முதன்மை நிர்வாகி')
+      ON CONFLICT (username) DO UPDATE SET password_hash=EXCLUDED.password_hash;"
+
+echo "=== Verifying ==="
+sleep 2
+curl -s http://127.0.0.1:3010/api/healthz && echo ""
+echo "=== DONE ==="
+EOF
+
+chmod +x /root/deploy.sh && bash /root/deploy.sh
+=== Pulling latest code ===
+/root/deploy.sh: line 5: cd: /opt/ayyappan-source: No such file or directory
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# 
