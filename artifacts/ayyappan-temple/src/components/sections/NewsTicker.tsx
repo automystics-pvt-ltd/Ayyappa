@@ -9,16 +9,44 @@ type NewsPost = {
   createdAt: string;
 };
 
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+
 export function NewsTicker() {
   const [posts, setPosts] = useState<NewsPost[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const activeIdxRef = useRef(0);
+  activeIdxRef.current = activeIdx;
 
   useEffect(() => {
-    api
-      .getNews()
-      .then((data) => setPosts((data as NewsPost[]).slice(0, 5)))
-      .catch(() => {});
+    let cancelled = false;
+
+    const fetchNews = () => {
+      api
+        .getNews()
+        .then((data) => {
+          if (cancelled) return;
+          const next = (data as NewsPost[]).slice(0, 5);
+          setPosts((prev) => {
+            // Only update if the list actually changed (by id sequence)
+            const prevIds = prev.map((p) => p.id).join(',');
+            const nextIds = next.map((p) => p.id).join(',');
+            if (prevIds === nextIds) return prev;
+            // Keep activeIdx in range after update
+            setActiveIdx((idx) => Math.min(idx, Math.max(next.length - 1, 0)));
+            return next;
+          });
+        })
+        .catch(() => {});
+    };
+
+    fetchNews();
+    const refreshTimer = setInterval(fetchNews, REFRESH_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(refreshTimer);
+    };
   }, []);
 
   // Cycle through titles every 4 seconds
