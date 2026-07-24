@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import templeHero from '@assets/temple_clean_v2.png';
+import templeHero from '@assets/temple_enhanced.png';
 import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { NewsTicker } from './NewsTicker';
