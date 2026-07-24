@@ -130,12 +130,14 @@ router.get("/approved", async (_req, res) => {
         place: donationsTable.place,
         amount: donationsTable.amount,
         anonymous: donationsTable.anonymous,
+        message: donationsTable.message,
         reviewedAt: donationsTable.reviewedAt,
+        createdAt: donationsTable.createdAt,
       })
       .from(donationsTable)
       .where(eq(donationsTable.status, "approved"))
       .orderBy(desc(donationsTable.reviewedAt))
-      .limit(100);
+      .limit(500);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch donors" });

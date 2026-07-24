@@ -8,6 +8,7 @@ import {
   ClipboardCheck, SendHorizonal,
 } from 'lucide-react';
 import { api, uploadScreenshot } from '@/lib/api';
+import { DonorWall, type Donor } from '@/components/sections/DonorWall';
 
 const AMOUNTS = [501, 1001, 5001, 10001];
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -16,7 +17,6 @@ const RECEIPT_TIMEOUT = 30; // seconds
 
 /* ─── Types ─── */
 interface Stats   { totalRaised: number; donorCount: number; goal: number; progressPercent: number }
-interface Donor   { id: number; donorName: string; place?: string; amount: string; anonymous: boolean; reviewedAt: string }
 interface Settings { bank_name?: string; bank_account_name?: string; bank_account_number?: string; bank_ifsc?: string; bank_upi_id?: string; qr_code_url?: string }
 
 interface ReceiptData {
@@ -250,118 +250,6 @@ function SubmissionReceipt({ receipt, onDone }: { receipt: ReceiptData; onDone: 
           </div>
         </div>
       </motion.div>
-    </div>
-  );
-}
-
-/* ─── Donor Honor Roll ─── */
-const MEDAL = ['🥇', '🥈', '🥉'];
-const MEDAL_BG = [
-  'bg-gradient-to-br from-yellow-50 to-amber-100 border-amber-300',
-  'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-300',
-  'bg-gradient-to-br from-orange-50 to-orange-100 border-orange-300',
-];
-const SHOW_INITIAL = 10;
-
-function DonorHonorRoll({ donors, fmt }: { donors: Donor[]; fmt: (n: number) => string }) {
-  const [showAll, setShowAll] = useState(false);
-
-  // Top 3 by amount (desc), rest in chronological order (already approved-date desc)
-  const sorted = [...donors].sort((a, b) => Number(b.amount) - Number(a.amount));
-  const top3   = sorted.slice(0, Math.min(3, sorted.length));
-  const rest   = donors.filter((d) => !top3.includes(d)); // preserve server order for the rest
-  const visible = showAll ? rest : rest.slice(0, SHOW_INITIAL);
-
-  const name = (d: Donor) => d.anonymous ? 'அடையாளம் தெரியாதவர்' : d.donorName;
-  const dateStr = (iso: string) => {
-    try { return new Date(iso).toLocaleDateString('ta-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
-    catch { return ''; }
-  };
-
-  return (
-    <div className="space-y-8">
-      {/* Top 3 podium cards */}
-      {top3.length > 0 && (
-        <div className={`grid gap-4 ${top3.length === 1 ? 'grid-cols-1 max-w-sm mx-auto' : top3.length === 2 ? 'grid-cols-2 max-w-xl mx-auto' : 'grid-cols-1 sm:grid-cols-3'}`}>
-          {top3.map((d, i) => (
-            <div key={d.id}
-              className={`border-2 rounded-2xl p-5 text-center shadow-md ${MEDAL_BG[i]}`}>
-              <div className="text-4xl mb-2">{MEDAL[i]}</div>
-              <div className="font-bold text-foreground text-base mb-0.5 truncate">{name(d)}</div>
-              {d.place && !d.anonymous && (
-                <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground mb-2">
-                  <MapPin className="w-3 h-3" />{d.place}
-                </div>
-              )}
-              <div className="text-xl font-bold text-primary mt-1">{fmt(Number(d.amount))}</div>
-              {d.reviewedAt && (
-                <div className="text-xs text-muted-foreground mt-1">{dateStr(d.reviewedAt)}</div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Remaining donors — numbered table */}
-      {rest.length > 0 && (
-        <div className="bg-card border border-card-border rounded-2xl overflow-hidden shadow-sm">
-          {/* Table header */}
-          <div className="grid grid-cols-[2.5rem_1fr_auto] md:grid-cols-[2.5rem_1fr_1fr_auto] gap-x-3 px-4 py-3 bg-muted/50 border-b border-border text-xs font-bold text-muted-foreground uppercase tracking-wider">
-            <span>#</span>
-            <span>பெயர்</span>
-            <span className="hidden md:block">ஊர்</span>
-            <span className="text-right">தொகை</span>
-          </div>
-
-          <div className="divide-y divide-border/50">
-            {visible.map((d, idx) => (
-              <div key={d.id}
-                className="grid grid-cols-[2.5rem_1fr_auto] md:grid-cols-[2.5rem_1fr_1fr_auto] gap-x-3 px-4 py-3.5 items-center hover:bg-muted/30 transition-colors">
-                {/* Rank */}
-                <span className="text-sm font-bold text-muted-foreground">{top3.length + idx + 1}</span>
-
-                {/* Name + mobile place */}
-                <div className="min-w-0">
-                  <div className="font-semibold text-foreground text-sm truncate flex items-center gap-1.5">
-                    <span>🙏</span>{name(d)}
-                  </div>
-                  {d.place && !d.anonymous && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground md:hidden mt-0.5">
-                      <MapPin className="w-3 h-3 flex-shrink-0" />{d.place}
-                    </div>
-                  )}
-                </div>
-
-                {/* Place — desktop only */}
-                <div className="hidden md:flex items-center gap-1 text-xs text-muted-foreground min-w-0">
-                  {d.place && !d.anonymous ? (
-                    <><MapPin className="w-3 h-3 flex-shrink-0" /><span className="truncate">{d.place}</span></>
-                  ) : '—'}
-                </div>
-
-                {/* Amount + date */}
-                <div className="text-right">
-                  <div className="font-bold text-primary text-sm">{fmt(Number(d.amount))}</div>
-                  {d.reviewedAt && (
-                    <div className="text-[10px] text-muted-foreground">{dateStr(d.reviewedAt)}</div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Show more / less */}
-          {rest.length > SHOW_INITIAL && (
-            <button
-              onClick={() => setShowAll((v) => !v)}
-              className="w-full py-3.5 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors border-t border-border flex items-center justify-center gap-2">
-              {showAll
-                ? <>↑ குறைவாக காட்டு</>
-                : <>மேலும் {rest.length - SHOW_INITIAL} நன்கொடையாளர்களை காண்க ↓</>}
-            </button>
-          )}
-        </div>
-      )}
     </div>
   );
 }
@@ -809,6 +697,7 @@ export function Donation() {
           viewport={{ once: true }} variants={fadeUpVariant}>
 
           {/* Section header */}
+          {/* Section heading */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-secondary/20 mb-4">
               <Users className="w-7 h-7 text-secondary-foreground" />
@@ -819,32 +708,9 @@ export function Donation() {
             <p className="text-muted-foreground text-sm">
               இவர்களின் அன்புத் தொகையால் ஆலய திருப்பணி நடைபெறுகிறது — ஸ்வாமி அனுகிரகம் நிறைவாக கிடைக்கட்டும் 🙏
             </p>
-            {donors.length > 0 && stats && (
-              <div className="inline-flex items-center gap-6 mt-5 bg-primary/5 border border-primary/20 rounded-2xl px-6 py-3">
-                <div className="text-center">
-                  <div className="text-xl font-bold text-primary">{donors.length}</div>
-                  <div className="text-xs text-muted-foreground">நன்கொடையாளர்கள்</div>
-                </div>
-                <div className="w-px h-8 bg-border" />
-                <div className="text-center">
-                  <div className="text-xl font-bold text-primary">{fmt(stats.totalRaised)}</div>
-                  <div className="text-xs text-muted-foreground">மொத்தம் திரட்டப்பட்டது</div>
-                </div>
-              </div>
-            )}
           </div>
 
-          {donors.length === 0 ? (
-            /* Empty state */
-            <div className="bg-card border border-card-border rounded-2xl p-12 text-center">
-              <div className="text-5xl mb-4">🙏</div>
-              <p className="text-muted-foreground font-medium">
-                முதல் நன்கொடையாளர் ஆக வாய்ப்பு உங்களுக்கே!
-              </p>
-            </div>
-          ) : (
-            <DonorHonorRoll donors={donors} fmt={fmt} />
-          )}
+          <DonorWall donors={donors} stats={stats} />
         </motion.div>
       </div>
 
