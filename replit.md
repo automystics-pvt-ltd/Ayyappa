@@ -1,45 +1,60 @@
-# [Project name]
+# அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் — Project Overview
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
-
-## Run & Operate
-
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+A Tamil-language crowdfunding + content management website for the Sri Ayyappan Temple renovation (Kumbhabhishekam) project in Vadamathurai, Dindigul District, Tamil Nadu.
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- **Frontend**: React 19 + Vite + Tailwind CSS + shadcn/ui (pnpm workspace: `@workspace/ayyappan-temple`)
+- **Backend**: Express 5 API server (pnpm workspace: `@workspace/api-server`)
+- **Database**: Replit PostgreSQL via Drizzle ORM (pnpm workspace: `@workspace/db`)
+- **Monorepo**: pnpm workspaces
 
-## Where things live
+## How to Run
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+Both workflows are managed by Replit:
+- **Temple website**: `artifacts/ayyappan-temple: web` → preview at `/`
+- **API server**: `artifacts/api-server: API Server` → preview at `/api`
 
-## Architecture decisions
+## Key Features
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+### Public Site
+- Temple info pages (history, gurus, renovation, Kumbhabhishekam, gallery)
+- Live crowdfunding progress bar with real donation stats
+- QR/UPI donation submission form (with donor name, mobile, transaction ID)
+- Approved donors list (publicly visible after admin verification)
+- Bank details and QR code managed from admin panel
 
-## Product
+### Admin Panel (`/admin`)
+- **Login**: `/admin` — username: `admin`, password: `admin123` (change after first login)
+- **Dashboard**: `/admin/dashboard` — crowdfunding stats, recent donations
+- **Donations**: `/admin/donations` — approve/reject pending donations
+- **News**: `/admin/news` — create/edit/delete announcements
+- **Events**: `/admin/events` — manage temple events (pujas, festivals)
+- **Settings**: `/admin/settings` — bank details, QR code URL, temple timings
+- **Admin Users**: `/admin/admins` — create new admins (super_admin only)
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+### Roles
+- `super_admin` — full access
+- `editor` — news, events, settings, donation approve/reject
+- `volunteer` — can only view/submit donations, cannot approve
 
-## User preferences
+## Database Tables
+- `admins` — admin users with roles
+- `donations` — donation submissions (pending → approved/rejected)
+- `news_posts` — announcements
+- `events` — temple events
+- `gallery_albums` / `gallery_photos` — photo gallery
+- `site_settings` — CMS key-value store (bank details, QR code, etc.)
+- `audit_logs` — admin action logs
+- `sessions` — express-session store (auto-created by connect-pg-simple)
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+## Default Admin
+- Username: `admin`
+- Password: `admin123`
+- Role: `super_admin`
 
-## Gotchas
+**Change this password immediately after first login.**
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+## User Preferences
+- Keep Tamil language text intact throughout the UI
+- All public-facing content should be in Tamil; admin UI can be bilingual
