@@ -22,11 +22,18 @@ const TEMPLE_LINKS = [
   { label: 'கேள்வி-பதில்',    href: '#faq',             icon: HelpCircle },
 ];
 
-/* ── Smooth scroll helper ── */
+/* ── Smooth scroll helper — accounts for fixed navbar height ── */
 function scrollTo(href: string, close?: () => void) {
-  const el = document.querySelector(href);
-  if (el) el.scrollIntoView({ behavior: 'smooth' });
   close?.();
+  // Small delay so drawer close animation doesn't fight the scroll
+  setTimeout(() => {
+    const el = document.querySelector(href);
+    if (!el) return;
+    const header = document.querySelector('header');
+    const offset = header ? header.getBoundingClientRect().height : 80;
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }, close ? 300 : 0);
 }
 
 /* ── Ticker: auto-scroll latest news ── */
