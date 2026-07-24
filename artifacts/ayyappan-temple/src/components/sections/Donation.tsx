@@ -6,6 +6,7 @@ import {
   CheckCircle2, Users, Upload, X, Image as ImageIcon,
   AlertCircle, MapPin, RefreshCw, ScanLine, IndianRupee,
   ClipboardCheck, SendHorizonal, Phone, Megaphone, Clock,
+  Copy, Check,
 } from 'lucide-react';
 import { api, uploadScreenshot } from '@/lib/api';
 import { DonorWall, type Donor } from '@/components/sections/DonorWall';
@@ -149,6 +150,33 @@ const RING_CIRC = 2 * Math.PI * RING_R;
 
 function SubmissionReceipt({ receipt, onDone }: { receipt: ReceiptData; onDone: () => void }) {
   const [remaining, setRemaining] = useState(RECEIPT_TIMEOUT);
+  const [copied, setCopied]       = useState(false);
+
+  const receiptUrl = receipt.receiptToken
+    ? `${window.location.origin}${import.meta.env.BASE_URL}receipt/${receipt.receiptToken}`
+    : null;
+
+  const handleCopy = async () => {
+    if (!receiptUrl) return;
+    try {
+      await navigator.clipboard.writeText(receiptUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // Fallback for older browsers / insecure contexts
+      const ta = document.createElement('textarea');
+      ta.value = receiptUrl;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -218,7 +246,7 @@ function SubmissionReceipt({ receipt, onDone }: { receipt: ReceiptData; onDone: 
               <div className="mt-1.5 text-amber-700">
                 அங்கீகாரத்திற்கு பிறகு{" "}
                 <a
-                  href={`${import.meta.env.BASE_URL}receipt/${receipt.receiptToken}`}
+                  href={receiptUrl ?? '#'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline font-semibold hover:text-amber-900"
@@ -229,6 +257,31 @@ function SubmissionReceipt({ receipt, onDone }: { receipt: ReceiptData; onDone: 
               </div>
             )}
           </div>
+
+          {/* Copy receipt link button */}
+          {receiptUrl && (
+            <button
+              type="button"
+              onClick={handleCopy}
+              className={`w-full flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                copied
+                  ? 'border-green-400 bg-green-50 text-green-700'
+                  : 'border-border bg-background text-foreground hover:bg-muted'
+              }`}
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  இணைப்பு நகலெடுக்கப்பட்டது!
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                  ரசீது இணைப்பை நகலெடு
+                </>
+              )}
+            </button>
+          )}
 
           {/* Countdown + buttons */}
           <div className="flex items-center justify-between pt-1 gap-3">
