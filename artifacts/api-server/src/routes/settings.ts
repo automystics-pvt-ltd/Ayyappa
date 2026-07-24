@@ -3,8 +3,34 @@ import { db } from "@workspace/db";
 import { siteSettingsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
+import { ObjectStorageService } from "../lib/objectStorage";
+
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const MAX_QR_SIZE = 5 * 1024 * 1024;
+const objectStorageService = new ObjectStorageService();
 
 const router = Router();
+
+// POST /api/settings/upload-qr-url — admin only, presigned URL for QR code image
+router.post("/upload-qr-url", requireRole("super_admin", "editor"), async (req, res) => {
+  const { size, contentType } = req.body ?? {};
+  if (!contentType || !ALLOWED_IMAGE_TYPES.has(contentType)) {
+    res.status(400).json({ error: "Only image files are allowed (JPEG, PNG, WebP, GIF)" });
+    return;
+  }
+  if (typeof size !== "number" || size <= 0 || size > MAX_QR_SIZE) {
+    res.status(400).json({ error: "File size must be between 1 byte and 5 MB" });
+    return;
+  }
+  try {
+    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+    const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+    res.json({ uploadURL, objectPath });
+  } catch (err) {
+    req.log.error({ err }, "Error generating QR upload URL");
+    res.status(500).json({ error: "Failed to generate upload URL" });
+  }
+});
 
 // GET /api/settings — public
 router.get("/", async (_req, res) => {

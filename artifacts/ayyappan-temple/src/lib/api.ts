@@ -48,6 +48,24 @@ export async function uploadScreenshot(file: File): Promise<string> {
   return objectPath;
 }
 
+/**
+ * Upload a QR code image to GCS via presigned URL (admin only).
+ * Returns the objectPath to store in settings as qr_code_url.
+ */
+export async function uploadQrCode(file: File): Promise<string> {
+  const { uploadURL, objectPath } = await apiFetch<{ uploadURL: string; objectPath: string }>(
+    "/settings/upload-qr-url",
+    { method: "POST", body: JSON.stringify({ size: file.size, contentType: file.type }) }
+  );
+  const uploadRes = await fetch(uploadURL, {
+    method: "PUT",
+    body: file,
+    headers: { "Content-Type": file.type },
+  });
+  if (!uploadRes.ok) throw new Error("QR code upload failed");
+  return objectPath;
+}
+
 export const api = {
   // Auth
   login: (username: string, password: string) =>

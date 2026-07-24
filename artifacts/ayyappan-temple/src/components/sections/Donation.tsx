@@ -623,6 +623,15 @@ export function Donation() {
               )}
             </div>
 
+            {/* GPay / PhonePe number */}
+            {settings.gpay_number && (
+              <div className="bg-muted rounded-xl px-4 py-2.5 mb-3 flex items-center justify-center gap-2">
+                <Phone className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span className="text-xs text-muted-foreground font-medium">GPay / PhonePe:</span>
+                <span className="font-mono font-bold text-foreground text-sm">{settings.gpay_number}</span>
+              </div>
+            )}
+
             {/* UPI ID */}
             {settings.bank_upi_id && (
               <div className="bg-muted rounded-xl px-4 py-2.5 mb-4 flex items-center justify-center gap-2">
