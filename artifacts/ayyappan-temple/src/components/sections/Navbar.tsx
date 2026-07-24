@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Phone, Mail } from 'lucide-react';
 
 const navLinks = [
   { label: 'முகப்பு', href: '#home' },
@@ -32,13 +32,32 @@ export function Navbar() {
   };
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <header className="fixed top-0 left-0 right-0 z-50">
+      {/* Automystics top banner */}
+      <div className="bg-gray-900 text-white text-xs py-1.5 px-4">
+        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 text-center sm:text-left">
+          <span className="text-gray-300">
+            Website · Application · ERP & all Software needs?
+            <span className="text-yellow-400 font-semibold ml-1">Contact Automystics Technologies Pvt. Ltd.</span>
+          </span>
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <a href="tel:9345127734" className="flex items-center gap-1 text-yellow-400 hover:text-yellow-300 transition-colors font-medium">
+              <Phone className="w-3 h-3" />9345127734
+            </a>
+            <span className="text-gray-600 hidden sm:inline">|</span>
+            <a href="mailto:info@automystics.com" className="flex items-center gap-1 text-yellow-400 hover:text-yellow-300 transition-colors font-medium">
+              <Mail className="w-3 h-3" />info@automystics.com
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Main navbar */}
+      <div className={`transition-all duration-300 ${
         isScrolled
           ? 'bg-background/95 backdrop-blur-md shadow-sm py-3'
           : 'bg-transparent py-5'
-      }`}
-    >
+      }`}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <div 
@@ -114,6 +133,7 @@ export function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>{/* end main navbar wrapper */}
     </header>
   );
 }
