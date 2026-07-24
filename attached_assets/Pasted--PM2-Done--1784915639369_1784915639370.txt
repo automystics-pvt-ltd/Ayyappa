@@ -1,0 +1,28 @@
+[PM2] Done.
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 28 │ automystics-api       │ default     │ 0.0.0   │ fork    │ 1524446  │ 13D    │ 2    │ online    │ 0%       │ 181.9mb  │ root     │ disabled │
+│ 29 │ automystics-api       │ default     │ N/A     │ fork    │ 1375740  │ 0s     │ 179… │ online    │ 25.9%    │ 58.0mb   │ root     │ disabled │
+│ 36 │ ayyappan-api          │ default     │ N/A     │ cluster │ 1375766  │ 0s     │ 0    │ online    │ 0%       │ 47.8mb   │ root     │ disabled │
+│ 32 │ docscan-api           │ default     │ 0.0.0   │ fork    │ 542910   │ 28h    │ 8    │ online    │ 0%       │ 147.2mb  │ root     │ disabled │
+│ 11 │ erp-automystics       │ default     │ N/A     │ fork    │ 342673   │ 3h     │ 11   │ online    │ 0%       │ 117.1mb  │ root     │ disabled │
+│ 1  │ fitro360              │ default     │ 1.0.0   │ fork    │ 1524182  │ 13D    │ 4    │ online    │ 0%       │ 108.6mb  │ root     │ disabled │
+│ 2  │ kalvicore-api         │ default     │ 0.0.0   │ fork    │ 198081   │ 30h    │ 8    │ online    │ 0%       │ 122.2mb  │ root     │ disabled │
+│ 13 │ mmwear-erp            │ default     │ 0.0.0   │ fork    │ 3396013  │ 3D     │ 137  │ online    │ 0%       │ 591.6mb  │ root     │ disabled │
+│ 14 │ mystics-audit         │ default     │ 0.0.0   │ fork    │ 1035800  │ 9D     │ 586  │ online    │ 0%       │ 195.0mb  │ root     │ disabled │
+│ 5  │ mysticscivil-api      │ default     │ N/A     │ fork    │ 1524242  │ 13D    │ 4    │ online    │ 0%       │ 99.2mb   │ root     │ disabled │
+│ 26 │ mysticshr-api         │ default     │ 0.0.0   │ fork    │ 852146   │ 8D     │ 14   │ online    │ 0%       │ 408.6mb  │ root     │ disabled │
+│ 12 │ mysticsinventory      │ default     │ N/A     │ fork    │ 1375726  │ 0s     │ 242… │ online    │ 44.4%    │ 75.9mb   │ root     │ disabled │
+│ 3  │ people-connect-api    │ default     │ 0.0.0   │ fork    │ 1524209  │ 13D    │ 4    │ online    │ 0%       │ 177.6mb  │ root     │ disabled │
+│ 6  │ solarnexus-api        │ default     │ 0.0.0   │ fork    │ 1524251  │ 13D    │ 4    │ online    │ 0%       │ 117.0mb  │ root     │ disabled │
+│ 4  │ tkprabhu-api          │ default     │ 0.0.0   │ fork    │ 1524217  │ 13D    │ 4    │ online    │ 0%       │ 179.5mb  │ root     │ disabled │
+│ 8  │ ungalrajeev-api       │ default     │ N/A     │ fork    │ 1375442  │ 4s     │ 958… │ online    │ 0%       │ 139.7mb  │ root     │ disabled │
+│ 7  │ ungaludan-sarath      │ default     │ 0.0.0   │ fork    │ 1524287  │ 13D    │ 4    │ online    │ 0%       │ 186.7mb  │ root     │ disabled │
+│ 9  │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1375512  │ 3s     │ 256… │ online    │ 0%       │ 136.7mb  │ root     │ disabled │
+│ 10 │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1524307  │ 13D    │ 199… │ online    │ 0%       │ 49.6mb   │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 99.9% | ram usage: 36.6% | lo: ⇓ 0.016mb/s ⇑ 0.016mb/s | eth0: ⇓ 0.001mb/s ⇑ 0.002mb/s | disk: ⇓ 29.654mb/s ⇑ 2.998mb/s |
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+{"error":"Email and password are required"}root@srv1609330:/opt/ayyappan-api# 
