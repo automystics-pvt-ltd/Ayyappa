@@ -207,7 +207,13 @@ router.patch("/:id/approve", requireRole("super_admin", "editor"), async (req, r
 
     // Send SMS/WhatsApp notification — runs in background, never blocks approval response
     if (updated.mobile) {
-      const siteBaseUrl = process.env.SITE_BASE_URL ?? "";
+      // Prefer explicitly configured SITE_BASE_URL (production domain), fall back to
+      // REPLIT_DEV_DOMAIN so the receipt link is always included even in dev/staging.
+      const siteBaseUrl =
+        process.env.SITE_BASE_URL ||
+        (process.env.REPLIT_DEV_DOMAIN
+          ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+          : "");
       notifyDonationApproved(
         {
           to: updated.mobile,
