@@ -45,7 +45,7 @@ export function Navbar() {
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => scrollTo('#home')}
           >
-            <div className={`font-serif text-xl md:text-2xl font-bold transition-colors ${isScrolled ? 'text-primary' : 'text-white drop-shadow-md'}`}>
+            <div className={`font-serif text-lg md:text-xl font-bold transition-colors whitespace-nowrap ${isScrolled ? 'text-primary' : 'text-white drop-shadow-md'}`}>
               ஸ்ரீ ஐயப்பன் திருக்கோவில்
             </div>
           </div>

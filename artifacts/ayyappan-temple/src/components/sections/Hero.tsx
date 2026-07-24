@@ -26,7 +26,7 @@ export function Hero() {
       <div className="absolute inset-0 z-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-secondary/40 via-transparent to-transparent pointer-events-none mix-blend-overlay" />
 
       {/* Content */}
-      <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl mx-auto mt-16">
+      <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl mx-auto">
         <motion.div
           variants={staggerContainer}
           initial="hidden"

@@ -46,18 +46,12 @@ export function Kumbhabhishekam() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center">
+          <div className="flex flex-wrap justify-center gap-4">
             {events.map((event, idx) => (
               <motion.div
                 key={idx}
                 variants={fadeUpVariant}
-                className={`
-                  bg-gradient-to-br from-secondary/10 to-transparent 
-                  border border-secondary/30 rounded-xl p-6 text-center
-                  backdrop-blur-sm hover:bg-secondary/20 hover:border-secondary/50 
-                  transition-all duration-300
-                  ${idx === events.length - 1 && events.length % 2 !== 0 && events.length % 3 !== 0 ? 'sm:col-span-2 md:col-span-1' : ''}
-                `}
+                className="w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.75rem)] bg-gradient-to-br from-secondary/10 to-transparent border border-secondary/30 rounded-xl p-6 text-center backdrop-blur-sm hover:bg-secondary/20 hover:border-secondary/50 transition-all duration-300"
               >
                 <h4 className="text-xl font-bold text-secondary drop-shadow-sm">{event}</h4>
               </motion.div>

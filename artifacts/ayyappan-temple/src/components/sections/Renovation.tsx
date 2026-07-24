@@ -54,11 +54,12 @@ export function Renovation() {
             <div className="grid sm:grid-cols-2 gap-4">
               {renovationWorks.map((work, idx) => {
                 const Icon = work.icon;
+                const isLastOdd = idx === renovationWorks.length - 1 && renovationWorks.length % 2 !== 0;
                 return (
                   <motion.div 
                     key={idx}
                     variants={fadeUpVariant}
-                    className="flex items-center gap-3 bg-white p-4 rounded-xl border border-border shadow-sm hover:border-primary/30 transition-colors group"
+                    className={`flex items-center gap-3 bg-white p-4 rounded-xl border border-border shadow-sm hover:border-primary/30 transition-colors group${isLastOdd ? ' sm:col-span-2 sm:max-w-sm sm:mx-auto sm:w-full' : ''}`}
                   >
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                       <Icon className="w-5 h-5 text-primary" />

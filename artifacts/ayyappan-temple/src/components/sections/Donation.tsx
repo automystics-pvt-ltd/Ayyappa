@@ -115,9 +115,9 @@ export function Donation() {
                   { label: 'IFSC', val: 'விவரங்கள் பின்னர் சேர்க்கப்படும்' },
                   { label: 'UPI ID', val: 'விவரங்கள் பின்னர் சேர்க்கப்படும்' }
                 ].map((item, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row sm:justify-between border-b border-border/50 pb-2 last:border-0 last:pb-0">
-                    <span className="text-muted-foreground font-medium">{item.label}</span>
-                    <span className="text-foreground font-bold">{item.val}</span>
+                  <div key={i} className="flex flex-col gap-0.5 border-b border-border/50 pb-3 last:border-0 last:pb-0">
+                    <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">{item.label}</span>
+                    <span className="text-foreground font-bold text-sm italic">{item.val}</span>
                   </div>
                 ))}
               </div>

@@ -48,29 +48,29 @@ export function About() {
             </p>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div className="bg-card border border-card-border rounded-xl p-6 shadow-sm flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <Calendar className="w-6 h-6" />
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-card border border-card-border rounded-xl p-4 shadow-sm flex flex-col items-center text-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                  <Calendar className="w-5 h-5" />
                 </div>
-                <div className="text-sm text-muted-foreground font-semibold uppercase tracking-wider">வருட வரலாறு</div>
-                <div className="text-xl font-bold text-foreground">பல ஆண்டுகள்</div>
+                <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wide leading-tight">வருட வரலாறு</div>
+                <div className="text-base font-bold text-foreground leading-snug">பல ஆண்டுகள்</div>
               </div>
               
-              <div className="bg-card border border-card-border rounded-xl p-6 shadow-sm flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary-foreground">
-                  <Clock className="w-6 h-6" />
+              <div className="bg-card border border-card-border rounded-xl p-4 shadow-sm flex flex-col items-center text-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary-foreground flex-shrink-0">
+                  <Clock className="w-5 h-5" />
                 </div>
-                <div className="text-sm text-muted-foreground font-semibold uppercase tracking-wider">தினசரி பூஜைகள்</div>
-                <div className="text-xl font-bold text-foreground">3 வேளை</div>
+                <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wide leading-tight">தினசரி பூஜைகள்</div>
+                <div className="text-base font-bold text-foreground leading-snug">3 வேளை</div>
               </div>
               
-              <div className="bg-card border border-card-border rounded-xl p-6 shadow-sm flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent">
-                  <Users className="w-6 h-6" />
+              <div className="bg-card border border-card-border rounded-xl p-4 shadow-sm flex flex-col items-center text-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
+                  <Users className="w-5 h-5" />
                 </div>
-                <div className="text-sm text-muted-foreground font-semibold uppercase tracking-wider">பக்தர்கள்</div>
-                <div className="text-xl font-bold text-foreground">ஆயிரக்கணக்கானோர்</div>
+                <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wide leading-tight">பக்தர்கள்</div>
+                <div className="text-base font-bold text-foreground leading-snug">ஆயிரக்கணக்கானோர்</div>
               </div>
             </div>
           </motion.div>
