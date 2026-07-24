@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, timestamp, boolean, numeric, integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, text, timestamp, boolean, numeric, integer, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -18,7 +18,9 @@ export const donationsTable = pgTable("donations", {
   reviewedBy: integer("reviewed_by"),
   reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-});
+}, (table) => [
+  uniqueIndex("donations_transaction_id_idx").on(table.transactionId),
+]);
 
 export const insertDonationSchema = createInsertSchema(donationsTable).omit({
   id: true, status: true, rejectionReason: true, reviewedBy: true, reviewedAt: true, createdAt: true

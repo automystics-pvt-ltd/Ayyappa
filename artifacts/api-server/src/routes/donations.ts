@@ -83,8 +83,16 @@ router.post("/", async (req, res) => {
       })
       .returning();
     res.json(donation);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to submit donation" });
+  } catch (err: any) {
+    // PostgreSQL unique-constraint violation code: 23505
+    if (err?.code === "23505" && err?.constraint?.includes("transaction_id")) {
+      res.status(409).json({
+        error: "இந்த Transaction ID ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது. மீண்டும் சமர்ப்பிக்க வேண்டாம்.",
+      });
+      return;
+    }
+    req.log.error({ err }, "Error submitting donation");
+    res.status(500).json({ error: "நன்கொடை சமர்ப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்." });
   }
 });
 
