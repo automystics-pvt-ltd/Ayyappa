@@ -70,10 +70,6 @@ export function Gurus() {
                     className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-                {/* Om symbol badge */}
-                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground rounded-full w-9 h-9 flex items-center justify-center text-xl shadow-lg border-2 border-secondary select-none">
-                  🪔
-                </div>
               </div>
 
               {/* Name */}
