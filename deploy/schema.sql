@@ -105,3 +105,15 @@ INSERT INTO site_settings (key, value) VALUES
   ('bank_upi_id',       ''),
   ('gpay_number',       '')
 ON CONFLICT (key) DO NOTHING;
+
+-- Session store table (used by connect-pg-simple)
+CREATE TABLE IF NOT EXISTS "sessions" (
+  "sid"    varchar   NOT NULL COLLATE "default",
+  "sess"   json      NOT NULL,
+  "expire" timestamp(6) NOT NULL
+) WITH (OIDS=FALSE);
+
+ALTER TABLE "sessions"
+  ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "sessions" ("expire");

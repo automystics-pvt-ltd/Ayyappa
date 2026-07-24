@@ -38,16 +38,21 @@ app.use(
 );
 
 // Build an explicit allowlist of trusted origins.
-// *.replit.dev wildcards are intentionally NOT used with credentials:true,
-// because that would allow any Replit-hosted page to make authenticated
-// cross-origin requests to this admin API.
+// In production, set ALLOWED_ORIGINS to a comma-separated list of allowed origins,
+// e.g. "https://vadamadurai-ayyappan-temple.automystics.tech"
 const replitDevDomain = process.env["REPLIT_DEV_DOMAIN"];
+const extraOrigins = (process.env["ALLOWED_ORIGINS"] ?? "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 const allowedOrigins = new Set<string>([
   // Only this repl's own preview domain
   ...(replitDevDomain ? [`https://${replitDevDomain}`] : []),
   // Local dev fallbacks
   "http://localhost:5173",
   "http://localhost:3000",
+  // Production / custom domains set via env var
+  ...extraOrigins,
 ]);
 
 app.use(
@@ -72,7 +77,9 @@ app.use(
     store: new PgSession({
       pool,
       tableName: "sessions",
-      createTableIfMissing: true,
+      // createTableIfMissing reads a .sql file at runtime which breaks when
+      // the app is bundled. Create the table manually via deploy/schema.sql instead.
+      createTableIfMissing: false,
     }),
     secret: sessionSecret,
     resave: false,
