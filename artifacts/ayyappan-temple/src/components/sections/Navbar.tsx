@@ -22,17 +22,20 @@ const TEMPLE_LINKS = [
   { label: 'கேள்வி-பதில்',    href: '#faq',             icon: HelpCircle },
 ];
 
-/* ── Smooth scroll helper — accounts for fixed navbar height ── */
+/* ── Smooth scroll helper — accounts for fixed navbar + breathing room ── */
 function scrollTo(href: string, close?: () => void) {
   close?.();
-  // Small delay so drawer close animation doesn't fight the scroll
+  // Wait for drawer slide-out before scrolling on mobile
   setTimeout(() => {
     const el = document.querySelector(href);
     if (!el) return;
     const header = document.querySelector('header');
-    const offset = header ? header.getBoundingClientRect().height : 80;
-    const top = el.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo({ top, behavior: 'smooth' });
+    // Measure actual header height at click-time (varies: scrolled vs top, ticker visible or not)
+    const headerH = header ? header.getBoundingClientRect().height : 80;
+    // Extra 16 px breathing room so the section title is fully clear of the navbar on all devices
+    const EXTRA = 16;
+    const top = el.getBoundingClientRect().top + window.scrollY - headerH - EXTRA;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
   }, close ? 300 : 0);
 }
 

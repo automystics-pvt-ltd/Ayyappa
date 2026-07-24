@@ -709,10 +709,9 @@ export function Donation() {
         </div>
 
         {/* ── Honor Roll ── */}
-        <motion.div className="mt-20" initial="hidden" whileInView="visible"
+        <motion.div id="donors" className="mt-20 scroll-mt-24" initial="hidden" whileInView="visible"
           viewport={{ once: true }} variants={fadeUpVariant}>
 
-          {/* Section header */}
           {/* Section heading */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-secondary/20 mb-4">
@@ -726,9 +725,7 @@ export function Donation() {
             </p>
           </div>
 
-          <div id="donors">
-            <DonorWall donors={donors} stats={stats} />
-          </div>
+          <DonorWall donors={donors} stats={stats} />
         </motion.div>
       </div>
 
