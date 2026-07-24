@@ -7,6 +7,7 @@ const navItems = [
   { path: "/admin/content",   label: "🖊️ உள்ளடக்கம்",          roles: ["super_admin", "editor"] },
   { path: "/admin/news",      label: "📢 செய்திகள்",           roles: ["super_admin", "editor"] },
   { path: "/admin/events",    label: "🎉 நிகழ்வுகள்",          roles: ["super_admin", "editor"] },
+  { path: "/admin/gallery",   label: "🖼️ படத் தொகுப்பு",       roles: ["super_admin", "editor"] },
   { path: "/admin/settings",  label: "⚙️ அமைப்புகள்",          roles: ["super_admin", "editor"] },
   { path: "/admin/admins",    label: "👥 நிர்வாகிகள்",         roles: ["super_admin"] },
 ];

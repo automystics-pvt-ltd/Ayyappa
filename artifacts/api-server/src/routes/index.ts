@@ -7,6 +7,7 @@ import eventsRouter from "./events";
 import settingsRouter from "./settings";
 import dashboardRouter from "./dashboard";
 import storageRouter from "./storage";
+import galleryRouter from "./gallery";
 
 const router = Router();
 
@@ -18,6 +19,7 @@ router.use("/news", newsRouter);
 router.use("/events", eventsRouter);
 router.use("/settings", settingsRouter);
 router.use("/dashboard", dashboardRouter);
+router.use("/gallery", galleryRouter);
 router.use("/", storageRouter);
 
 export default router;

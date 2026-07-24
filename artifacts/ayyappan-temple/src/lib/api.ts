@@ -101,7 +101,40 @@ export const api = {
   createAdmin: (data: Record<string, unknown>) =>
     apiFetch("/auth/create-admin", { method: "POST", body: JSON.stringify(data) }),
 
-  // Screenshot serving URL helper
+  // Screenshot / object storage URL helper (admin-only, requires auth)
   screenshotUrl: (objectPath: string) =>
     `${API_BASE}/storage${objectPath}`,
+
+  // Public gallery photo URL — served via the unauthenticated gallery-objects route
+  // objectPath is like /objects/bucket/uploads/uuid → /storage/gallery-objects/bucket/uploads/uuid
+  storageUrl: (objectPath: string) => {
+    const withoutPrefix = objectPath.startsWith('/objects/')
+      ? objectPath.slice('/objects/'.length)
+      : objectPath;
+    return `${API_BASE}/storage/gallery-objects/${withoutPrefix}`;
+  },
+
+  // Public - Gallery
+  getPublicAlbums: () => apiFetch<unknown[]>("/gallery/albums"),
+  getAlbumPhotos: (albumId: number) => apiFetch<unknown[]>(`/gallery/albums/${albumId}/photos`),
+
+  // Admin - Gallery
+  getAdminAlbums: () => apiFetch("/gallery/admin/albums"),
+  getGalleryUploadUrl: (contentType: string, size: number) =>
+    apiFetch("/gallery/upload-url", {
+      method: "POST",
+      body: JSON.stringify({ contentType, size }),
+    }),
+  createAlbum: (data: Record<string, unknown>) =>
+    apiFetch("/gallery/albums", { method: "POST", body: JSON.stringify(data) }),
+  updateAlbum: (id: number, data: Record<string, unknown>) =>
+    apiFetch(`/gallery/albums/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteAlbum: (id: number) =>
+    apiFetch(`/gallery/albums/${id}`, { method: "DELETE" }),
+  addPhoto: (data: Record<string, unknown>) =>
+    apiFetch("/gallery/photos", { method: "POST", body: JSON.stringify(data) }),
+  updatePhoto: (id: number, data: Record<string, unknown>) =>
+    apiFetch(`/gallery/photos/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deletePhoto: (id: number) =>
+    apiFetch(`/gallery/photos/${id}`, { method: "DELETE" }),
 };

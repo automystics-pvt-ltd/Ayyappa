@@ -11,6 +11,7 @@ import EventsAdmin from '@/pages/admin/Events';
 import SettingsAdmin from '@/pages/admin/Settings';
 import AdminManagement from '@/pages/admin/AdminManagement';
 import ContentManager from '@/pages/admin/ContentManager';
+import GalleryAdmin from '@/pages/admin/Gallery';
 import { Route, Switch, Router as WouterRouter, Redirect } from 'wouter';
 import { AdminContext, useAdminState, useAdmin } from '@/hooks/useAdmin';
 import { SiteSettingsProvider } from '@/hooks/useSiteSettings';
@@ -58,6 +59,9 @@ function AppContent() {
         </Route>
         <Route path="/admin/content">
           <AdminGuard><ContentManager /></AdminGuard>
+        </Route>
+        <Route path="/admin/gallery">
+          <AdminGuard><GalleryAdmin /></AdminGuard>
         </Route>
         <Route component={NotFound} />
       </Switch>

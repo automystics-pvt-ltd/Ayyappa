@@ -6,6 +6,9 @@ import {
   ObjectStorageService,
 } from '../lib/objectStorage';
 import { requireAuth } from '../middlewares/auth';
+import { db } from '@workspace/db';
+import { galleryPhotosTable } from '@workspace/db/schema';
+import { eq } from 'drizzle-orm';
 
 const router: IRouter = Router();
 const objectStorageService = new ObjectStorageService();
@@ -48,6 +51,53 @@ router.get(
     }
   },
 );
+
+/**
+ * GET /storage/gallery-objects/*
+ *
+ * Publicly serve gallery photo assets — no auth required.
+ * Safety: validates the requested objectPath exists in gallery_photos table
+ * so arbitrary private objects cannot be accessed via this endpoint.
+ */
+router.get('/storage/gallery-objects/*path', async (req: Request, res: Response) => {
+  try {
+    const raw = req.params.path;
+    const wildcardPath = Array.isArray(raw) ? raw.join('/') : raw;
+    const objectPath = `/objects/${wildcardPath}`;
+
+    // Confirm this path is a registered gallery photo before serving publicly
+    const [photo] = await db
+      .select({ id: galleryPhotosTable.id })
+      .from(galleryPhotosTable)
+      .where(eq(galleryPhotosTable.url, objectPath))
+      .limit(1);
+
+    if (!photo) {
+      res.status(404).json({ error: 'Gallery photo not found' });
+      return;
+    }
+
+    const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+    const response = await objectStorageService.downloadObject(objectFile, 3600);
+
+    res.status(response.status);
+    response.headers.forEach((value, key) => res.setHeader(key, value));
+
+    if (response.body) {
+      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
+      nodeStream.pipe(res);
+    } else {
+      res.end();
+    }
+  } catch (error) {
+    if (error instanceof ObjectNotFoundError) {
+      res.status(404).json({ error: 'Object not found' });
+      return;
+    }
+    req.log.error({ err: error }, 'Error serving gallery object');
+    res.status(500).json({ error: 'Failed to serve gallery photo' });
+  }
+});
 
 /**
  * GET /storage/objects/*

@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { api } from '@/lib/api';
 import img1 from '@assets/image_1784877197239.png';
 import img2 from '@assets/image_1784877330565.png';
 import img3 from '@assets/image_1784877335449.png';
@@ -9,7 +10,7 @@ import img4 from '@assets/image_1784877437971.png';
 import img5 from '@assets/image_1784877450501.png';
 import img6 from '@assets/image_1784877459509.png';
 
-const photos = [
+const staticPhotos = [
   { src: img1, caption: 'அருள்மிகு ஸ்ரீ ஐயப்பன் — மலர் அலங்காரம்' },
   { src: img2, caption: 'திருக்கோவில் கர்ப்பகிருஹம்' },
   { src: img3, caption: 'பக்தர்கள் திருப்பணி சேவை' },
@@ -18,13 +19,50 @@ const photos = [
   { src: img6, caption: 'திருக்கோவில் திருப்பணி நிகழ்வுகள்' },
 ];
 
+type LivePhoto = { src: string; caption: string };
+type AlbumRaw = { id: number; title: string; published: boolean };
+type PhotoRaw = { id: number; url: string; caption: string | null };
+
 export function Gallery() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [photos, setPhotos] = useState<LivePhoto[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const albums = (await api.getPublicAlbums()) as AlbumRaw[];
+        if (!albums.length) { setLoaded(true); return; }
+
+        // Fetch photos from all albums in parallel
+        const photoArrays = await Promise.all(
+          albums.map((album) => api.getAlbumPhotos(album.id) as Promise<PhotoRaw[]>)
+        );
+
+        const allPhotos: LivePhoto[] = photoArrays.flat().map((p) => ({
+          src: api.storageUrl(p.url),
+          caption: p.caption ?? '',
+        }));
+
+        if (!cancelled && allPhotos.length > 0) {
+          setPhotos(allPhotos);
+        }
+      } catch {
+        // Silently fall back to static photos
+      } finally {
+        if (!cancelled) setLoaded(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const activePhotos = loaded && photos.length > 0 ? photos : staticPhotos;
 
   const openLightbox = (i: number) => setLightboxIndex(i);
   const closeLightbox = () => setLightboxIndex(null);
-  const prev = () => setLightboxIndex((i) => (i! - 1 + photos.length) % photos.length);
-  const next = () => setLightboxIndex((i) => (i! + 1) % photos.length);
+  const prev = () => setLightboxIndex((i) => (i! - 1 + activePhotos.length) % activePhotos.length);
+  const next = () => setLightboxIndex((i) => (i! + 1) % activePhotos.length);
 
   return (
     <section id="gallery" className="py-20 md:py-32 bg-background relative overflow-hidden">
@@ -56,7 +94,7 @@ export function Gallery() {
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
         >
-          {photos.map((photo, i) => (
+          {activePhotos.map((photo, i) => (
             <motion.div
               key={i}
               variants={fadeUpVariant}
@@ -120,15 +158,15 @@ export function Gallery() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={photos[lightboxIndex].src}
-                alt={photos[lightboxIndex].caption}
+                src={activePhotos[lightboxIndex].src}
+                alt={activePhotos[lightboxIndex].caption}
                 className="max-h-[75vh] w-auto rounded-xl shadow-2xl object-contain"
               />
               <p className="text-white/90 text-center text-base font-medium px-4">
-                {photos[lightboxIndex].caption}
+                {activePhotos[lightboxIndex].caption}
               </p>
               <p className="text-white/40 text-sm">
-                {lightboxIndex + 1} / {photos.length}
+                {lightboxIndex + 1} / {activePhotos.length}
               </p>
             </motion.div>
 
