@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import templeHero from '@assets/image_1784865302842.png';
+import templeHero from '@assets/temple_hero_hd.png';
 import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { NewsTicker } from './NewsTicker';
@@ -20,8 +20,8 @@ export function Hero() {
         transition={{ duration: 1.5, ease: 'easeOut' }}>
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${templeHero})` }} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
-        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
+        <div className="absolute inset-0 bg-black/15" />
       </motion.div>
 
       <div className="absolute inset-0 z-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-secondary/40 via-transparent to-transparent pointer-events-none mix-blend-overlay" />
