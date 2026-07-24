@@ -1,12 +1,17 @@
 import { MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
-const MAPS_EMBED_URL =
-  'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d123.5!2d78.1003317!3d10.4371753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baa07d265880d21%3A0x8e9624bb1f4bed9a!2sAyyapa%20Temple!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin';
-
-const MAPS_LINK =
-  'https://www.google.com/maps/place/Ayyapa+Temple/@10.4371753,78.1003317,18z';
+const DEFAULT_MAPS_EMBED = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d123.5!2d78.1003317!3d10.4371753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baa07d265880d21%3A0x8e9624bb1f4bed9a!2sAyyapa%20Temple!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin';
+const DEFAULT_MAPS_LINK  = 'https://www.google.com/maps/place/Ayyapa+Temple/@10.4371753,78.1003317,18z';
 
 export function Footer() {
+  const s = useSiteSettings();
+  const phone     = s.temple_phone;
+  const email     = s.temple_email;
+  const address   = s.temple_address   || 'வடமதுரை, திண்டுக்கல் மாவட்டம்';
+  const mapsEmbed = s.temple_maps_embed || DEFAULT_MAPS_EMBED;
+  const mapsLink  = s.temple_maps_link  || DEFAULT_MAPS_LINK;
+
   return (
     <footer id="contact" className="bg-foreground text-white pt-20 pb-8 border-t-[8px] border-secondary">
       <div className="container mx-auto px-4 md:px-6 max-w-6xl">
@@ -23,42 +28,48 @@ export function Footer() {
           <div>
             <h4 className="text-xl font-bold mb-6 text-white/90 border-b border-white/10 pb-2">தொடர்புக்கு</h4>
             <div className="space-y-6">
+              {/* Address */}
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                   <MapPin className="w-5 h-5 text-secondary" />
                 </div>
                 <div>
                   <h5 className="font-semibold text-white/80 text-sm uppercase tracking-wider mb-1">முகவரி</h5>
-                  <p className="text-lg">வடமதுரை, திண்டுக்கல் மாவட்டம்</p>
-                  <a
-                    href={MAPS_LINK}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 mt-2 text-sm text-secondary hover:text-secondary/80 transition-colors"
-                  >
-                    Google Maps-ல் பார்க்க
-                    <ExternalLink className="w-3.5 h-3.5" />
+                  <p className="text-lg whitespace-pre-line">{address}</p>
+                  <a href={mapsLink} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 mt-2 text-sm text-secondary hover:text-secondary/80 transition-colors">
+                    Google Maps-ல் பார்க்க <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
               </div>
 
+              {/* Phone */}
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                   <Phone className="w-5 h-5 text-secondary" />
                 </div>
                 <div>
                   <h5 className="font-semibold text-white/80 text-sm uppercase tracking-wider mb-1">கைபேசி</h5>
-                  <p className="text-lg text-white/40 italic">(விவரங்கள் பின்னர் சேர்க்கப்படும்)</p>
+                  {phone ? (
+                    <a href={`tel:${phone}`} className="text-lg hover:text-secondary transition-colors">{phone}</a>
+                  ) : (
+                    <p className="text-lg text-white/40 italic">(விவரங்கள் பின்னர் சேர்க்கப்படும்)</p>
+                  )}
                 </div>
               </div>
 
+              {/* Email */}
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                   <Mail className="w-5 h-5 text-secondary" />
                 </div>
                 <div>
                   <h5 className="font-semibold text-white/80 text-sm uppercase tracking-wider mb-1">மின்னஞ்சல்</h5>
-                  <p className="text-lg text-white/40 italic">(விவரங்கள் பின்னர் சேர்க்கப்படும்)</p>
+                  {email ? (
+                    <a href={`mailto:${email}`} className="text-lg hover:text-secondary transition-colors">{email}</a>
+                  ) : (
+                    <p className="text-lg text-white/40 italic">(விவரங்கள் பின்னர் சேர்க்கப்படும்)</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -72,25 +83,15 @@ export function Footer() {
             <span className="text-sm font-semibold text-white/80 tracking-wide">
               அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் — வடமதுரை
             </span>
-            <a
-              href={MAPS_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-auto inline-flex items-center gap-1 text-xs text-secondary hover:text-secondary/80 transition-colors"
-            >
+            <a href={mapsLink} target="_blank" rel="noopener noreferrer"
+              className="ml-auto inline-flex items-center gap-1 text-xs text-secondary hover:text-secondary/80 transition-colors">
               பெரிதாக பார்க்க <ExternalLink className="w-3 h-3" />
             </a>
           </div>
-          <iframe
-            title="ஸ்ரீ ஐயப்பன் திருக்கோவில் இருப்பிடம்"
-            src={MAPS_EMBED_URL}
-            width="100%"
-            height="340"
-            style={{ border: 0, display: 'block' }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
+          <iframe title="ஸ்ரீ ஐயப்பன் திருக்கோவில் இருப்பிடம்"
+            src={mapsEmbed} width="100%" height="340"
+            style={{ border: 0, display: 'block' }} allowFullScreen loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade" />
         </div>
 
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-white/50 text-sm">
@@ -99,12 +100,8 @@ export function Footer() {
         </div>
         <div className="border-t border-white/10 mt-6 pt-4 text-center text-white/30 text-xs">
           Powered by{' '}
-          <a
-            href="https://www.automystics.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/50 hover:text-secondary transition-colors"
-          >
+          <a href="https://www.automystics.com" target="_blank" rel="noopener noreferrer"
+            className="text-white/50 hover:text-secondary transition-colors">
             Automystics Technologies Pvt. Ltd.
           </a>
         </div>

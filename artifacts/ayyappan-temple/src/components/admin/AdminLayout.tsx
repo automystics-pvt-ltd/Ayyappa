@@ -2,12 +2,13 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { useLocation } from "wouter";
 
 const navItems = [
-  { path: "/admin/dashboard", label: "📊 Dashboard", roles: ["super_admin", "editor", "volunteer"] },
-  { path: "/admin/donations", label: "💰 நன்கொடைகள்", roles: ["super_admin", "editor", "volunteer"] },
-  { path: "/admin/news", label: "📢 செய்திகள்", roles: ["super_admin", "editor"] },
-  { path: "/admin/events", label: "🎉 நிகழ்வுகள்", roles: ["super_admin", "editor"] },
-  { path: "/admin/settings", label: "⚙️ அமைப்புகள்", roles: ["super_admin", "editor"] },
-  { path: "/admin/admins", label: "👥 நிர்வாகிகள்", roles: ["super_admin"] },
+  { path: "/admin/dashboard", label: "📊 Dashboard",          roles: ["super_admin", "editor", "volunteer"] },
+  { path: "/admin/donations", label: "💰 நன்கொடைகள்",         roles: ["super_admin", "editor", "volunteer"] },
+  { path: "/admin/content",   label: "🖊️ உள்ளடக்கம்",          roles: ["super_admin", "editor"] },
+  { path: "/admin/news",      label: "📢 செய்திகள்",           roles: ["super_admin", "editor"] },
+  { path: "/admin/events",    label: "🎉 நிகழ்வுகள்",          roles: ["super_admin", "editor"] },
+  { path: "/admin/settings",  label: "⚙️ அமைப்புகள்",          roles: ["super_admin", "editor"] },
+  { path: "/admin/admins",    label: "👥 நிர்வாகிகள்",         roles: ["super_admin"] },
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {

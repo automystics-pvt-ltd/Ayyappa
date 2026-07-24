@@ -10,8 +10,10 @@ import NewsAdmin from '@/pages/admin/News';
 import EventsAdmin from '@/pages/admin/Events';
 import SettingsAdmin from '@/pages/admin/Settings';
 import AdminManagement from '@/pages/admin/AdminManagement';
+import ContentManager from '@/pages/admin/ContentManager';
 import { Route, Switch, Router as WouterRouter, Redirect } from 'wouter';
 import { AdminContext, useAdminState, useAdmin } from '@/hooks/useAdmin';
+import { SiteSettingsProvider } from '@/hooks/useSiteSettings';
 
 const queryClient = new QueryClient();
 
@@ -32,6 +34,7 @@ function AppContent() {
 
   return (
     <AdminContext.Provider value={adminState}>
+      <SiteSettingsProvider>
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/admin" component={AdminLogin} />
@@ -53,8 +56,12 @@ function AppContent() {
         <Route path="/admin/admins">
           <AdminGuard><AdminManagement /></AdminGuard>
         </Route>
+        <Route path="/admin/content">
+          <AdminGuard><ContentManager /></AdminGuard>
+        </Route>
         <Route component={NotFound} />
       </Switch>
+      </SiteSettingsProvider>
     </AdminContext.Provider>
   );
 }
