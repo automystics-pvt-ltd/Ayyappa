@@ -1,0 +1,61 @@
+host metrics | cpu: 98.4% | ram usage: 33.9% | lo: ⇓ 0.02mb/s ⇑ 0.02mb/s | eth0: ⇓ 0.002mb/s ⇑ 0.002mb/s | disk: ⇓ 0mb/s ⇑ 0.388mb/s |
+[TAILING] Tailing last 5 lines for [ayyappan-api] process (change the value with --lines option)
+/root/.pm2/logs/ayyappan-api-error-38.log last 5 lines:
+38|ayyappa |     at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:549:36)
+38|ayyappa |     at afterResolve (node:internal/modules/esm/loader:597:52)
+38|ayyappa |     at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:12)
+38|ayyappa |     at node:internal/modules/esm/loader:622:32
+38|ayyappa |     at TracingChannel.tracePromise (node:diagnostics_channel:362:14)
+
+/root/.pm2/logs/ayyappan-api-out-38.log last 5 lines:
+38|ayyappa | uest errored"}
+38|ayyappa | {"level":30,"time":1784918844401,"pid":1588167,"hostname":"srv1609330","req":{"id":13,"method":"GET","url":"/api/news"},"res":{"statusCode":500},"err":{"type":"Error","message":"failed with status code 500","stack":"Error: failed with status code 500\n    at onResFinished (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:115:39)\n    at ServerResponse.onResponseComplete (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:178:14)\n    at ServerResponse.emit (node:events:521:24)\n    at onFinish (node:_http_outgoing:1031:10)\n    at callback (node:internal/streams/writable:764:21)\n    at afterWrite (node:internal/streams/writable:708:5)\n    at afterWriteTick (node:internal/streams/writable:694:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"},"responseTime":36,"msg":"request errored"}
+38|ayyappa | {"level":30,"time":1784919416003,"pid":1658935,"hostname":"srv1609330","port":3019,"msg":"Server listening"}
+
+{"id":1,"username":"admin","role":"pm2 logs ayyappan-api --lines 30 --nostream 2>&1@srv1609330:/opt/ayyappan-api# pm2 logs ayyappan-api --lines 30 --nostream 2>&1
+[TAILING] Tailing last 30 lines for [ayyappan-api] process (change the value with --lines option)
+/root/.pm2/logs/ayyappan-api-out-38.log last 30 lines:
+38|ayyappa | ernal/streams/writable:708:5)\n    at afterWriteTick (node:internal/streams/writable:694:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"},"responseTime":30,"msg":"request errored"}
+38|ayyappa | {"level":30,"time":1784918543994,"pid":1588167,"hostname":"srv1609330","req":{"id":10,"method":"GET","url":"/api/news"},"res":{"statusCode":500},"err":{"type":"Error","message":"failed with status code 500","stack":"Error: failed with status code 500\n    at onResFinished (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:115:39)\n    at ServerResponse.onResponseComplete (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:178:14)\n    at ServerResponse.emit (node:events:521:24)\n    at onFinish (node:_http_outgoing:1031:10)\n    at callback (node:internal/streams/writable:764:21)\n    at afterWrite (node:internal/streams/writable:708:5)\n    at afterWriteTick (node:internal/streams/writable:694:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"},"responseTime":52,"msg":"request errored"}
+38|ayyappa | {"level":30,"time":1784918642660,"pid":1588167,"hostname":"srv1609330","req":{"id":11,"method":"POST","url":"/api/auth/login"},"res":{"statusCode":200},"responseTime":877,"msg":"request completed"}
+38|ayyappa | {"level":30,"time":1784918752707,"pid":1588167,"hostname":"srv1609330","req":{"id":12,"method":"POST","url":"/api/auth/login"},"res":{"statusCode":500},"err":{"type":"Error","message":"failed with status code 500","stack":"Error: failed with status code 500\n    at onResFinished (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:115:39)\n    at ServerResponse.onResponseComplete (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:178:14)\n    at ServerResponse.emit (node:events:521:24)\n    at onFinish (node:_http_outgoing:1031:10)\n    at callback (node:internal/streams/writable:764:21)\n    at afterWrite (node:internal/streams/writable:708:5)\n    at afterWriteTick (node:internal/streams/writable:694:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"},"responseTime":49,"msg":"request errored"}
+38|ayyappa | {"level":30,"time":1784918844401,"pid":1588167,"hostname":"srv1609330","req":{"id":13,"method":"GET","url":"/api/news"},"res":{"statusCode":500},"err":{"type":"Error","message":"failed with status code 500","stack":"Error: failed with status code 500\n    at onResFinished (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:115:39)\n    at ServerResponse.onResponseComplete (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:178:14)\n    at ServerResponse.emit (node:events:521:24)\n    at onFinish (node:_http_outgoing:1031:10)\n    at callback (node:internal/streams/writable:764:21)\n    at afterWrite (node:internal/streams/writable:708:5)\n    at afterWriteTick (node:internal/streams/writable:694:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"},"responseTime":36,"msg":"request errored"}
+38|ayyappa | {"level":30,"time":1784919416003,"pid":1658935,"hostname":"srv1609330","port":3019,"msg":"Server listening"}
+38|ayyappa | {"level":30,"time":1784919418472,"pid":1658935,"hostname":"srv1609330","req":{"id":1,"method":"POST","url":"/api/auth/login"},"res":{"statusCode":200},"responseTime":642,"msg":"request completed"}
+38|ayyappa | {"level":30,"time":1784919438367,"pid":1658935,"hostname":"srv1609330","req":{"id":2,"method":"POST","url":"/api/auth/login"},"res":{"statusCode":500},"err":{"type":"Error","message":"failed with status code 500","stack":"Error: failed with status code 500\n    at onResFinished (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:115:39)\n    at ServerResponse.onResponseComplete (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:178:14)\n    at ServerResponse.emit (node:events:521:24)\n    at onFinish (node:_http_outgoing:1031:10)\n    at callback (node:internal/streams/writable:764:21)\n    at afterWrite (node:internal/streams/writable:708:5)\n    at afterWriteTick (node:internal/streams/writable:694:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"},"responseTime":26,"msg":"request errored"}
+38|ayyappa | {"level":30,"time":1784919443966,"pid":1658935,"hostname":"srv1609330","req":{"id":3,"method":"GET","url":"/api/news"},"res":{"statusCode":500},"err":{"type":"Error","message":"failed with status code 500","stack":"Error: failed with status code 500\n    at onResFinished (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:115:39)\n    at ServerResponse.onResponseComplete (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:178:14)\n    at ServerResponse.emit (node:events:521:24)\n    at onFinish (node:_http_outgoing:1031:10)\n    at callback (node:internal/streams/writable:764:21)\n    at afterWrite (node:internal/streams/writable:708:5)\n    at afterWriteTick (node:internal/streams/writable:694:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"},"responseTime":38,"msg":"request errored"}
+38|ayyappa | {"level":30,"time":1784919557974,"pid":1658935,"hostname":"srv1609330","req":{"id":4,"method":"POST","url":"/api/auth/login"},"res":{"statusCode":500},"err":{"type":"Error","message":"failed with status code 500","stack":"Error: failed with status code 500\n    at onResFinished (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:115:39)\n    at ServerResponse.onResponseComplete (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:178:14)\n    at ServerResponse.emit (node:events:521:24)\n    at onFinish (node:_http_outgoing:1031:10)\n    at callback (node:internal/streams/writable:764:21)\n    at afterWrite (node:internal/streams/writable:708:5)\n    at afterWriteTick (node:internal/streams/writable:694:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"},"responseTime":38,"msg":"request errored"}
+
+/root/.pm2/logs/ayyappan-api-error-38.log last 30 lines:
+38|ayyappa |     at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:12)
+38|ayyappa |     at node:internal/modules/esm/loader:622:32
+38|ayyappa |     at TracingChannel.tracePromise (node:diagnostics_channel:362:14)
+38|ayyappa | SyntaxError: Unexpected token '<'
+38|ayyappa |     at compileSourceTextModule (node:internal/modules/esm/utils:318:16)
+38|ayyappa |     at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:90:18)
+38|ayyappa |     at #translate (node:internal/modules/esm/loader:435:20)
+38|ayyappa |     at afterLoad (node:internal/modules/esm/loader:491:29)
+38|ayyappa |     at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:496:12)
+38|ayyappa |     at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:549:36)
+38|ayyappa |     at afterResolve (node:internal/modules/esm/loader:597:52)
+38|ayyappa |     at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:12)
+38|ayyappa |     at node:internal/modules/esm/loader:622:32
+38|ayyappa |     at TracingChannel.tracePromise (node:diagnostics_channel:362:14)
+38|ayyappa | error: permission denied for table sessions
+38|ayyappa |     at <anonymous> (/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+38|ayyappa |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+38|ayyappa |     at async PGStore._asyncQuery (/node_modules/.pnpm/connect-pg-simple@10.0.0/node_modules/connect-pg-simple/index.js:322:21)
+38|ayyappa | error: permission denied for table sessions
+38|ayyappa |     at <anonymous> (/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+38|ayyappa |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+38|ayyappa |     at async PGStore._asyncQuery (/node_modules/.pnpm/connect-pg-simple@10.0.0/node_modules/connect-pg-simple/index.js:322:21)
+38|ayyappa | error: permission denied for table sessions
+38|ayyappa |     at <anonymous> (/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+38|ayyappa |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+38|ayyappa |     at async PGStore._asyncQuery (/node_modules/.pnpm/connect-pg-simple@10.0.0/node_modules/connect-pg-simple/index.js:322:21)
+38|ayyappa | error: permission denied for table sessions
+38|ayyappa |     at <anonymous> (/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+38|ayyappa |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+38|ayyappa |     at async PGStore._asyncQuery (/node_modules/.pnpm/connect-pg-simple@10.0.0/node_modules/connect-pg-simple/index.js:322:21)
+
+root@srv1609330:/opt/ayyappan-api# 
