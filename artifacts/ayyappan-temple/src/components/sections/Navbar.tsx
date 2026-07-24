@@ -325,7 +325,7 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={close}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
             />
 
             {/* Drawer panel */}
@@ -334,7 +334,7 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-background z-50 flex flex-col shadow-2xl"
+              className="fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-background z-[210] flex flex-col shadow-2xl"
             >
               {/* Drawer header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-border/50 bg-primary/5">

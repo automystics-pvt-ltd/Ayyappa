@@ -39,7 +39,7 @@ export function Hero() {
 
       <div className="absolute inset-0 z-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-secondary/40 via-transparent to-transparent pointer-events-none mix-blend-overlay" />
 
-      <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl mx-auto">
+      <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl mx-auto mt-20 sm:mt-0">
         <motion.div variants={staggerContainer} initial="hidden" animate="visible"
           className="flex flex-col items-center">
           <motion.div variants={fadeUpVariant} className="mb-6">
