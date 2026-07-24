@@ -1,0 +1,36 @@
+root@srv1609330:/opt/ayyappan-api# # Check if API process is actually running
+pm2 list | grep ayyappan
+
+# Check API logs for errors
+pm2 logs ayyappan-api --lines 30 --nostream
+
+# Check if the built file exists
+ls -la /opt/ayyappan-api/dist/index.mjs
+
+# Check what port Nginx is proxying to
+grep proxy_pass /etc/nginx/sites-available/ayyappan-temple
+
+# Check what's listening on ports 3001 and 3002
+ss -tlnp | grep -E '300[12]'
+│ 33 │ ayyappan-api          │ default     │ N/A     │ cluster │ 764235   │ 2m     │ 0    │ online    │ 0%       │ 97.7mb   │ root     │ disabled │
+[TAILING] Tailing last 30 lines for [ayyappan-api] process (change the value with --lines option)
+/root/.pm2/logs/ayyappan-api-out-33.log last 30 lines:
+/root/.pm2/logs/ayyappan-api-error-33.log last 30 lines:
+33|ayyappa | You have triggered an unhandledRejection, you may have forgotten to catch a Promise rejection:
+33|ayyappa | Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@google-cloud/storage' imported from /opt/ayyappan-api/dist/index.mjs
+33|ayyappa |     at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+33|ayyappa |     at packageResolve (node:internal/modules/esm/resolve:768:81)
+33|ayyappa |     at moduleResolve (node:internal/modules/esm/resolve:859:18)
+33|ayyappa |     at defaultResolve (node:internal/modules/esm/resolve:992:11)
+33|ayyappa |     at #cachedDefaultResolve (node:internal/modules/esm/loader:691:20)
+33|ayyappa |     at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:708:38)
+33|ayyappa |     at ModuleLoader.resolveSync (node:internal/modules/esm/loader:740:52)
+33|ayyappa |     at #resolve (node:internal/modules/esm/loader:673:17)
+33|ayyappa |     at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:593:35)
+33|ayyappa |     at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33)
+
+-rw-rw-r-- 1 root root 10611812 Jul 24 15:39 /opt/ayyappan-api/dist/index.mjs
+grep: /etc/nginx/sites-available/ayyappan-temple: No such file or directory
+LISTEN 0      511                *:3001             *:*    users:(("node /home/auto",pid=198081,fd=22))                                                                                                  
+LISTEN 0      511                *:3002             *:*    users:(("node /home/tami",pid=1524217,fd=22))                                                                                                 
+root@srv1609330:/opt/ayyappan-api# 
