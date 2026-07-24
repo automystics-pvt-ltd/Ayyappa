@@ -7,6 +7,8 @@ import { Kumbhabhishekam } from '@/components/sections/Kumbhabhishekam';
 import { Donation } from '@/components/sections/Donation';
 import { SpecialPujas } from '@/components/sections/SpecialPujas';
 import { Gallery } from '@/components/sections/Gallery';
+import { EventsSection } from '@/components/sections/EventsSection';
+import { NewsSection } from '@/components/sections/NewsSection';
 import { Faq } from '@/components/sections/Faq';
 import { Appeal } from '@/components/sections/Appeal';
 import { Footer } from '@/components/sections/Footer';
@@ -21,6 +23,8 @@ export default function Home() {
         <Gurus />
         <Renovation />
         <Kumbhabhishekam />
+        <EventsSection />
+        <NewsSection />
         <Donation />
         <Gallery />
         <SpecialPujas />
