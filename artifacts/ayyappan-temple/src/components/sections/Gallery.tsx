@@ -22,31 +22,40 @@ const staticPhotos = [
 type LivePhoto = { src: string; caption: string };
 type AlbumRaw = { id: number; title: string; published: boolean };
 type PhotoRaw = { id: number; url: string; caption: string | null };
+type Album = { id: number; title: string; photos: LivePhoto[] };
 
 export function Gallery() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [photos, setPhotos] = useState<LivePhoto[]>([]);
+  const [albums, setAlbums] = useState<Album[]>([]);
+  const [activeAlbumId, setActiveAlbumId] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const albums = (await api.getPublicAlbums()) as AlbumRaw[];
-        if (!albums.length) { setLoaded(true); return; }
+        const albumsRaw = (await api.getPublicAlbums()) as AlbumRaw[];
+        if (!albumsRaw.length) { setLoaded(true); return; }
 
         // Fetch photos from all albums in parallel
         const photoArrays = await Promise.all(
-          albums.map((album) => api.getAlbumPhotos(album.id) as Promise<PhotoRaw[]>)
+          albumsRaw.map((album) => api.getAlbumPhotos(album.id) as Promise<PhotoRaw[]>)
         );
 
-        const allPhotos: LivePhoto[] = photoArrays.flat().map((p) => ({
-          src: api.storageUrl(p.url),
-          caption: p.caption ?? '',
-        }));
+        const loadedAlbums: Album[] = albumsRaw
+          .map((album, idx) => ({
+            id: album.id,
+            title: album.title,
+            photos: photoArrays[idx].map((p) => ({
+              src: api.storageUrl(p.url),
+              caption: p.caption ?? '',
+            })),
+          }))
+          .filter((a) => a.photos.length > 0);
 
-        if (!cancelled && allPhotos.length > 0) {
-          setPhotos(allPhotos);
+        if (!cancelled && loadedAlbums.length > 0) {
+          setAlbums(loadedAlbums);
+          setActiveAlbumId(loadedAlbums[0].id);
         }
       } catch {
         // Silently fall back to static photos
@@ -57,7 +66,19 @@ export function Gallery() {
     return () => { cancelled = true; };
   }, []);
 
-  const activePhotos = loaded && photos.length > 0 ? photos : staticPhotos;
+  // Determine which photos to show
+  const useLive = loaded && albums.length > 0;
+  const showTabs = useLive && albums.length > 1;
+
+  const activePhotos: LivePhoto[] = useLive
+    ? (albums.find((a) => a.id === activeAlbumId)?.photos ?? albums[0].photos)
+    : staticPhotos;
+
+  // Reset lightbox when tab changes
+  const switchAlbum = (id: number) => {
+    setLightboxIndex(null);
+    setActiveAlbumId(id);
+  };
 
   const openLightbox = (i: number) => setLightboxIndex(i);
   const closeLightbox = () => setLightboxIndex(null);
@@ -86,39 +107,70 @@ export function Gallery() {
           <motion.div variants={fadeUpVariant} className="w-20 h-1 bg-secondary mx-auto rounded-full" />
         </motion.div>
 
+        {/* Album tabs — only when multiple albums exist */}
+        {showTabs && (
+          <motion.div
+            className="flex flex-wrap justify-center gap-2 mb-10"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {albums.map((album) => {
+              const isActive = album.id === activeAlbumId;
+              return (
+                <button
+                  key={album.id}
+                  onClick={() => switchAlbum(album.id)}
+                  className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 border ${
+                    isActive
+                      ? 'bg-secondary text-white border-secondary shadow-md scale-105'
+                      : 'bg-background text-primary border-primary/20 hover:border-secondary/60 hover:text-secondary'
+                  }`}
+                >
+                  {album.title}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+
         {/* Grid */}
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
-        >
-          {activePhotos.map((photo, i) => (
-            <motion.div
-              key={i}
-              variants={fadeUpVariant}
-              className="group relative overflow-hidden rounded-2xl shadow-lg cursor-pointer aspect-[4/3]"
-              onClick={() => openLightbox(i)}
-            >
-              <img
-                src={photo.src}
-                alt={photo.caption}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                <p className="text-white text-sm font-medium leading-snug translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                  {photo.caption}
-                </p>
-              </div>
-              {/* Corner badge */}
-              <div className="absolute top-3 right-3 bg-secondary/90 text-white text-xs font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                பெரிதாக்க
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeAlbumId ?? 'static'}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+            viewport={{ once: true, margin: '-60px' }}
+          >
+            {activePhotos.map((photo, i) => (
+              <motion.div
+                key={i}
+                variants={fadeUpVariant}
+                className="group relative overflow-hidden rounded-2xl shadow-lg cursor-pointer aspect-[4/3]"
+                onClick={() => openLightbox(i)}
+              >
+                <img
+                  src={photo.src}
+                  alt={photo.caption}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                  <p className="text-white text-sm font-medium leading-snug translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                    {photo.caption}
+                  </p>
+                </div>
+                {/* Corner badge */}
+                <div className="absolute top-3 right-3 bg-secondary/90 text-white text-xs font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  பெரிதாக்க
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Lightbox */}
