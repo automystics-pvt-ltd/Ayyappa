@@ -53,12 +53,19 @@ export default function GalleryAdmin() {
   // Lightbox
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
-  // Drag-and-drop reorder state
+  // Drag-and-drop reorder state (photos)
   const [orderedPhotos, setOrderedPhotos] = useState<GalleryPhoto[]>([]);
   const [isDirty, setIsDirty] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
   const dragIndexRef = useRef<number | null>(null);
   const dragOverIndexRef = useRef<number | null>(null);
+
+  // Drag-and-drop reorder state (albums)
+  const [orderedAlbums, setOrderedAlbums] = useState<GalleryAlbum[]>([]);
+  const [isAlbumsDirty, setIsAlbumsDirty] = useState(false);
+  const [savingAlbumOrder, setSavingAlbumOrder] = useState(false);
+  const albumDragIndexRef = useRef<number | null>(null);
+  const albumDragOverIndexRef = useRef<number | null>(null);
 
   // Sync orderedPhotos when album changes
   useEffect(() => {
@@ -69,7 +76,55 @@ export default function GalleryAdmin() {
     }
   }, [selectedAlbum?.id, albums]);
 
-  // Drag handlers
+  // Sync orderedAlbums when albums list changes (but not while dragging/dirty)
+  useEffect(() => {
+    if (!isAlbumsDirty) {
+      setOrderedAlbums([...albums].sort((a, b) => a.sortOrder - b.sortOrder));
+    }
+  }, [albums]);
+
+  // Album drag handlers
+  const handleAlbumDragStart = (index: number) => {
+    albumDragIndexRef.current = index;
+  };
+
+  const handleAlbumDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    albumDragOverIndexRef.current = index;
+  };
+
+  const handleAlbumDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const from = albumDragIndexRef.current;
+    const to = albumDragOverIndexRef.current;
+    if (from === null || to === null || from === to) return;
+    const reordered = [...orderedAlbums];
+    const [moved] = reordered.splice(from, 1);
+    reordered.splice(to, 0, moved);
+    setOrderedAlbums(reordered);
+    setIsAlbumsDirty(true);
+    albumDragIndexRef.current = null;
+    albumDragOverIndexRef.current = null;
+  };
+
+  const saveAlbumOrder = async () => {
+    setSavingAlbumOrder(true);
+    try {
+      await Promise.all(
+        orderedAlbums.map((album, idx) =>
+          api.updateAlbum(album.id, { sortOrder: idx })
+        )
+      );
+      setIsAlbumsDirty(false);
+      await fetchAlbums();
+    } catch (e: any) {
+      alert(e.message);
+    } finally {
+      setSavingAlbumOrder(false);
+    }
+  };
+
+  // Photo drag handlers
   const handleDragStart = (index: number) => {
     dragIndexRef.current = index;
   };
@@ -478,16 +533,49 @@ export default function GalleryAdmin() {
           </div>
         )}
 
+        {/* Save album order bar */}
+        {isAlbumsDirty && (
+          <div className="mb-4 flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
+            <p className="text-sm text-orange-700">அல்பம் வரிசை மாற்றப்பட்டது. சேமிக்கவும்.</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setOrderedAlbums([...albums].sort((a, b) => a.sortOrder - b.sortOrder));
+                  setIsAlbumsDirty(false);
+                }}
+                className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                ரத்து
+              </button>
+              <button
+                onClick={saveAlbumOrder}
+                disabled={savingAlbumOrder}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50"
+              >
+                <Save className="w-3.5 h-3.5" />
+                {savingAlbumOrder ? "சேமிக்கிறது..." : "வரிசை சேமி"}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Albums grid */}
-        {albums.length === 0 ? (
+        {orderedAlbums.length === 0 ? (
           <div className="text-center py-20 text-gray-400 bg-white rounded-xl border">
             <Image className="w-10 h-10 mx-auto mb-2 opacity-30" />
             <p>இன்னும் அல்பங்கள் இல்லை. "புது அல்பம்" பொத்தானை கிளிக் செய்யுங்கள்.</p>
           </div>
         ) : (
           <div className="space-y-3">
-            {albums.map((album) => (
-              <div key={album.id} className="bg-white rounded-xl border shadow-sm overflow-hidden">
+            {orderedAlbums.map((album, albumIdx) => (
+              <div
+                key={album.id}
+                draggable={editAlbumId !== album.id}
+                onDragStart={() => handleAlbumDragStart(albumIdx)}
+                onDragOver={(e) => handleAlbumDragOver(e, albumIdx)}
+                onDrop={handleAlbumDrop}
+                className="bg-white rounded-xl border shadow-sm overflow-hidden"
+              >
                 {editAlbumId === album.id ? (
                   // Edit form inline
                   <div className="p-4 space-y-3">
@@ -513,7 +601,11 @@ export default function GalleryAdmin() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-4 p-4">
+                  <div className="flex items-center gap-4 p-4 cursor-grab active:cursor-grabbing">
+                    {/* Drag handle */}
+                    <div className="text-gray-300 hover:text-gray-500 flex-shrink-0" title="இழுத்து வரிசை மாற்றுங்கள்">
+                      <GripVertical className="w-5 h-5" />
+                    </div>
                     {/* Cover thumbnail */}
                     <div
                       className="w-16 h-16 rounded-lg overflow-hidden bg-orange-50 flex-shrink-0 cursor-pointer"
