@@ -1,68 +1,123 @@
 import { useAdmin } from "@/hooks/useAdmin";
 import { useLocation } from "wouter";
+import {
+  LayoutDashboard, IndianRupee, FileEdit, Newspaper,
+  CalendarDays, Images, Settings, ShieldCheck,
+  LogOut, ChevronRight, Zap
+} from "lucide-react";
 
-const navItems = [
-  { path: "/admin/dashboard", label: "📊 Dashboard",          roles: ["super_admin", "editor", "volunteer"] },
-  { path: "/admin/donations", label: "💰 நன்கொடைகள்",         roles: ["super_admin", "editor", "volunteer"] },
-  { path: "/admin/content",   label: "🖊️ உள்ளடக்கம்",          roles: ["super_admin", "editor"] },
-  { path: "/admin/news",      label: "📢 செய்திகள்",           roles: ["super_admin", "editor"] },
-  { path: "/admin/events",    label: "🎉 நிகழ்வுகள்",          roles: ["super_admin", "editor"] },
-  { path: "/admin/gallery",   label: "🖼️ படத் தொகுப்பு",       roles: ["super_admin", "editor"] },
-  { path: "/admin/settings",  label: "⚙️ அமைப்புகள்",          roles: ["super_admin", "editor"] },
-  { path: "/admin/admins",    label: "👥 நிர்வாகிகள்",         roles: ["super_admin"] },
+const NAV_ITEMS = [
+  { path: "/admin/dashboard", labelTa: "Dashboard",       labelEn: "கண்ணோட்டம்",   icon: LayoutDashboard, roles: ["super_admin","editor","volunteer"] },
+  { path: "/admin/donations", labelTa: "நன்கொடைகள்",     labelEn: "Donations",     icon: IndianRupee,     roles: ["super_admin","editor","volunteer"] },
+  { path: "/admin/content",   labelTa: "உள்ளடக்கம்",     labelEn: "Content",       icon: FileEdit,        roles: ["super_admin","editor"] },
+  { path: "/admin/news",      labelTa: "செய்திகள்",       labelEn: "News",          icon: Newspaper,       roles: ["super_admin","editor"] },
+  { path: "/admin/events",    labelTa: "நிகழ்வுகள்",      labelEn: "Events",        icon: CalendarDays,    roles: ["super_admin","editor"] },
+  { path: "/admin/gallery",   labelTa: "படத் தொகுப்பு",   labelEn: "Gallery",       icon: Images,          roles: ["super_admin","editor"] },
+  { path: "/admin/settings",  labelTa: "அமைப்புகள்",      labelEn: "Settings",      icon: Settings,        roles: ["super_admin","editor"] },
+  { path: "/admin/admins",    labelTa: "நிர்வாகிகள்",     labelEn: "Admins",        icon: ShieldCheck,     roles: ["super_admin"] },
 ];
+
+const ROLE_DISPLAY: Record<string, string> = {
+  super_admin: "Super Admin",
+  editor:      "Editor",
+  volunteer:   "Volunteer",
+};
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const { admin, logout } = useAdmin();
   const [location, navigate] = useLocation();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/admin");
-  };
-
-  const visibleNav = navItems.filter((item) => admin && item.roles.includes(admin.role));
+  const handleLogout = async () => { await logout(); navigate("/admin"); };
+  const visible = NAV_ITEMS.filter(i => admin && i.roles.includes(admin.role));
+  const initials = (admin?.displayName || admin?.role || "A").slice(0, 1).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg flex flex-col">
-        <div className="p-5 border-b">
-          <div className="text-2xl mb-1">🛕</div>
-          <h2 className="font-bold text-gray-800 text-sm leading-tight">ஐயப்பன் திருக்கோவில்</h2>
-          <p className="text-xs text-gray-500">Admin Panel</p>
+    <div className="min-h-screen flex" style={{ background: "#fdf6ee" }}>
+
+      {/* ══ Sidebar ══ */}
+      <aside className="w-[230px] shrink-0 flex flex-col h-screen sticky top-0"
+        style={{ background: "linear-gradient(160deg, #ea580c 0%, #d97706 100%)" }}>
+
+        {/* Logo */}
+        <div className="px-5 py-5 border-b border-white/15">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl shrink-0 shadow-inner">
+              🕉
+            </div>
+            <div className="min-w-0">
+              <p className="text-white text-sm font-bold leading-tight truncate">ஐயப்பன் கோவில்</p>
+              <p className="text-white/60 text-[10px]">Admin Portal</p>
+            </div>
+          </div>
+          {/* System pill */}
+          <div className="mt-3 flex items-center gap-1.5 bg-white/10 rounded-full px-3 py-1 w-fit">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+            <span className="text-[10px] text-white/80 font-medium">System Online</span>
+          </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
-          {visibleNav.map((item) => (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                location === item.path
-                  ? "bg-orange-50 text-orange-600 border border-orange-200"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+          <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest px-3 mb-3">
+            கட்டுப்பாட்டு மேடை
+          </p>
+          {visible.map(({ path, labelTa, labelEn, icon: Icon }) => {
+            const active = location === path;
+            return (
+              <button
+                key={path}
+                onClick={() => navigate(path)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all group ${
+                  active ? "bg-white/20 shadow-inner" : "hover:bg-white/10"
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                  active ? "bg-white/25" : "bg-white/10 group-hover:bg-white/20"
+                }`}>
+                  <Icon className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <p className={`text-xs font-semibold truncate leading-tight ${active ? "text-white" : "text-white/80"}`}>
+                    {labelTa}
+                  </p>
+                  <p className="text-[9px] text-white/45 truncate leading-tight">{labelEn}</p>
+                </div>
+                {active && <ChevronRight className="w-3.5 h-3.5 text-white/50 shrink-0" />}
+              </button>
+            );
+          })}
         </nav>
 
-        <div className="p-4 border-t">
-          <div className="text-xs text-gray-500 mb-1">{admin?.displayName || admin?.role}</div>
-          <div className="text-xs text-gray-400 mb-3 capitalize">{admin?.role?.replace("_", " ")}</div>
+        {/* User card */}
+        <div className="px-3 py-4 border-t border-white/15">
+          <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-white/10 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-white/25 flex items-center justify-center text-white text-sm font-bold shrink-0">
+              {initials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white text-xs font-bold truncate leading-tight">
+                {admin?.displayName || "Admin"}
+              </p>
+              <p className="text-white/50 text-[10px] truncate">
+                {ROLE_DISPLAY[admin?.role || ""] || admin?.role}
+              </p>
+            </div>
+            <Zap className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+          </div>
           <button
             onClick={handleLogout}
-            className="w-full text-sm text-red-500 hover:text-red-700 font-medium"
+            className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 text-xs font-medium transition-colors"
           >
-            வெளியேறு (Logout)
+            <LogOut className="w-3.5 h-3.5" />
+            வெளியேறு · Logout
           </button>
         </div>
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 overflow-auto p-6">{children}</main>
+      {/* ══ Main content ══ */}
+      <main className="flex-1 min-w-0 overflow-auto">
+        {children}
+      </main>
     </div>
   );
 }

@@ -1,34 +1,51 @@
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { api } from "@/lib/api";
+import { Plus, Pencil, Trash2, Eye, EyeOff, CalendarDays, MapPin, X } from "lucide-react";
 
 type Event = {
   id: number; title: string; eventType?: string; description?: string;
-  eventDate: string; location?: string; posterUrl?: string; published: boolean;
-  createdAt: string;
+  eventDate: string; location?: string; posterUrl?: string; published: boolean; createdAt: string;
 };
 
 const emptyForm = { title: "", eventType: "", description: "", eventDate: "", location: "", posterUrl: "", published: true };
 const EVENT_TYPES = ["பூஜை", "திருவிழா", "அன்னதானம்", "கும்பாபிஷேகம்", "மண்டல பூஜை", "Other"];
 
+const TYPE_COLORS: Record<string, string> = {
+  "பூஜை": "bg-violet-100 text-violet-700 border-violet-200",
+  "திருவிழா": "bg-amber-100 text-amber-700 border-amber-200",
+  "அன்னதானம்": "bg-emerald-100 text-emerald-700 border-emerald-200",
+  "கும்பாபிஷேகம்": "bg-orange-100 text-orange-700 border-orange-200",
+  "மண்டல பூஜை": "bg-rose-100 text-rose-700 border-rose-200",
+};
+
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div>
+    <label className="block text-xs font-bold text-orange-700 mb-1.5">{label}</label>
+    {children}
+  </div>
+);
+
+const inputCls = "w-full border border-orange-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white placeholder-orange-300 text-orange-900";
+
 export default function EventsAdmin() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents]   = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState(emptyForm);
-  const [editId, setEditId] = useState<number | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [form, setForm]       = useState(emptyForm);
+  const [editId, setEditId]   = useState<number | null>(null);
+  const [saving, setSaving]   = useState(false);
 
-  const fetch = async () => {
+  const load = async () => {
     setLoading(true);
     try { setEvents(await api.getAllEvents() as Event[]); }
     finally { setLoading(false); }
   };
 
-  useEffect(() => { fetch(); }, []);
+  useEffect(() => { load(); }, []);
 
   const openCreate = () => { setForm(emptyForm); setEditId(null); setShowForm(true); };
-  const openEdit = (e: Event) => {
+  const openEdit   = (e: Event) => {
     setForm({
       title: e.title, eventType: e.eventType || "", description: e.description || "",
       eventDate: e.eventDate ? new Date(e.eventDate).toISOString().slice(0, 16) : "",
@@ -43,89 +60,169 @@ export default function EventsAdmin() {
     try {
       if (editId) await api.updateEvent(editId, form);
       else await api.createEvent(form);
-      setShowForm(false); await fetch();
+      setShowForm(false); await load();
     } catch (e: any) { alert(e.message); }
     finally { setSaving(false); }
   };
 
   const del = async (id: number) => {
     if (!confirm("நிச்சயமாக நீக்கவுமா?")) return;
-    try { await api.deleteEvent(id); await fetch(); } catch (e: any) { alert(e.message); }
+    try { await api.deleteEvent(id); await load(); } catch (e: any) { alert(e.message); }
   };
 
   return (
     <AdminLayout>
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">நிகழ்வுகள்</h1>
-          <button onClick={openCreate} className="bg-orange-500 text-white px-4 py-2 rounded-xl font-medium hover:bg-orange-600">
-            + புதிய நிகழ்வு
-          </button>
+      {/* Header */}
+      <div className="bg-white border-b border-orange-100 px-6 py-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-lg font-bold text-orange-900">நிகழ்வுகள்</h1>
+          <p className="text-xs text-orange-500">Events Management · {events.length} நிகழ்வுகள்</p>
         </div>
+        <button onClick={openCreate}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white shadow-md shadow-orange-200 transition-all hover:scale-105"
+          style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}>
+          <Plus className="w-4 h-4" /> புதிய நிகழ்வு
+        </button>
+      </div>
 
-        {loading ? <div className="text-center py-20 text-gray-400">ஏற்றுகிறது...</div> : (
-          <div className="space-y-4">
-            {!events.length && <div className="text-center py-20 text-gray-400 bg-white rounded-xl border">நிகழ்வுகள் இல்லை</div>}
-            {events.map((e) => (
-              <div key={e.id} className="bg-white rounded-xl border p-5 flex justify-between items-start gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-gray-800">{e.title}</h3>
-                    {e.eventType && <span className="text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full">{e.eventType}</span>}
-                    {!e.published && <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Draft</span>}
-                  </div>
-                  {e.description && <p className="text-sm text-gray-500 line-clamp-1">{e.description}</p>}
-                  <p className="text-xs text-gray-400 mt-1">
-                    📅 {new Date(e.eventDate).toLocaleDateString("ta-IN", { dateStyle: "full" })}
-                    {e.location && ` • 📍 ${e.location}`}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => openEdit(e)} className="text-sm bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-100">திருத்து</button>
-                  <button onClick={() => del(e.id)} className="text-sm bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100">நீக்கு</button>
-                </div>
-              </div>
-            ))}
+      <div className="p-6 max-w-4xl mx-auto space-y-4">
+        {loading ? (
+          <div className="flex items-center justify-center h-48">
+            <div className="w-8 h-8 rounded-full border-3 border-orange-300 border-t-orange-600 animate-spin" />
           </div>
-        )}
+        ) : !events.length ? (
+          <div className="bg-white rounded-2xl border border-orange-100 py-16 text-center">
+            <CalendarDays className="w-12 h-12 text-orange-200 mx-auto mb-3" />
+            <p className="text-orange-400 font-medium">நிகழ்வுகள் இல்லை</p>
+            <button onClick={openCreate} className="mt-4 text-sm text-orange-600 font-bold hover:text-orange-700">
+              + முதல் நிகழ்வை சேர்க்கவும்
+            </button>
+          </div>
+        ) : (
+          events.map(e => (
+            <div key={e.id} className="bg-white rounded-2xl border border-orange-100 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-start gap-4 p-5">
+                {/* Date block */}
+                <div className="w-14 h-14 rounded-xl flex flex-col items-center justify-center shrink-0 text-white"
+                  style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}>
+                  <span className="text-lg font-bold leading-tight">
+                    {new Date(e.eventDate).getDate()}
+                  </span>
+                  <span className="text-[9px] font-medium opacity-80">
+                    {new Date(e.eventDate).toLocaleDateString("en-IN", { month: "short" })}
+                  </span>
+                </div>
 
-        {showForm && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-              <h3 className="font-bold text-lg mb-4">{editId ? "நிகழ்வு திருத்து" : "புதிய நிகழ்வு"}</h3>
-              <div className="space-y-3">
-                <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="தலைப்பு *" className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                <select value={form.eventType} onChange={(e) => setForm({ ...form, eventType: e.target.value })}
-                  className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
-                  <option value="">நிகழ்வு வகை தேர்ந்தெடுக்க</option>
-                  {EVENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
-                <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="விளக்கம்" rows={3}
-                  className="w-full border rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                <input type="datetime-local" value={form.eventDate} onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
-                  className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
-                  placeholder="இடம்" className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                <input value={form.posterUrl} onChange={(e) => setForm({ ...form, posterUrl: e.target.value })}
-                  placeholder="Poster URL (விருப்பம்)" className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" checked={form.published} onChange={(e) => setForm({ ...form, published: e.target.checked })} />
-                  வெளியிடப்பட்டது (Published)
-                </label>
-              </div>
-              <div className="flex gap-3 mt-5">
-                <button onClick={save} disabled={saving}
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-xl font-medium disabled:opacity-50">
-                  {saving ? "சேமிக்கிறது..." : "சேமி"}
-                </button>
-                <button onClick={() => setShowForm(false)} className="flex-1 border py-2 rounded-xl text-gray-600 hover:bg-gray-50">ரத்து செய்</button>
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <h3 className="font-bold text-orange-900">{e.title}</h3>
+                    {e.eventType && (
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${TYPE_COLORS[e.eventType] ?? "bg-orange-100 text-orange-700 border-orange-200"}`}>
+                        {e.eventType}
+                      </span>
+                    )}
+                    {e.published
+                      ? <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200"><Eye className="w-2.5 h-2.5"/>Live</span>
+                      : <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200"><EyeOff className="w-2.5 h-2.5"/>Draft</span>
+                    }
+                  </div>
+                  {e.description && <p className="text-sm text-orange-600/70 line-clamp-1 mb-2">{e.description}</p>}
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-orange-400">
+                    <span className="flex items-center gap-1">
+                      <CalendarDays className="w-3 h-3" />
+                      {new Date(e.eventDate).toLocaleDateString("ta-IN", { dateStyle: "full" })}
+                    </span>
+                    {e.location && (
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />{e.location}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <button onClick={() => openEdit(e)}
+                    className="w-8 h-8 rounded-lg bg-orange-50 hover:bg-orange-100 border border-orange-200 flex items-center justify-center transition-colors">
+                    <Pencil className="w-3.5 h-3.5 text-orange-600" />
+                  </button>
+                  <button onClick={() => del(e.id)}
+                    className="w-8 h-8 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 flex items-center justify-center transition-colors">
+                    <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          ))
         )}
       </div>
+
+      {/* Form modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl border border-orange-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-orange-100"
+              style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}>
+              <h3 className="font-bold text-white">{editId ? "நிகழ்வு திருத்து" : "புதிய நிகழ்வு"}</h3>
+              <button onClick={() => setShowForm(false)} className="text-white/70 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <Field label="தலைப்பு *">
+                <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
+                  placeholder="நிகழ்வு தலைப்பு" className={inputCls} />
+              </Field>
+              <Field label="நிகழ்வு வகை">
+                <select value={form.eventType} onChange={e => setForm({ ...form, eventType: e.target.value })}
+                  className={inputCls}>
+                  <option value="">தேர்ந்தெடுக்கவும்</option>
+                  {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </Field>
+              <Field label="விளக்கம்">
+                <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
+                  placeholder="நிகழ்வு விவரம்" rows={3} className={`${inputCls} resize-none`} />
+              </Field>
+              <Field label="தேதி & நேரம் *">
+                <input type="datetime-local" value={form.eventDate}
+                  onChange={e => setForm({ ...form, eventDate: e.target.value })} className={inputCls} />
+              </Field>
+              <Field label="இடம்">
+                <input value={form.location} onChange={e => setForm({ ...form, location: e.target.value })}
+                  placeholder="நிகழ்வு இடம்" className={inputCls} />
+              </Field>
+              <Field label="Poster URL (விருப்பம்)">
+                <input value={form.posterUrl} onChange={e => setForm({ ...form, posterUrl: e.target.value })}
+                  placeholder="https://..." className={inputCls} />
+              </Field>
+              <label className="flex items-center gap-3 p-3 rounded-xl bg-orange-50 border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors">
+                <input type="checkbox" checked={form.published}
+                  onChange={e => setForm({ ...form, published: e.target.checked })}
+                  className="w-4 h-4 accent-orange-500" />
+                <div>
+                  <p className="text-sm font-semibold text-orange-900">வெளியிடு (Publish)</p>
+                  <p className="text-[10px] text-orange-400">பொது பார்வைக்கு காட்டவும்</p>
+                </div>
+              </label>
+            </div>
+
+            <div className="flex gap-3 px-6 pb-6">
+              <button onClick={save} disabled={saving}
+                className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}>
+                {saving ? "சேமிக்கிறது..." : "சேமி"}
+              </button>
+              <button onClick={() => setShowForm(false)}
+                className="flex-1 border border-orange-200 py-2.5 rounded-xl font-medium text-orange-700 hover:bg-orange-50 text-sm">
+                ரத்து செய்
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }
