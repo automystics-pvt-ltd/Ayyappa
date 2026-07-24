@@ -97,6 +97,17 @@ export function Footer() {
           <p>© {new Date().getFullYear()} ஸ்ரீ ஐயப்பன் திருக்கோவில், வடமதுரை. All rights reserved.</p>
           <p className="font-serif text-secondary/80 font-bold tracking-widest">ஸ்வாமியே சரணம் ஐயப்பா</p>
         </div>
+        <div className="border-t border-white/10 mt-6 pt-4 text-center text-white/30 text-xs">
+          Powered by{' '}
+          <a
+            href="https://www.automystics.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/50 hover:text-secondary transition-colors"
+          >
+            Automystics Technologies Pvt. Ltd.
+          </a>
+        </div>
       </div>
     </footer>
   );
