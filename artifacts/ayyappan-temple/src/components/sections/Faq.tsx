@@ -15,7 +15,7 @@ export function Faq() {
   const faqs = parseJsonSetting<{ q: string; a: string }[]>(s.faqs, DEFAULT_FAQS);
 
   return (
-    <section className="py-20 bg-background">
+    <section id="faq" className="py-20 bg-background">
       <div className="container mx-auto px-4 md:px-6 max-w-3xl">
         <motion.div initial="hidden" whileInView="visible"
           viewport={{ once: true, margin: '-100px' }} variants={fadeUpVariant}>

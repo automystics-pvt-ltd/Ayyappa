@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Menu, X, ChevronDown, Newspaper, CalendarDays, Images,
   HandCoins, Phone, Mail, Home, BookOpen, Users2, HardHat,
-  FlameKindling, HelpCircle, MessageSquare, Flame, Bell
+  FlameKindling, HelpCircle, MessageSquare, Flame, Bell, HeartHandshake
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 
@@ -261,6 +261,13 @@ export function Navbar() {
                 <CountBadge n={upcomingEvents.length} />
               </button>
 
+              {/* Donors */}
+              <button onClick={() => scrollTo('#donors')}
+                className={`flex items-center text-sm font-medium transition-colors px-2 py-1 rounded-lg hover:bg-white/10 whitespace-nowrap ${textCls}`}>
+                <HeartHandshake className="w-3.5 h-3.5 mr-1 opacity-70" />
+                நன்கொடையாளர்கள்
+              </button>
+
               {/* Contact */}
               <button onClick={() => scrollTo('#contact')}
                 className={`flex items-center text-sm font-medium transition-colors px-2 py-1 rounded-lg hover:bg-white/10 whitespace-nowrap ${textCls}`}>
@@ -346,8 +353,9 @@ export function Navbar() {
                   {[
                     { label: 'முகப்பு',     href: '#home',    icon: Home },
                     { label: 'செய்திகள்',   href: '#news',    icon: Newspaper,   count: publishedNews.length },
-                    { label: 'நிகழ்வுகள்',  href: '#events',  icon: CalendarDays, count: upcomingEvents.length },
-                    { label: 'தொடர்புக்கு', href: '#contact', icon: MessageSquare },
+                    { label: 'நிகழ்வுகள்',       href: '#events',  icon: CalendarDays,    count: upcomingEvents.length },
+                    { label: 'நன்கொடையாளர்கள்', href: '#donors',  icon: HeartHandshake },
+                    { label: 'தொடர்புக்கு',      href: '#contact', icon: MessageSquare },
                   ].map(({ label, href, icon: Icon, count }) => (
                     <button
                       key={href}

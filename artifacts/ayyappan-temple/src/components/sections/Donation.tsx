@@ -726,7 +726,9 @@ export function Donation() {
             </p>
           </div>
 
-          <DonorWall donors={donors} stats={stats} />
+          <div id="donors">
+            <DonorWall donors={donors} stats={stats} />
+          </div>
         </motion.div>
       </div>
 
