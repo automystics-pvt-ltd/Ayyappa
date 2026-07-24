@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { api } from "@/lib/api";
-import { Plus, Trash2, Pencil, ChevronLeft, Image, UploadCloud, X, Check, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, Pencil, ChevronLeft, Image, UploadCloud, X, Check, Eye, EyeOff, GripVertical, Save } from "lucide-react";
 
 type GalleryPhoto = {
   id: number;
@@ -52,6 +52,63 @@ export default function GalleryAdmin() {
 
   // Lightbox
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+
+  // Drag-and-drop reorder state
+  const [orderedPhotos, setOrderedPhotos] = useState<GalleryPhoto[]>([]);
+  const [isDirty, setIsDirty] = useState(false);
+  const [savingOrder, setSavingOrder] = useState(false);
+  const dragIndexRef = useRef<number | null>(null);
+  const dragOverIndexRef = useRef<number | null>(null);
+
+  // Sync orderedPhotos when album changes
+  useEffect(() => {
+    const album = albums.find((a) => a.id === selectedAlbum?.id) ?? selectedAlbum;
+    if (album) {
+      setOrderedPhotos([...album.photos].sort((a, b) => a.sortOrder - b.sortOrder));
+      setIsDirty(false);
+    }
+  }, [selectedAlbum?.id, albums]);
+
+  // Drag handlers
+  const handleDragStart = (index: number) => {
+    dragIndexRef.current = index;
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    dragOverIndexRef.current = index;
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const from = dragIndexRef.current;
+    const to = dragOverIndexRef.current;
+    if (from === null || to === null || from === to) return;
+    const reordered = [...orderedPhotos];
+    const [moved] = reordered.splice(from, 1);
+    reordered.splice(to, 0, moved);
+    setOrderedPhotos(reordered);
+    setIsDirty(true);
+    dragIndexRef.current = null;
+    dragOverIndexRef.current = null;
+  };
+
+  const savePhotoOrder = async () => {
+    setSavingOrder(true);
+    try {
+      await Promise.all(
+        orderedPhotos.map((photo, idx) =>
+          api.updatePhoto(photo.id, { sortOrder: idx })
+        )
+      );
+      setIsDirty(false);
+      await fetchAlbums();
+    } catch (e: any) {
+      alert(e.message);
+    } finally {
+      setSavingOrder(false);
+    }
+  };
 
   const fetchAlbums = async () => {
     setLoading(true);
@@ -245,35 +302,75 @@ export default function GalleryAdmin() {
             )}
           </div>
 
+          {/* Save order bar */}
+          {isDirty && (
+            <div className="mb-4 flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
+              <p className="text-sm text-orange-700">வரிசை மாற்றப்பட்டது. சேமிக்கவும்.</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    const album = albums.find((a) => a.id === selectedAlbum?.id) ?? selectedAlbum;
+                    if (album) setOrderedPhotos([...album.photos].sort((a, b) => a.sortOrder - b.sortOrder));
+                    setIsDirty(false);
+                  }}
+                  className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
+                >
+                  ரத்து
+                </button>
+                <button
+                  onClick={savePhotoOrder}
+                  disabled={savingOrder}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  {savingOrder ? "சேமிக்கிறது..." : "வரிசை சேமி"}
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Photo grid */}
-          {album.photos.length === 0 ? (
+          {orderedPhotos.length === 0 ? (
             <div className="text-center py-16 text-gray-400 bg-white rounded-xl border">
               <Image className="w-10 h-10 mx-auto mb-2 opacity-30" />
               <p>இன்னும் படங்கள் இல்லை. மேலே பதிவேற்றுங்கள்.</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {album.photos.map((photo) => (
-                <div key={photo.id} className="group relative rounded-xl overflow-hidden bg-gray-100 aspect-square shadow-sm">
+              {orderedPhotos.map((photo, idx) => (
+                <div
+                  key={photo.id}
+                  draggable
+                  onDragStart={() => handleDragStart(idx)}
+                  onDragOver={(e) => handleDragOver(e, idx)}
+                  onDrop={handleDrop}
+                  className="group relative rounded-xl overflow-hidden bg-gray-100 aspect-square shadow-sm cursor-grab active:cursor-grabbing"
+                >
                   <img
                     src={photoSrc(photo.url)}
                     alt={photo.caption ?? ""}
-                    className="w-full h-full object-cover cursor-pointer"
+                    className="w-full h-full object-cover"
                     onClick={() => setLightboxUrl(photoSrc(photo.url))}
+                    draggable={false}
                   />
+
+                  {/* Drag handle */}
+                  <div className="absolute top-2 left-2 bg-black/40 text-white p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <GripVertical className="w-3.5 h-3.5" />
+                  </div>
 
                   {/* Overlay controls */}
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
                     <div className="flex justify-end gap-1">
                       <button
-                        onClick={() => { setEditCaptionId(photo.id); setEditCaption(photo.caption ?? ""); }}
+                        onClick={(e) => { e.stopPropagation(); setEditCaptionId(photo.id); setEditCaption(photo.caption ?? ""); }}
                         className="bg-white/20 hover:bg-white/40 text-white p-1.5 rounded-lg transition-colors"
                         title="Caption திருத்து"
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => deletePhoto(photo)}
+                        onClick={(e) => { e.stopPropagation(); deletePhoto(photo); }}
                         className="bg-red-500/80 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors"
                         title="நீக்கு"
                       >
