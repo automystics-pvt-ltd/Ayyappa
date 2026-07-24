@@ -4,7 +4,8 @@ import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import {
   Building, HeartHandshake, QrCode, ShieldCheck,
   CheckCircle2, Users, Upload, X, Image as ImageIcon,
-  AlertCircle, MapPin, RefreshCw,
+  AlertCircle, MapPin, RefreshCw, ScanLine, IndianRupee,
+  ClipboardCheck, SendHorizonal,
 } from 'lucide-react';
 import { api, uploadScreenshot } from '@/lib/api';
 
@@ -253,6 +254,109 @@ function SubmissionReceipt({ receipt, onDone }: { receipt: ReceiptData; onDone: 
   );
 }
 
+/* ─── Steps guide ─── */
+const STEPS = [
+  {
+    num: 1,
+    icon: ScanLine,
+    title: 'QR Scan / UPI',
+    desc: 'வலதுபுறம் உள்ள QR Code-ஐ Scan செய்யவும் அல்லது UPI ID-க்கு நேரடியாக பணம் அனுப்பவும்.',
+    tip: 'PhonePe · GPay · Paytm · BHIM',
+  },
+  {
+    num: 2,
+    icon: IndianRupee,
+    title: 'தொகை தேர்வு',
+    desc: 'கீழே உள்ள preset தொகைகளில் ஒன்றை click செய்யவும் அல்லது உங்கள் விருப்பப்படி custom தொகை உள்ளிடவும்.',
+    tip: '₹501 · ₹1,001 · ₹5,001 · ₹10,001',
+  },
+  {
+    num: 3,
+    icon: ClipboardCheck,
+    title: 'Transaction ID',
+    desc: 'Payment முடிந்த உடனே கிடைக்கும் Transaction / UTR Reference ID-ஐ கவனமாக குறித்துக்கொள்ளவும்.',
+    tip: 'உ.ம்: 425678901234',
+  },
+  {
+    num: 4,
+    icon: SendHorizonal,
+    title: 'சமர்ப்பிக்கவும்',
+    desc: '"நன்கொடை வழங்க" பொத்தானை அழுத்தி உங்கள் பெயர், ஊர், Transaction ID மற்றும் Screenshot upload செய்து சமர்ப்பிக்கவும்.',
+    tip: 'நிர்வாகி சரிபார்த்த பின் பட்டியலில் சேர்க்கப்படும்',
+  },
+];
+
+function HowToSteps() {
+  return (
+    <div className="mb-10">
+      <h3 className="text-center text-lg font-bold text-foreground mb-6 flex items-center justify-center gap-2">
+        <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">?</span>
+        எப்படி நன்கொடை வழங்குவது?
+      </h3>
+
+      {/* Desktop: horizontal row */}
+      <div className="hidden md:flex items-start gap-0">
+        {STEPS.map((step, idx) => {
+          const Icon = step.icon;
+          return (
+            <div key={step.num} className="flex-1 flex flex-col items-center text-center relative">
+              {/* Connector line */}
+              {idx < STEPS.length - 1 && (
+                <div className="absolute top-6 left-1/2 w-full h-0.5 bg-gradient-to-r from-primary/60 to-primary/20 z-0" />
+              )}
+              {/* Circle */}
+              <div className="relative z-10 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md mb-3 flex-shrink-0">
+                <Icon className="w-5 h-5" />
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-secondary text-secondary-foreground text-[10px] font-bold flex items-center justify-center border-2 border-background">
+                  {step.num}
+                </span>
+              </div>
+              <div className="px-3">
+                <p className="font-bold text-foreground text-sm mb-1">{step.title}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-1.5">{step.desc}</p>
+                <span className="inline-block text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                  {step.tip}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Mobile: vertical timeline */}
+      <div className="md:hidden space-y-0">
+        {STEPS.map((step, idx) => {
+          const Icon = step.icon;
+          return (
+            <div key={step.num} className="flex gap-4 relative">
+              {/* Vertical line */}
+              <div className="flex flex-col items-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md relative z-10">
+                  <Icon className="w-4 h-4" />
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-secondary text-secondary-foreground text-[9px] font-bold flex items-center justify-center border border-background">
+                    {step.num}
+                  </span>
+                </div>
+                {idx < STEPS.length - 1 && (
+                  <div className="w-0.5 flex-1 min-h-[2rem] bg-gradient-to-b from-primary/50 to-primary/10 my-1" />
+                )}
+              </div>
+              {/* Content */}
+              <div className={`pb-5 ${idx === STEPS.length - 1 ? '' : ''}`}>
+                <p className="font-bold text-foreground text-sm mb-0.5">{step.title}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-1">{step.desc}</p>
+                <span className="inline-block text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                  {step.tip}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Blank form state ─── */
 const BLANK_FORM = { donorName: '', mobile: '', place: '', transactionId: '', message: '', anonymous: false };
 
@@ -414,6 +518,12 @@ export function Donation() {
             </div>
           </motion.div>
         )}
+
+        {/* Step-by-step guide */}
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUpVariant}
+          className="bg-card border border-card-border rounded-2xl p-6 md:p-8 shadow-md mb-8">
+          <HowToSteps />
+        </motion.div>
 
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
 
