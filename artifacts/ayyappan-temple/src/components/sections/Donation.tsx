@@ -328,7 +328,7 @@ const STEPS = [
     num: 1,
     icon: ScanLine,
     title: 'QR Scan / UPI',
-    desc: 'வலதுபுறம் உள்ள QR Code-ஐ Scan செய்யவும் அல்லது UPI ID-க்கு நேரடியாக பணம் அனுப்பவும்.',
+    desc: 'கீழே உள்ள QR Code-ஐ Scan செய்யவும் அல்லது UPI ID-க்கு நேரடியாக பணம் அனுப்பவும்.',
     tip: 'PhonePe · GPay · Paytm · BHIM',
   },
   {
