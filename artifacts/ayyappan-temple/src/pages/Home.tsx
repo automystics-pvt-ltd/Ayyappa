@@ -1,6 +1,7 @@
 import { Navbar } from '@/components/sections/Navbar';
 import { Hero } from '@/components/sections/Hero';
 import { About } from '@/components/sections/About';
+import { Gurus } from '@/components/sections/Gurus';
 import { Renovation } from '@/components/sections/Renovation';
 import { Kumbhabhishekam } from '@/components/sections/Kumbhabhishekam';
 import { Donation } from '@/components/sections/Donation';
@@ -16,6 +17,7 @@ export default function Home() {
       <main>
         <Hero />
         <About />
+        <Gurus />
         <Renovation />
         <Kumbhabhishekam />
         <Donation />

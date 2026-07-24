@@ -5,6 +5,7 @@ import { Menu, X, Phone, Mail } from 'lucide-react';
 const navLinks = [
   { label: 'முகப்பு', href: '#home' },
   { label: 'வரலாறு', href: '#about' },
+  { label: 'குருநாதர்கள்', href: '#gurus' },
   { label: 'திருப்பணி', href: '#renovation' },
   { label: 'கும்பாபிஷேகம்', href: '#kumbhabhishekam' },
   { label: 'நன்கொடை', href: '#donate' },
@@ -70,12 +71,12 @@ export function Navbar() {
           </div>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-4 lg:gap-6">
             {navLinks.map((link) => (
               <button
                 key={link.href}
                 onClick={() => scrollTo(link.href)}
-                className={`text-sm lg:text-base font-medium transition-colors hover:text-secondary ${
+                className={`text-xs lg:text-sm font-medium transition-colors hover:text-secondary whitespace-nowrap ${
                   isScrolled ? 'text-foreground/80' : 'text-white/90 drop-shadow-sm hover:text-white'
                 }`}
               >
@@ -84,7 +85,7 @@ export function Navbar() {
             ))}
             <button
               onClick={() => scrollTo('#donate')}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-full font-medium transition-transform hover:scale-105 active:scale-95 shadow-lg"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 lg:px-6 py-2 rounded-full text-xs lg:text-sm font-medium transition-transform hover:scale-105 active:scale-95 shadow-lg whitespace-nowrap flex-shrink-0"
             >
               நன்கொடை
             </button>
