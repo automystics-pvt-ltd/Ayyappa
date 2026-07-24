@@ -5,6 +5,7 @@ import { donationsTable, siteSettingsTable } from "@workspace/db/schema";
 import { eq, desc, sum, count } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { ObjectStorageService } from "../lib/objectStorage";
+import { notifyDonationApproved } from "../lib/smsService";
 
 const router = Router();
 const objectStorageService = new ObjectStorageService();
@@ -203,6 +204,22 @@ router.patch("/:id/approve", requireRole("super_admin", "editor"), async (req, r
       .where(eq(donationsTable.id, id))
       .returning();
     if (!updated) { res.status(404).json({ error: "Donation not found" }); return; }
+
+    // Send SMS/WhatsApp notification — runs in background, never blocks approval response
+    if (updated.mobile) {
+      const siteBaseUrl = process.env.SITE_BASE_URL ?? "";
+      notifyDonationApproved(
+        {
+          to: updated.mobile,
+          donorName: updated.donorName,
+          amount: updated.amount,
+          receiptToken: updated.receiptToken ?? "",
+          siteBaseUrl: siteBaseUrl || undefined,
+        },
+        req.log,
+      ).catch((err) => req.log.error({ err }, "Unhandled error in notifyDonationApproved"));
+    }
+
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: "Failed to approve" });
