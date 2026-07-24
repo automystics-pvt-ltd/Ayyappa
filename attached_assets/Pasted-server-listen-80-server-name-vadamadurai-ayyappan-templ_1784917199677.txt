@@ -1,0 +1,51 @@
+server {
+    listen 80;
+    server_name vadamadurai-ayyappan-temple.automystics.tech;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name vadamadurai-ayyappan-temple.automystics.tech;
+
+    ssl_certificate     /etc/nginx/ssl-certificates/vadamadurai-ayyappan-temple.automystics.tech.crt;
+    ssl_certificate_key /etc/nginx/ssl-certificates/vadamadurai-ayyappan-temple.automystics.tech.key;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_session_cache   shared:SSL:10m;
+
+    location /api/ {
+        proxy_pass         http://127.0.0.1:3010;
+        proxy_http_version 1.1;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+        client_max_body_size 15M;
+    }
+
+    root /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech;
+    index index.html;
+
+    location / { try_files $uri $uri/ /index.html; }
+    location /assets/ { expires 1y; add_header Cache-Control "public, immutable"; }
+
+    gzip on;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+}
+root@srv1609330:/opt/ayyappan-api# grep -rn "vadamadurai\|ayyappan\|3010\|3019" /etc/nginx/
+/etc/nginx/sites-enabled/ayyappan-temple:3:    server_name vadamadurai-ayyappan-temple.automystics.tech;
+/etc/nginx/sites-enabled/ayyappan-temple:9:    server_name vadamadurai-ayyappan-temple.automystics.tech;
+/etc/nginx/sites-enabled/ayyappan-temple:11:    ssl_certificate     /etc/nginx/ssl-certificates/vadamadurai-ayyappan-temple.automystics.tech.crt;
+/etc/nginx/sites-enabled/ayyappan-temple:12:    ssl_certificate_key /etc/nginx/ssl-certificates/vadamadurai-ayyappan-temple.automystics.tech.key;
+/etc/nginx/sites-enabled/ayyappan-temple:17:        proxy_pass         http://127.0.0.1:3010;
+/etc/nginx/sites-enabled/ayyappan-temple:27:    root /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech;
+/etc/nginx/sites-enabled/docscan.automystics.tech.conf:35:    proxy_pass http://127.0.0.1:3019;
+/etc/nginx/sites-available/ayyappan-temple:3:    server_name vadamadurai-ayyappan-temple.automystics.tech;
+/etc/nginx/sites-available/ayyappan-temple:9:    server_name vadamadurai-ayyappan-temple.automystics.tech;
+/etc/nginx/sites-available/ayyappan-temple:11:    ssl_certificate     /etc/nginx/ssl-certificates/vadamadurai-ayyappan-temple.automystics.tech.crt;
+/etc/nginx/sites-available/ayyappan-temple:12:    ssl_certificate_key /etc/nginx/ssl-certificates/vadamadurai-ayyappan-temple.automystics.tech.key;
+/etc/nginx/sites-available/ayyappan-temple:17:        proxy_pass         http://127.0.0.1:3010;
+/etc/nginx/sites-available/ayyappan-temple:27:    root /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech;
+grep: /etc/nginx/geoip/GeoLiteCity.dat: binary file matches
+root@srv1609330:/opt/ayyappan-api# 
