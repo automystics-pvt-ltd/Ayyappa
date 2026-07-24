@@ -1,0 +1,67 @@
+root@srv1609330:/opt/ayyappan-source# find / -name "pnpm-workspace.yaml" 2>/dev/null | grep -v node_modules | head -5
+find / -name ".git" -type d 2>/dev/null | grep -v node_modules | grep -v ".local" | head -5
+/home/automystics-erp/htdocs/erp.automystics.tech/pnpm-workspace.yaml
+/home/automystics-scada/htdocs/scada.automystics.tech/Mystics-Scada/pnpm-workspace.yaml
+/home/automystics-scada/htdocs/scada.automystics.tech/pnpm-workspace.yaml
+/home/automystics_civil/htdocs/mysticscivil.automystics.tech/pnpm-workspace.yaml
+/home/automystics-mysticsaudit/htdocs/mysticsaudit.automystics.tech/Mystics-Audit/pnpm-workspace.yaml
+/home/automystics-erp/htdocs/erp.automystics.tech/.git
+/home/automystics-scada/htdocs/scada.automystics.tech/.git
+/home/automystics-scada/htdocs/scada.automystics.tech/Mystics-Scada/.git
+/home/automystics_civil/htdocs/mysticscivil.automystics.tech/.git
+/home/automystics-mysticsaudit/htdocs/mysticsaudit.automystics.tech/.git
+root@srv1609330:/opt/ayyappan-source# # Find the running API bundle
+find /opt/ayyappan-api -name "*.mjs" 2>/dev/null
+
+# Then replace the old error message in-place
+sed -i 's/Email and password are required/Username and password required/g' /opt/ayyappan-api/dist/index.mjs
+
+# Restart
+pm2 restart ayyappan-api
+sleep 2
+
+# Test login
+curl -s -X POST http://127.0.0.1:3010/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"Admin@2026$"}'
+/opt/ayyappan-api/dist/pino-worker.mjs
+/opt/ayyappan-api/dist/index.mjs
+/opt/ayyappan-api/dist/pino-file.mjs
+/opt/ayyappan-api/dist/thread-stream-worker.mjs
+/opt/ayyappan-api/dist/pino-pretty.mjs
+/opt/ayyappan-api/node_modules/event-target-shim/dist/event-target-shim.mjs
+/opt/ayyappan-api/node_modules/abort-controller/browser.mjs
+/opt/ayyappan-api/node_modules/abort-controller/polyfill.mjs
+/opt/ayyappan-api/node_modules/abort-controller/dist/abort-controller.mjs
+/opt/ayyappan-api/node_modules/node-fetch/lib/index.mjs
+/opt/ayyappan-api/node_modules/uuid/wrapper.mjs
+/opt/ayyappan-api/node_modules/hasown/eslint.config.mjs
+/opt/ayyappan-api/node_modules/bignumber.js/bignumber.mjs
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [ayyappan-api](ids: [ 35 ])
+[PM2] [ayyappan-api](35) ✓
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 28 │ automystics-api       │ default     │ 0.0.0   │ fork    │ 1524446  │ 13D    │ 2    │ online    │ 1.6%     │ 227.9mb  │ root     │ disabled │
+│ 29 │ automystics-api       │ default     │ N/A     │ fork    │ 1149157  │ 0s     │ 178… │ online    │ 0%       │ 49.3mb   │ root     │ disabled │
+│ 35 │ ayyappan-api          │ default     │ N/A     │ cluster │ 1149168  │ 0s     │ 2091 │ online    │ 0%       │ 46.5mb   │ root     │ disabled │
+│ 32 │ docscan-api           │ default     │ 0.0.0   │ fork    │ 542910   │ 28h    │ 8    │ online    │ 0%       │ 146.3mb  │ root     │ disabled │
+│ 11 │ erp-automystics       │ default     │ N/A     │ fork    │ 342673   │ 2h     │ 11   │ online    │ 0%       │ 117.1mb  │ root     │ disabled │
+│ 1  │ fitro360              │ default     │ 1.0.0   │ fork    │ 1524182  │ 13D    │ 4    │ online    │ 0%       │ 110.1mb  │ root     │ disabled │
+│ 2  │ kalvicore-api         │ default     │ 0.0.0   │ fork    │ 198081   │ 29h    │ 8    │ online    │ 0%       │ 122.2mb  │ root     │ disabled │
+│ 13 │ mmwear-erp            │ default     │ 0.0.0   │ fork    │ 3396013  │ 3D     │ 137  │ online    │ 1.6%     │ 603.0mb  │ root     │ disabled │
+│ 14 │ mystics-audit         │ default     │ 0.0.0   │ fork    │ 1035800  │ 9D     │ 586  │ online    │ 0%       │ 214.0mb  │ root     │ disabled │
+│ 5  │ mysticscivil-api      │ default     │ N/A     │ fork    │ 1524242  │ 13D    │ 4    │ online    │ 0%       │ 222.3mb  │ root     │ disabled │
+│ 26 │ mysticshr-api         │ default     │ 0.0.0   │ fork    │ 852146   │ 8D     │ 14   │ online    │ 0%       │ 408.6mb  │ root     │ disabled │
+│ 12 │ mysticsinventory      │ default     │ N/A     │ fork    │ 1149096  │ 0s     │ 242… │ online    │ 62.9%    │ 80.4mb   │ root     │ disabled │
+│ 3  │ people-connect-api    │ default     │ 0.0.0   │ fork    │ 1524209  │ 13D    │ 4    │ online    │ 0%       │ 198.0mb  │ root     │ disabled │
+│ 6  │ solarnexus-api        │ default     │ 0.0.0   │ fork    │ 1524251  │ 13D    │ 4    │ online    │ 0%       │ 129.5mb  │ root     │ disabled │
+│ 4  │ tkprabhu-api          │ default     │ 0.0.0   │ fork    │ 1524217  │ 13D    │ 4    │ online    │ 0%       │ 194.2mb  │ root     │ disabled │
+│ 8  │ ungalrajeev-api       │ default     │ N/A     │ fork    │ 1148491  │ 9s     │ 957… │ online    │ 0%       │ 139.5mb  │ root     │ disabled │
+│ 7  │ ungaludan-sarath      │ default     │ 0.0.0   │ fork    │ 1524287  │ 13D    │ 4    │ online    │ 0%       │ 205.8mb  │ root     │ disabled │
+│ 9  │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1148983  │ 2s     │ 256… │ online    │ 25.8%    │ 136.3mb  │ root     │ disabled │
+│ 10 │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1524307  │ 13D    │ 199… │ online    │ 0%       │ 97.8mb   │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 99.9% | ram usage: 41.6% | lo: ⇓ 0.022mb/s ⇑ 0.022mb/s | eth0: ⇓ 0.001mb/s ⇑ 0.002mb/s | disk: ⇓ 2.871mb/s ⇑ 1.161mb/s |
+{"error":"Email and password are required"}root@srv1609330:/opt/ayyappan-source# 
