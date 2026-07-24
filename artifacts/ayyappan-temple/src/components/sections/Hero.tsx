@@ -57,6 +57,12 @@ export function Hero() {
             <p className="text-lg md:text-2xl text-white/90 font-medium tracking-wider">{location}</p>
           </motion.div>
 
+          <motion.div variants={fadeUpVariant}
+            className="bg-black/40 backdrop-blur-sm border border-secondary/30 rounded-2xl py-4 px-6 md:px-10 max-w-3xl mb-4">
+            <p className="text-lg md:text-xl text-secondary font-medium mb-2">{tagline}</p>
+            <p className="text-base md:text-lg text-white/80 italic">{quote}</p>
+          </motion.div>
+
           <motion.div variants={fadeUpVariant} className="mb-8 w-full flex justify-center">
             <NewsTicker />
           </motion.div>
