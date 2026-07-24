@@ -28,7 +28,7 @@ export function Kumbhabhishekam() {
         >
           <div className="inline-flex items-center justify-center gap-2 text-secondary mb-4">
             <Sparkles className="w-6 h-6" />
-            <span className="uppercase tracking-widest text-sm font-bold">புனித விழா</span>
+            <span className="uppercase tracking-widest text-sm font-bold">புனித குடமுழுக்கு விழா</span>
             <Sparkles className="w-6 h-6" />
           </div>
           <h2 className="text-4xl md:text-6xl font-serif font-bold text-secondary mb-6 drop-shadow-md">
