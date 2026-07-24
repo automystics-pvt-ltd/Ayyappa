@@ -1,0 +1,338 @@
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# sed -i 's/read -rsp "Database password: " DB_PASS; echo ""/echo -n "Database password (typing is hidden - nothing will show): "\n  read -rsp "" DB_PASS; echo ""\n  [[ -n "$DB_PASS" ]] || { echo "Cannot be empty, try again."; read -rsp "" DB_PASS; echo ""; }/' /tmp/temple-repo/deploy/first-time-server-setup.sh
+
+bash /tmp/temple-repo/deploy/first-time-server-setup.sh
+
+╔══════════════════════════════════════════════════╗
+║  Ayyappan Temple — First-Time Server Setup       ║
+║  (GitHub Actions will handle future deploys)     ║
+╚══════════════════════════════════════════════════╝
+
+── Paths ───────────────────────────────────────────
+Domain (e.g. vadamadurai-ayyappan-temple.automystics.tech): cat > /tmp/setup.sh << 'SETUPEOF'
+#!/bin/bash
+set -euo pipefail
+
+echo ""
+echo "=== Ayyappan Temple Setup ==="
+echo ""
+
+read -rp "DB password (will be visible): " DB_PASS
+read -rp "Session secret (40+ chars): "    SESSION_SECRET
+read -rp "Admin panel password: "           ADMIN_PASS
+read -rp "Your email (for SSL cert): "      SSL_EMAIL
+
+DOMAIN="vadamadurai-ayyappan-temple.automystics.tech"
+WEB_ROOT="/home/automystics-ayyappan/htdocs/${DOMAIN}"
+APP_DIR="/opt/ayyappan-api"
+API_PORT="3001"
+DB_NAME="ayyappan_temple"
+DB_USER="ayyappan_user"
+DATABASE_URL="postgresql://${DB_USER}:${DB_PASS}@127.0.0.1:5432/${DB_NAME}"
+
+echo ""; echo "Installing packages..."
+apt-get update -qq
+apt-get install -y -qq nginx postgresql postgresql-client curl rsync certbot python3-certbot-nginx
+
+echo "Installing Node.js 20..."
+if ! node --version 2>/dev/null | grep -qE "^v2[0-9]"; then
+  curl -fsSL https://deb.nodesource.com/setup_20.x | bash - >/dev/null
+  apt-get install -y -qq nodejs
+fi
+command -v pm2 &>/dev/null || npm install -g pm2 --silent
+echo "Node $(node --version), PM2 $(pm2 --version)"
+
+echo "Setting up PostgreSQL..."
+systemctl enable --now postgresql
+sudo -u postgres psql -c "CREATE USER ${DB_USER} WITH PASSWORD '${DB_PASS}';" 2>/dev/null \
+  || sudo -u postgres psql -c "ALTER USER ${DB_USER} WITH PASSWORD '${DB_PASS}';"
+sudo -u postgres psql -c "CREATE DATABASE ${DB_NAME} OWNER ${DB_USER};" 2>/dev/null || true
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_NAME} TO ${DB_USER};" >/dev/null
+
+echo "Applying schema..."
+PGPASSWORD="${DB_PASS}" psql "${DATABASE_URL}" -f /tmp/temple-repo/deploy/schema.sql -q
+echo "Schema done."
+
+echo "Creating directories..."
+mkdir -p "${WEB_ROOT}" "${APP_DIR}/dist" "${APP_DIR}/uploads"
+
+echo "Writing PM2 config..."
+cat > "${APP_DIR}/ecosystem.config.cjs" << ECOEOF
+module.exports = {
+  apps: [{
+    name: "ayyappan-api",
+    script: "${APP_DIR}/dist/index.mjs",
+    interpreter: "node",
+    interpreter_args: "--enable-source-maps",
+    instances: 1,
+    autorestart: true,
+    watch: false,
+    max_memory_restart: "512M",
+    env: {
+      NODE_ENV: "production",
+      PORT: "${API_PORT}",
+      DATABASE_URL: "${DATABASE_URL}",
+      SESSION_SECRET: "${SESSION_SECRET}",
+      INITIAL_ADMIN_PASSWORD: "${ADMIN_PASS}",
+      DEFAULT_OBJECT_STORAGE_BUCKET_ID: "",
+      PRIVATE_OBJECT_DIR: "${APP_DIR}/uploads",
+      PUBLIC_OBJECT_SEARCH_PATHS: "uploads",
+    }
+  }]
+};
+ECOEOF
+chmod 600 "${APP_DIR}/ecosystem.config.cjs"
+
+echo "Configuring Nginx..."
+cat > /etc/nginx/sites-available/ayyappan-temple << NGINXEOF
+server {
+    listen 80;
+    server_name ${DOMAIN};
+    location /api/ {
+        proxy_pass         http://127.0.0.1:${API_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header   Host              \$host;
+        proxy_set_header   X-Real-IP         \$remote_addr;
+        proxy_set_header   X-Forwarded-For   \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 60s;
+        client_max_body_size 15M;
+    }
+    root ${WEB_ROOT};
+    index index.html;
+    location / { try_files \$uri \$uri/ /index.html; }
+    location /assets/ { expires 1y; add_header Cache-Control "public, immutable"; }
+    gzip on;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+}
+NGINXEOF
+ln -sf /etc/nginx/sites-available/ayyappan-temple /etc/nginx/sites-enabled/
+rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
+nginx -t && systemctl enable --now nginx && systemctl reload nginx
+echo "Nginx configured."
+
+echo "Getting SSL certificate..."
+certbot --nginx -d "${DOMAIN}" --email "${SSL_EMAIL}" --agree-tos --non-interactive --redirect && echo "SSL done." || echo "SSL skipped — run manually later."
+
+echo "Starting PM2..."
+cd "${APP_DIR}"
+pm2 delete ayyappan-api 2>/dev/null || true
+pm2 start ecosystem.config.cjs
+env PATH="$PATH:/usr/bin" pm2 startup systemd -u root --hp /root | tail -1 | bash || true
+pm2 save
+
+echo ""
+echo "=== Setup complete! ==="
+echo "  Admin: https://${DOMAIN}/admin"
+echo "  API health: https://${DOMAIN}/api/healthz"
+echo "  pm2 logs aWeb root path [/var/www/cat > /tmp/setup.sh << 'SETUPEOF']: yyappan-api API directory [/opt/ayyappan-api]:   ← to see live API port [3001]: l
+── Database ─────────────────────────────────────────
+Use local PostgreSQL? (y/n) [y]: ogs"
+SETPostgreSQL URL (postgresql://user:pass@host:5432/db): UPEOF
+
+bash /tmp/setup.sh
+── Secrets ──────────────────────────────────────────
+SESSION_SECRET (min 32 chars): 
+[ERROR] SESSION_SECRET must be ≥ 32 chars.
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# 
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# read -rp "DB password (will be visible): " DB_PASS
+DB password (will be visible): root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# cat > /tmp/setup.sh << 'SETUPEOF'
+#!/bin/bash
+set -euo pipefail
+
+echo ""
+echo "=== Ayyappan Temple Setup ==="
+echo ""
+
+read -rp "DB password (will be visible): " DB_PASS
+read -rp "Session secret (40+ chars): "    SESSION_SECRET
+read -rp "Admin panel password: "           ADMIN_PASS
+read -rp "Your email (for SSL cert): "      SSL_EMAIL
+
+DOMAIN="vadamadurai-ayyappan-temple.automystics.tech"
+WEB_ROOT="/home/automystics-ayyappan/htdocs/${DOMAIN}"
+APP_DIR="/opt/ayyappan-api"
+API_PORT="3001"
+DB_NAME="ayyappan_temple"
+DB_USER="ayyappan_user"
+DATABASE_URL="postgresql://${DB_USER}:${DB_PASS}@127.0.0.1:5432/${DB_NAME}"
+
+echo ""; echo "Installing packages..."
+apt-get update -qq
+apt-get install -y -qq nginx postgresql postgresql-client curl rsync certbot python3-certbot-nginx
+
+echo "Installing Node.js 20..."
+if ! node --version 2>/dev/null | grep -qE "^v2[0-9]"; then
+  curl -fsSL https://deb.nodesource.com/setup_20.x | bash - >/dev/null
+  apt-get install -y -qq nodejs
+fi
+command -v pm2 &>/dev/null || npm install -g pm2 --silent
+echo "Node $(node --version), PM2 $(pm2 --version)"
+
+echo "Setting up PostgreSQL..."
+systemctl enable --now postgresql
+sudo -u postgres psql -c "CREATE USER ${DB_USER} WITH PASSWORD '${DB_PASS}';" 2>/dev/null \
+  || sudo -u postgres psql -c "ALTER USER ${DB_USER} WITH PASSWORD '${DB_PASS}';"
+sudo -u postgres psql -c "CREATE DATABASE ${DB_NAME} OWNER ${DB_USER};" 2>/dev/null || true
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_NAME} TO ${DB_USER};" >/dev/null
+
+echo "Applying schema..."
+PGPASSWORD="${DB_PASS}" psql "${DATABASE_URL}" -f /tmp/temple-repo/deploy/schema.sql -q
+echo "Schema done."
+
+echo "Creating directories..."
+mkdir -p "${WEB_ROOT}" "${APP_DIR}/dist" "${APP_DIR}/uploads"
+
+echo "Writing PM2 config..."
+cat > "${APP_DIR}/ecosystem.config.cjs" << ECOEOF
+module.exports = {
+  apps: [{
+    name: "ayyappan-api",
+    script: "${APP_DIR}/dist/index.mjs",
+    interpreter: "node",
+bash /tmp/setup.shyyappan-api   ← to see live logs"ot --hp /root | tail -1 | bash || trueirect && echo "SSL done." || echo "SSL skipped — run manually later."
+
+=== Ayyappan Temple Setup ===
+
+DB password (will be visible): 
+Session secret (40+ chars): Ayyappan2024Temple_Vadamadurai_Dindigul_SecureKey_XyZ9
+Admin panel password: Admin@2026$
+Your email (for SSL cert): automystics.com@gmail.com
+
+Installing packages...
+Preconfiguring packages ...
+(Reading database ... 211250 files and directories currently installed.)
+Preparing to unpack .../00-nginx-full_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking nginx-full (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../01-nginx_1.30.4-1+clp-noble_all.deb ...
+Unpacking nginx (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../02-libnginx-mod-stream_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking libnginx-mod-stream (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../03-libnginx-mod-ngx-brotli_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking libnginx-mod-ngx-brotli (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../04-libnginx-mod-mail_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking libnginx-mod-mail (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../05-libnginx-mod-http-xslt-filter_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking libnginx-mod-http-xslt-filter (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../06-libnginx-mod-http-upstream-fair_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking libnginx-mod-http-upstream-fair (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../07-libnginx-mod-http-subs-filter_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking libnginx-mod-http-subs-filter (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../08-libnginx-mod-http-image-filter_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking libnginx-mod-http-image-filter (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../09-libnginx-mod-http-geoip_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking libnginx-mod-http-geoip (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../10-libnginx-mod-http-auth-pam_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking libnginx-mod-http-auth-pam (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../11-libnginx-mod-http-dav-ext_1.30.4-1+clp-noble_amd64.deb ...
+Unpacking libnginx-mod-http-dav-ext (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Preparing to unpack .../12-nginx-common_1.30.4-1+clp-noble_all.deb ...
+Unpacking nginx-common (1.30.4-1+clp-noble) over (1.30.3-2+clp-noble) ...
+Selecting previously unselected package postgresql-client.
+Preparing to unpack .../13-postgresql-client_16+257build1.1_all.deb ...
+Unpacking postgresql-client (16+257build1.1) ...
+Selecting previously unselected package python3-josepy.
+Preparing to unpack .../14-python3-josepy_1.14.0-1_all.deb ...
+Unpacking python3-josepy (1.14.0-1) ...
+Selecting previously unselected package python3-rfc3339.
+Preparing to unpack .../15-python3-rfc3339_1.1-4_all.deb ...
+Unpacking python3-rfc3339 (1.1-4) ...
+Selecting previously unselected package python3-acme.
+Preparing to unpack .../16-python3-acme_2.9.0-1_all.deb ...
+Unpacking python3-acme (2.9.0-1) ...
+Selecting previously unselected package python3-configargparse.
+Preparing to unpack .../17-python3-configargparse_1.7-1_all.deb ...
+Unpacking python3-configargparse (1.7-1) ...
+Selecting previously unselected package python3-parsedatetime.
+Preparing to unpack .../18-python3-parsedatetime_2.6-3_all.deb ...
+Unpacking python3-parsedatetime (2.6-3) ...
+Selecting previously unselected package python3-certbot.
+Preparing to unpack .../19-python3-certbot_2.9.0-1_all.deb ...
+Unpacking python3-certbot (2.9.0-1) ...
+Selecting previously unselected package certbot.
+Preparing to unpack .../20-certbot_2.9.0-1_all.deb ...
+Unpacking certbot (2.9.0-1) ...
+Selecting previously unselected package python3-certbot-nginx.
+Preparing to unpack .../21-python3-certbot-nginx_2.9.0-1_all.deb ...
+Unpacking python3-certbot-nginx (2.9.0-1) ...
+Selecting previously unselected package python3-icu.
+Preparing to unpack .../22-python3-icu_2.12-1build2_amd64.deb ...
+Unpacking python3-icu (2.12-1build2) ...
+Setting up python3-configargparse (1.7-1) ...
+Setting up python3-parsedatetime (2.6-3) ...
+Setting up postgresql-client (16+257build1.1) ...
+Setting up python3-icu (2.12-1build2) ...
+Setting up nginx-common (1.30.4-1+clp-noble) ...
+Setting up libnginx-mod-http-xslt-filter (1.30.4-1+clp-noble) ...
+Setting up libnginx-mod-http-auth-pam (1.30.4-1+clp-noble) ...
+Setting up libnginx-mod-http-geoip (1.30.4-1+clp-noble) ...
+Setting up python3-josepy (1.14.0-1) ...
+Setting up libnginx-mod-http-subs-filter (1.30.4-1+clp-noble) ...
+Setting up python3-rfc3339 (1.1-4) ...
+Setting up libnginx-mod-http-dav-ext (1.30.4-1+clp-noble) ...
+Setting up libnginx-mod-mail (1.30.4-1+clp-noble) ...
+Setting up libnginx-mod-ngx-brotli (1.30.4-1+clp-noble) ...
+Setting up libnginx-mod-http-image-filter (1.30.4-1+clp-noble) ...
+Setting up libnginx-mod-stream (1.30.4-1+clp-noble) ...
+Setting up libnginx-mod-http-upstream-fair (1.30.4-1+clp-noble) ...
+Setting up nginx-full (1.30.4-1+clp-noble) ...
+ * Upgrading binary nginx                                                                                                                                                                                [ OK ] 
+Setting up python3-acme (2.9.0-1) ...
+Setting up python3-certbot (2.9.0-1) ...
+Setting up certbot (2.9.0-1) ...
+Created symlink /etc/systemd/system/timers.target.wants/certbot.timer → /usr/lib/systemd/system/certbot.timer.
+Setting up nginx (1.30.4-1+clp-noble) ...
+Setting up python3-certbot-nginx (2.9.0-1) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Processing triggers for ufw (0.36.2-6) ...
+Use of uninitialized value $sdev in right bitshift (>>) at /usr/sbin/needrestart line 610, <HMAP> line 125.=================================                                                                   ]
+Use of uninitialized value $sdev in right bitshift (>>) at /usr/sbin/needrestart line 610, <HMAP> line 125.
+Use of uninitialized value $sdev in bitwise and (&) at /usr/sbin/needrestart line 610, <HMAP> line 125.
+Use of uninitialized value $sdev in right bitshift (>>) at /usr/sbin/needrestart line 610, <HMAP> line 125.
+Use of uninitialized value $sdev in right bitshift (>>) at /usr/sbin/needrestart line 610, <HMAP> line 125.
+Use of uninitialized value $sdev in bitwise and (&) at /usr/sbin/needrestart line 610, <HMAP> line 125.
+Use of uninitialized value $sdev in right bitshift (>>) at /usr/sbin/needrestart line 622, <HMAP> line 125.
+Use of uninitialized value $sdev in right bitshift (>>) at /usr/sbin/needrestart line 622, <HMAP> line 125.
+Use of uninitialized value $sinode in string eq at /usr/sbin/needrestart line 627, <HMAP> line 125.
+Scanning processes...                                                                                                                                                                                           
+Scanning candidates...                                                                                                                                                                                          
+Scanning linux images...                                                                                                                                                                                        
+
+Pending kernel upgrade!
+Running kernel version:
+  6.8.0-107-generic
+Diagnostics:
+  The currently running kernel version is not the expected kernel version 6.8.0-134-generic.
+
+Restarting the system to load the new kernel will not be handled automatically, so you should consider rebooting.
+
+Restarting services...
+ systemctl restart clp-nginx.service
+
+Service restarts being deferred:
+ /etc/needrestart/restart.d/dbus.service
+ systemctl restart networkd-dispatcher.service
+ systemctl restart systemd-logind.service
+ systemctl restart unattended-upgrades.service
+
+No containers need to be restarted.
+
+User sessions running outdated binaries:
+ root @ session #119: PM2 v6.0.14: Go[36157]
+ root @ session #12170: script[436281]
+ root @ session #145: PM2 v6.0.14: Go[55713], sh[2467311]
+ root @ session #3319: PM2 v6.0.14: Go[548807]
+ root @ user manager service: systemd[15778]
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+Installing Node.js 20...
+Node v24.16.0, PM2 7.0.3
+Setting up PostgreSQL...
+Synchronizing state of postgresql.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install enable postgresql
+CREATE ROLE
+CREATE DATABASE
+Applying schema...
+Password for user ayyappan_user: 
+psql: error: connection to server at "127.0.0.1", port 5432 failed: FATAL:  password authentication failed for user "ayyappan_user"
+connection to server at "127.0.0.1", port 5432 failed: FATAL:  password authentication failed for user "ayyappan_user"
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# 
