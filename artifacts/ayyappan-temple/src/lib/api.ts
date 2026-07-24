@@ -22,6 +22,32 @@ export async function apiFetch<T = unknown>(
   return res.json();
 }
 
+/**
+ * Upload a file directly to GCS via presigned URL.
+ * Returns the objectPath to store in the database.
+ */
+export async function uploadScreenshot(file: File): Promise<string> {
+  // Step 1: request presigned URL from our API
+  const { uploadURL, objectPath } = await apiFetch<{ uploadURL: string; objectPath: string }>(
+    "/donations/upload-screenshot-url",
+    {
+      method: "POST",
+      body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+    }
+  );
+
+  // Step 2: upload file directly to GCS (no auth header, no Content-Type application/json override)
+  const uploadRes = await fetch(uploadURL, {
+    method: "PUT",
+    body: file,
+    headers: { "Content-Type": file.type },
+  });
+
+  if (!uploadRes.ok) throw new Error("Screenshot upload failed");
+
+  return objectPath;
+}
+
 export const api = {
   // Auth
   login: (username: string, password: string) =>
@@ -74,4 +100,8 @@ export const api = {
   // Admin - Create admin user
   createAdmin: (data: Record<string, unknown>) =>
     apiFetch("/auth/create-admin", { method: "POST", body: JSON.stringify(data) }),
+
+  // Screenshot serving URL helper
+  screenshotUrl: (objectPath: string) =>
+    `${API_BASE}/storage${objectPath}`,
 };

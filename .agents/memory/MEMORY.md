@@ -1,0 +1,2 @@
+- [Object Storage Setup](object-storage.md) — bucket provisioned; screenshot upload flow uses presigned GCS URLs via /api/donations/upload-screenshot-url (public, image-only, 10 MB cap)
+- [Donation Form Architecture](donation-form.md) — form has inline validation, place field, file upload; objectPath stored in donations.screenshot_url; admin serves via /api/storage/objects/*

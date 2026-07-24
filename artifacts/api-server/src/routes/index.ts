@@ -6,10 +6,11 @@ import newsRouter from "./news";
 import eventsRouter from "./events";
 import settingsRouter from "./settings";
 import dashboardRouter from "./dashboard";
+import storageRouter from "./storage";
 
 const router = Router();
 
-// Mount health router at root so /healthz stays at /api/healthz (no prefix change)
+// Mount health router at root so /healthz stays at /api/healthz
 router.use("/", healthRouter);
 router.use("/auth", authRouter);
 router.use("/donations", donationsRouter);
@@ -17,5 +18,6 @@ router.use("/news", newsRouter);
 router.use("/events", eventsRouter);
 router.use("/settings", settingsRouter);
 router.use("/dashboard", dashboardRouter);
+router.use("/", storageRouter);
 
 export default router;

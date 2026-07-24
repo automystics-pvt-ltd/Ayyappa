@@ -6,6 +6,7 @@ export const donationsTable = pgTable("donations", {
   id: serial("id").primaryKey(),
   donorName: varchar("donor_name", { length: 200 }).notNull(),
   mobile: varchar("mobile", { length: 20 }).notNull(),
+  place: varchar("place", { length: 200 }),
   amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
   transactionId: varchar("transaction_id", { length: 200 }).notNull(),
   screenshotUrl: text("screenshot_url"),
