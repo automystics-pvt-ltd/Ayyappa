@@ -117,3 +117,11 @@ ALTER TABLE "sessions"
   ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "sessions" ("expire");
+
+-- Grant session table access to the app user
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_roles WHERE rolname = 'ayyappan_user') THEN
+    GRANT ALL PRIVILEGES ON TABLE sessions TO ayyappan_user;
+  END IF;
+END $$;
