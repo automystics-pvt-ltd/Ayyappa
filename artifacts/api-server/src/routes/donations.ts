@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { randomUUID } from "crypto";
 import { db } from "@workspace/db";
 import { donationsTable, siteSettingsTable } from "@workspace/db/schema";
 import { eq, desc, sum, count } from "drizzle-orm";
@@ -69,6 +70,7 @@ router.post("/", async (req, res) => {
     const [donation] = await db
       .insert(donationsTable)
       .values({
+        receiptToken: randomUUID(),
         donorName: donorName.trim(),
         mobile: mobile.trim(),
         place: place?.trim() || null,
@@ -156,6 +158,37 @@ router.get("/", requireAuth, async (req, res) => {
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch donations" });
+  }
+});
+
+// GET /api/donations/receipt/:token — public, returns donation data for any status
+// Token is a non-guessable UUID generated at submission time.
+router.get("/receipt/:token", async (req, res) => {
+  const { token } = req.params;
+  if (!token || token.length < 10) { res.status(400).json({ error: "Invalid receipt token" }); return; }
+  try {
+    const [donation] = await db
+      .select({
+        id: donationsTable.id,
+        donorName: donationsTable.donorName,
+        place: donationsTable.place,
+        amount: donationsTable.amount,
+        transactionId: donationsTable.transactionId,
+        anonymous: donationsTable.anonymous,
+        message: donationsTable.message,
+        status: donationsTable.status,
+        reviewedAt: donationsTable.reviewedAt,
+        createdAt: donationsTable.createdAt,
+      })
+      .from(donationsTable)
+      .where(eq(donationsTable.receiptToken, token))
+      .limit(1);
+
+    if (!donation) { res.status(404).json({ error: "Receipt not found" }); return; }
+    res.json(donation);
+  } catch (err) {
+    req.log.error({ err }, "Error fetching donation receipt");
+    res.status(500).json({ error: "Failed to fetch receipt" });
   }
 });
 

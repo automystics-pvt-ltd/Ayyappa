@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 
 export const donationsTable = pgTable("donations", {
   id: serial("id").primaryKey(),
+  receiptToken: text("receipt_token"),
   donorName: varchar("donor_name", { length: 200 }).notNull(),
   mobile: varchar("mobile", { length: 20 }).notNull(),
   place: varchar("place", { length: 200 }),

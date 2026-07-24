@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { api } from "@/lib/api";
 import { useAdmin } from "@/hooks/useAdmin";
-import { MapPin, Image, CheckCircle2, XCircle, AlertCircle, Phone, Hash, MessageSquare, CalendarDays, MoreHorizontal } from "lucide-react";
+import { MapPin, Image, CheckCircle2, XCircle, AlertCircle, Phone, Hash, MessageSquare, CalendarDays, MoreHorizontal, FileText } from "lucide-react";
 
 type Donation = {
-  id: number; donorName: string; mobile: string; place?: string; amount: string;
+  id: number; receiptToken?: string; donorName: string; mobile: string; place?: string; amount: string;
   transactionId: string; screenshotUrl?: string; anonymous: boolean;
   message?: string; status: string; rejectionReason?: string;
   createdAt: string; reviewedAt?: string;
@@ -203,6 +203,17 @@ export default function Donations() {
                     )}
                     {d.status !== "pending" && (
                       <span className="text-orange-200"><MoreHorizontal className="w-4 h-4" /></span>
+                    )}
+                    {d.status === "approved" && d.receiptToken && (
+                      <a
+                        href={`${import.meta.env.BASE_URL}receipt/${d.receiptToken}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        ரசீது பார்க்க
+                      </a>
                     )}
                   </div>
                 </div>

@@ -21,6 +21,7 @@ interface Settings { bank_name?: string; bank_account_name?: string; bank_accoun
 
 interface ReceiptData {
   id: number;
+  receiptToken?: string;
   donorName: string;
   place: string;
   amount: number;
@@ -213,6 +214,20 @@ function SubmissionReceipt({ receipt, onDone }: { receipt: ReceiptData; onDone: 
 
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 text-center">
             நிர்வாகி சரிபார்த்த பிறகே உங்கள் பெயர் நன்கொடையாளர் பட்டியலில் சேர்க்கப்படும்.
+            {receipt.receiptToken && (
+              <div className="mt-1.5 text-amber-700">
+                அங்கீகாரத்திற்கு பிறகு{" "}
+                <a
+                  href={`${import.meta.env.BASE_URL}receipt/${receipt.receiptToken}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-semibold hover:text-amber-900"
+                >
+                  இந்த இணைப்பில்
+                </a>{" "}
+                ரசீது பதிவிறக்கம் செய்யலாம்.
+              </div>
+            )}
           </div>
 
           {/* Countdown + buttons */}
@@ -433,6 +448,7 @@ export function Donation() {
       setShowForm(false);
       setReceipt({
         id:            result.id,
+        receiptToken:  result.receiptToken,
         donorName:     form.donorName,
         place:         form.place,
         amount,
