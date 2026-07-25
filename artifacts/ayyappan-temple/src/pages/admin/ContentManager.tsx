@@ -275,7 +275,7 @@ export default function ContentManager() {
                 value={settings.about_history || ''} onChange={e => set('about_history', e.target.value)}
                 placeholder="வடமதுரை பகுதியில் அமைந்துள்ள..." />
             </Field>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Field label="வருட வரலாறு">
                 <input className={inputCls} value={settings.about_years || ''} onChange={e => set('about_years', e.target.value)} placeholder="பல ஆண்டுகள்" />
               </Field>

@@ -110,19 +110,43 @@ export default function Donations() {
             <p className="text-orange-400 font-medium">இந்த வகையில் நன்கொடைகள் இல்லை</p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-orange-100 shadow-sm overflow-hidden">
-            {/* Table header */}
-            <div style={{ background: "#fff9f0" }} className="border-b border-orange-50 grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 px-5 py-3">
+          <div className="space-y-3 md:space-y-0 md:bg-white md:rounded-2xl md:border md:border-orange-100 md:shadow-sm md:overflow-hidden">
+
+            {/* Desktop table header — hidden on mobile */}
+            <div style={{ background: "#fff9f0" }} className="hidden md:grid border-b border-orange-50 grid-cols-[1fr_auto_auto_auto_auto] gap-4 px-5 py-3">
               {["நன்கொடையாளர் விவரம்","தொகை","நிலை","தேதி","செயல்கள்"].map(h => (
                 <div key={h} className="text-[10px] font-bold text-orange-400 uppercase tracking-wider">{h}</div>
               ))}
             </div>
 
-            <div className="divide-y divide-orange-50">
-              {donations.map(d => (
-                <div key={d.id} className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 px-5 py-4 items-start hover:bg-orange-50/40 transition-colors">
+            <div className="md:divide-y md:divide-orange-50 space-y-3 md:space-y-0">
+              {donations.map(d => {
+                const actions = (
+                  <div className="flex flex-wrap gap-2">
+                    {canApprove && d.status === "pending" && (
+                      <>
+                        <button onClick={() => approve(d.id)} disabled={actionLoading === d.id}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all disabled:opacity-50"
+                          style={{ background: "linear-gradient(135deg,#10b981,#059669)" }}>
+                          {actionLoading === d.id ? "..." : "✓ அங்கீகரி"}
+                        </button>
+                        <button onClick={() => { setRejectId(d.id); setRejectReason(""); }}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors">
+                          ✕ நிராகரி
+                        </button>
+                      </>
+                    )}
+                    {d.status === "approved" && d.receiptToken && (
+                      <a href={`${import.meta.env.BASE_URL}receipt/${d.receiptToken}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors">
+                        <FileText className="w-3.5 h-3.5" />ரசீது பார்க்க
+                      </a>
+                    )}
+                  </div>
+                );
 
-                  {/* Donor info */}
+                const donorInfo = (
                   <div>
                     <div className="flex items-center gap-2.5 mb-2">
                       <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0"
@@ -162,62 +186,54 @@ export default function Donations() {
                         </div>
                       )}
                       {d.screenshotUrl && (
-                        <button
-                          onClick={() => setPreviewUrl(api.screenshotUrl(d.screenshotUrl!))}
-                          className="flex items-center gap-1 text-xs text-orange-600 bg-orange-50 hover:bg-orange-100 px-2.5 py-1 rounded-lg border border-orange-200 transition-colors mt-1"
-                        >
+                        <button onClick={() => setPreviewUrl(api.screenshotUrl(d.screenshotUrl!))}
+                          className="flex items-center gap-1 text-xs text-orange-600 bg-orange-50 hover:bg-orange-100 px-2.5 py-1 rounded-lg border border-orange-200 transition-colors mt-1">
                           <Image className="w-3 h-3" />Screenshot பார்க்க
                         </button>
                       )}
                     </div>
                   </div>
+                );
 
-                  {/* Amount */}
-                  <div className="pt-1 text-right">
-                    <p className="text-lg font-bold" style={{ color: "#ea580c" }}>{fmt(d.amount)}</p>
+                return (
+                  <div key={d.id}>
+                    {/* ── Mobile card ── */}
+                    <div className="md:hidden bg-white rounded-2xl border border-orange-100 shadow-sm p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        {donorInfo}
+                        <div className="text-right shrink-0">
+                          <p className="text-lg font-bold" style={{ color: "#ea580c" }}>{fmt(d.amount)}</p>
+                          <StatusBadge status={d.status} />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-orange-400 border-t border-orange-50 pt-2">
+                        <CalendarDays className="w-3 h-3" />
+                        {new Date(d.createdAt).toLocaleDateString("ta-IN")}
+                      </div>
+                      {actions}
+                    </div>
+
+                    {/* ── Desktop row ── */}
+                    <div className="hidden md:grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 px-5 py-4 items-start hover:bg-orange-50/40 transition-colors">
+                      {donorInfo}
+                      <div className="pt-1 text-right">
+                        <p className="text-lg font-bold" style={{ color: "#ea580c" }}>{fmt(d.amount)}</p>
+                      </div>
+                      <div className="pt-1.5"><StatusBadge status={d.status} /></div>
+                      <div className="pt-1.5 text-xs text-orange-400 flex items-center gap-1 whitespace-nowrap">
+                        <CalendarDays className="w-3 h-3" />
+                        {new Date(d.createdAt).toLocaleDateString("ta-IN")}
+                      </div>
+                      <div className="pt-1 flex flex-col gap-1.5">
+                        {actions}
+                        {d.status !== "pending" && !d.receiptToken && (
+                          <span className="text-orange-200"><MoreHorizontal className="w-4 h-4" /></span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-
-                  {/* Status */}
-                  <div className="pt-1.5"><StatusBadge status={d.status} /></div>
-
-                  {/* Date */}
-                  <div className="pt-1.5 text-xs text-orange-400 flex items-center gap-1 whitespace-nowrap">
-                    <CalendarDays className="w-3 h-3" />
-                    {new Date(d.createdAt).toLocaleDateString("ta-IN")}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="pt-1 flex flex-col gap-1.5">
-                    {canApprove && d.status === "pending" && (
-                      <>
-                        <button onClick={() => approve(d.id)} disabled={actionLoading === d.id}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all disabled:opacity-50 whitespace-nowrap"
-                          style={{ background: "linear-gradient(135deg,#10b981,#059669)" }}>
-                          {actionLoading === d.id ? "..." : "✓ அங்கீகரி"}
-                        </button>
-                        <button onClick={() => { setRejectId(d.id); setRejectReason(""); }}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors whitespace-nowrap">
-                          ✕ நிராகரி
-                        </button>
-                      </>
-                    )}
-                    {d.status !== "pending" && (
-                      <span className="text-orange-200"><MoreHorizontal className="w-4 h-4" /></span>
-                    )}
-                    {d.status === "approved" && d.receiptToken && (
-                      <a
-                        href={`${import.meta.env.BASE_URL}receipt/${d.receiptToken}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-2 inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors"
-                      >
-                        <FileText className="w-3.5 h-3.5" />
-                        ரசீது பார்க்க
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

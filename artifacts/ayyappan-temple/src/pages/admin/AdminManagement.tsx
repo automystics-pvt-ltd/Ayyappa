@@ -77,7 +77,7 @@ export default function AdminManagement() {
       <div className="p-6 max-w-lg mx-auto space-y-5">
 
         {/* Role info cards */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {ROLES.map(r => (
             <div key={r.value} className={`rounded-2xl border p-3 ${r.bg}`}>
               <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${r.color} flex items-center justify-center mb-2`}>

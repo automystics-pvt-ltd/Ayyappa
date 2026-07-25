@@ -163,7 +163,8 @@ export default function Dashboard() {
               {!stats?.recentDonations?.length ? (
                 <div className="py-12 text-center text-orange-300 text-sm">நன்கொடைகள் இல்லை</div>
               ) : (
-                <table className="w-full text-xs">
+                <div className="overflow-x-auto">
+                <table className="w-full text-xs min-w-[420px]">
                   <thead>
                     <tr style={{ background: "#fff9f0" }} className="border-b border-orange-50">
                       {["நன்கொடையாளர்","தொகை","நிலை","தேதி"].map(h => (
@@ -190,6 +191,7 @@ export default function Dashboard() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </div>
           </>
