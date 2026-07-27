@@ -12,8 +12,15 @@ import { NewsSection } from '@/components/sections/NewsSection';
 import { Faq } from '@/components/sections/Faq';
 import { Appeal } from '@/components/sections/Appeal';
 import { Footer } from '@/components/sections/Footer';
+import { useEffect } from 'react';
+import { api } from '@/lib/api';
 
 export default function Home() {
+  useEffect(() => {
+    // Record a visit (server dedupes to one count per session per day)
+    api.trackVisit().catch(() => {});
+  }, []);
+
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
       <Navbar />

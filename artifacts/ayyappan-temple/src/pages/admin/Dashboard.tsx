@@ -3,13 +3,14 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { api } from "@/lib/api";
 import {
   IndianRupee, Users, Clock, TrendingUp, ArrowUpRight,
-  CheckCircle2, XCircle, AlertCircle, Newspaper, CalendarDays
+  CheckCircle2, XCircle, AlertCircle, Newspaper, CalendarDays, Eye
 } from "lucide-react";
 
 interface DashboardStats {
   totalRaised: number; donorCount: number; pendingCount: number;
   rejectedCount: number; goal: number; progressPercent: number;
   newsCount: number; eventsCount: number; recentDonations: any[];
+  totalVisitors: number; todayVisitors: number;
 }
 
 const BAR_HEIGHTS = [38, 52, 45, 68, 57, 80, 71, 76, 68, 88, 83, 100];
@@ -82,10 +83,12 @@ export default function Dashboard() {
 
             {/* ── Secondary stats ── */}
             {(stats?.newsCount !== undefined || stats?.eventsCount !== undefined) && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                   { label: "செய்திகள்", value: stats?.newsCount ?? 0, icon: Newspaper, color: "text-violet-600", bg: "bg-violet-50 border-violet-100" },
                   { label: "நிகழ்வுகள்", value: stats?.eventsCount ?? 0, icon: CalendarDays, color: "text-blue-600", bg: "bg-blue-50 border-blue-100" },
+                  { label: "மொத்த பார்வையாளர்கள்", value: stats?.totalVisitors ?? 0, icon: Eye, color: "text-teal-600", bg: "bg-teal-50 border-teal-100" },
+                  { label: "இன்றைய பார்வையாளர்கள்", value: stats?.todayVisitors ?? 0, icon: Eye, color: "text-orange-600", bg: "bg-orange-50 border-orange-100" },
                 ].map(({ label, value, icon: Icon, color, bg }) => (
                   <div key={label} className={`${bg} border rounded-2xl p-4 flex items-center gap-4`}>
                     <div className={`w-10 h-10 rounded-xl ${bg} border flex items-center justify-center`}>

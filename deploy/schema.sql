@@ -125,3 +125,10 @@ BEGIN
     GRANT ALL PRIVILEGES ON TABLE sessions TO ayyappan_user;
   END IF;
 END $$;
+
+CREATE TABLE IF NOT EXISTS visits (
+  id          SERIAL PRIMARY KEY,
+  day_key     VARCHAR(10) NOT NULL,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS visits_day_key_idx ON visits(day_key);

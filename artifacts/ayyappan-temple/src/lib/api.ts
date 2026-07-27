@@ -82,6 +82,10 @@ export const api = {
   submitDonation: (data: Record<string, unknown>) =>
     apiFetch("/donations", { method: "POST", body: JSON.stringify(data) }),
 
+  // Public - Visitor counter
+  trackVisit: () => apiFetch("/visits/track", { method: "POST" }),
+  getVisitorCount: () => apiFetch<{ total: number }>("/visits/count"),
+
   // Public - Donation receipt by non-guessable UUID token
   getDonationReceipt: (token: string) => apiFetch(`/donations/receipt/${token}`),
 

@@ -8,6 +8,7 @@ import settingsRouter from "./settings";
 import dashboardRouter from "./dashboard";
 import storageRouter from "./storage";
 import galleryRouter from "./gallery";
+import visitsRouter from "./visits";
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.use("/events", eventsRouter);
 router.use("/settings", settingsRouter);
 router.use("/dashboard", dashboardRouter);
 router.use("/gallery", galleryRouter);
+router.use("/visits", visitsRouter);
 router.use("/", storageRouter);
 
 export default router;

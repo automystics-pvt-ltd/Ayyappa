@@ -1,8 +1,9 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
-import { donationsTable, newsPostsTable, eventsTable } from "@workspace/db/schema";
+import { donationsTable, newsPostsTable, eventsTable, visitsTable } from "@workspace/db/schema";
 import { eq, desc, sum, count, gte } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth";
+import { todayKey } from "./visits";
 
 const router = Router();
 
@@ -42,6 +43,12 @@ router.get("/stats", requireAuth, async (_req, res) => {
     const [newsCount] = await db.select({ cnt: count() }).from(newsPostsTable);
     const [eventsCount] = await db.select({ cnt: count() }).from(eventsTable);
 
+    const [totalVisits] = await db.select({ cnt: count() }).from(visitsTable);
+    const [todayVisits] = await db
+      .select({ cnt: count() })
+      .from(visitsTable)
+      .where(eq(visitsTable.dayKey, todayKey()));
+
     const total = Number(totalResult?.total ?? 0);
     const goal = 5000000;
 
@@ -54,6 +61,8 @@ router.get("/stats", requireAuth, async (_req, res) => {
       progressPercent: Math.min(100, Math.round((total / goal) * 100)),
       newsCount: Number(newsCount?.cnt ?? 0),
       eventsCount: Number(eventsCount?.cnt ?? 0),
+      totalVisitors: Number(totalVisits?.cnt ?? 0),
+      todayVisitors: Number(todayVisits?.cnt ?? 0),
       recentDonations,
     });
   } catch (err) {

@@ -1,11 +1,21 @@
-import { MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
+import { MapPin, Phone, Mail, ExternalLink, Eye } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { useEffect, useState } from 'react';
+import { api } from '@/lib/api';
 
 const DEFAULT_MAPS_EMBED = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d123.5!2d78.1003317!3d10.4371753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baa07d265880d21%3A0x8e9624bb1f4bed9a!2sAyyapa%20Temple!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin';
 const DEFAULT_MAPS_LINK  = 'https://www.google.com/maps/place/Ayyapa+Temple/@10.4371753,78.1003317,18z';
 
 export function Footer() {
   const s = useSiteSettings();
+  const [visitorCount, setVisitorCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    api.getVisitorCount()
+      .then((d) => setVisitorCount(d.total))
+      .catch(() => {});
+  }, []);
+
   const phone     = s.temple_phone;
   const email     = s.temple_email;
   const address   = s.temple_address   || 'வடமதுரை, திண்டுக்கல் மாவட்டம்';
@@ -93,6 +103,18 @@ export function Footer() {
             style={{ border: 0, display: 'block' }} allowFullScreen loading="lazy"
             referrerPolicy="no-referrer-when-downgrade" />
         </div>
+
+        {visitorCount !== null && (
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-secondary/30 text-white/70 text-sm">
+              <Eye className="w-4 h-4 text-secondary" />
+              <span>பார்வையாளர்கள் / Visitors:</span>
+              <span className="font-bold text-secondary tracking-wide">
+                {visitorCount.toLocaleString('en-IN')}
+              </span>
+            </div>
+          </div>
+        )}
 
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-white/50 text-sm">
           <p>© {new Date().getFullYear()} ஸ்ரீ ஐயப்பன் திருக்கோவில், வடமதுரை. All rights reserved.</p>

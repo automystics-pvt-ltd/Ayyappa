@@ -5,3 +5,4 @@ export * from "./events";
 export * from "./gallery";
 export * from "./siteSettings";
 export * from "./auditLogs";
+export * from "./visits";
