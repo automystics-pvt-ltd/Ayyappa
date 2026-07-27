@@ -29,16 +29,16 @@ export function useAdminState() {
 
   useEffect(() => {
     api.me()
-      .then((data) => setAdmin(data as AdminUser))
+      .then((data: any) => setAdmin(data?.admin ?? null))
       .catch(() => setAdmin(null))
       .finally(() => setLoading(false));
   }, []);
 
   const login = async (username: string, password: string) => {
-    const data = await api.login(username, password);
-    // re-fetch me
-    const me = await api.me();
-    setAdmin(me as AdminUser);
+    await api.login(username, password);
+    // re-fetch /me to get the updated session
+    const me: any = await api.me();
+    setAdmin(me?.admin ?? null);
   };
 
   const logout = async () => {
