@@ -76,6 +76,13 @@ export default function GalleryAdmin() {
   const albumDragIndexRef = useRef<number | null>(null);
   const albumDragOverIndexRef = useRef<number | null>(null);
 
+  // Touch drag state (albums)
+  const albumTouchDragIndexRef = useRef<number | null>(null);
+  const albumTouchDragOverIndexRef = useRef<number | null>(null);
+  const [draggingAlbumIndex, setDraggingAlbumIndex] = useState<number | null>(null);
+  const [dragOverAlbumIndex, setDragOverAlbumIndex] = useState<number | null>(null);
+  const albumListRef = useRef<HTMLDivElement>(null);
+
   // Sync orderedPhotos when album changes
   useEffect(() => {
     const album = albums.find((a) => a.id === selectedAlbum?.id) ?? selectedAlbum;
@@ -115,6 +122,57 @@ export default function GalleryAdmin() {
     albumDragIndexRef.current = null;
     albumDragOverIndexRef.current = null;
   };
+
+  // Album touch handlers (mobile)
+  const handleAlbumTouchStart = (index: number) => {
+    albumTouchDragIndexRef.current = index;
+    setDraggingAlbumIndex(index);
+  };
+
+  // Resets all album drag state — called on touchend and touchcancel
+  const resetAlbumDragState = () => {
+    albumTouchDragIndexRef.current = null;
+    albumTouchDragOverIndexRef.current = null;
+    setDraggingAlbumIndex(null);
+    setDragOverAlbumIndex(null);
+  };
+
+  // Called from the row's onTouchEnd — only commits a completed drag; tap-to-open is handled by onClick on info/cover
+  const handleAlbumTouchEnd = () => {
+    const from = albumTouchDragIndexRef.current;
+    const to = albumTouchDragOverIndexRef.current;
+    resetAlbumDragState();
+    if (from !== null && to !== null && from !== to) {
+      const reordered = [...orderedAlbums];
+      const [moved] = reordered.splice(from, 1);
+      reordered.splice(to, 0, moved);
+      setOrderedAlbums(reordered);
+      setIsAlbumsDirty(true);
+    }
+  };
+
+  // Non-passive touchmove on album list to allow preventDefault (stops page scroll during drag)
+  useEffect(() => {
+    const list = albumListRef.current;
+    if (!list) return;
+    const onTouchMove = (e: TouchEvent) => {
+      if (albumTouchDragIndexRef.current === null) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement | null;
+      if (!el) return;
+      const item = el.closest("[data-album-index]") as HTMLElement | null;
+      if (item) {
+        const idx = parseInt(item.dataset.albumIndex ?? "-1", 10);
+        if (idx >= 0 && idx !== albumTouchDragOverIndexRef.current) {
+          albumTouchDragOverIndexRef.current = idx;
+          setDragOverAlbumIndex(idx);
+        }
+      }
+    };
+    list.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => list.removeEventListener("touchmove", onTouchMove);
+  }, [orderedAlbums]);
 
   const saveAlbumOrder = async () => {
     setSavingAlbumOrder(true);
@@ -645,98 +703,119 @@ export default function GalleryAdmin() {
             <p>இன்னும் அல்பங்கள் இல்லை. "புது அல்பம்" பொத்தானை கிளிக் செய்யுங்கள்.</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {orderedAlbums.map((album, albumIdx) => (
-              <div
-                key={album.id}
-                draggable={editAlbumId !== album.id}
-                onDragStart={() => handleAlbumDragStart(albumIdx)}
-                onDragOver={(e) => handleAlbumDragOver(e, albumIdx)}
-                onDrop={handleAlbumDrop}
-                className="bg-white rounded-xl border shadow-sm overflow-hidden"
-              >
-                {editAlbumId === album.id ? (
-                  // Edit form inline
-                  <div className="p-4 space-y-3">
-                    <input
-                      type="text"
-                      value={editAlbumTitle}
-                      onChange={(e) => setEditAlbumTitle(e.target.value)}
-                      className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
-                      autoFocus
-                    />
-                    <input
-                      type="text"
-                      value={editAlbumDesc}
-                      onChange={(e) => setEditAlbumDesc(e.target.value)}
-                      placeholder="விளக்கம்"
-                      className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
-                    />
-                    <div className="flex gap-2 justify-end">
-                      <button onClick={() => setEditAlbumId(null)} className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">ரத்து</button>
-                      <button onClick={saveAlbumEdit} disabled={savingAlbum} className="px-3 py-1.5 text-sm bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> {savingAlbum ? "..." : "சேமி"}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-4 p-4 cursor-grab active:cursor-grabbing">
-                    {/* Drag handle */}
-                    <div className="text-gray-300 hover:text-gray-500 flex-shrink-0" title="இழுத்து வரிசை மாற்றுங்கள்">
-                      <GripVertical className="w-5 h-5" />
-                    </div>
-                    {/* Cover thumbnail */}
-                    <div
-                      className="w-16 h-16 rounded-lg overflow-hidden bg-orange-50 flex-shrink-0 cursor-pointer"
-                      onClick={() => setSelectedAlbum(album)}
-                    >
-                      {album.photos.length > 0 ? (
-                        <img src={photoSrc(album.photos[0].url)} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Image className="w-6 h-6 text-orange-200" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0 cursor-pointer" onClick={() => setSelectedAlbum(album)}>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-semibold text-gray-800 truncate">{album.title}</h3>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${album.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                          {album.published ? "Published" : "Draft"}
-                        </span>
+          <div ref={albumListRef} className="space-y-3">
+            {orderedAlbums.map((album, albumIdx) => {
+              const isDraggingThis = draggingAlbumIndex === albumIdx;
+              const isDropTarget = dragOverAlbumIndex === albumIdx && draggingAlbumIndex !== null && draggingAlbumIndex !== albumIdx;
+              return (
+                <div
+                  key={album.id}
+                  data-album-index={albumIdx}
+                  draggable={editAlbumId !== album.id}
+                  onDragStart={() => handleAlbumDragStart(albumIdx)}
+                  onDragOver={(e) => handleAlbumDragOver(e, albumIdx)}
+                  onDrop={handleAlbumDrop}
+                  onTouchEnd={editAlbumId !== album.id ? handleAlbumTouchEnd : undefined}
+                  onTouchCancel={editAlbumId !== album.id ? resetAlbumDragState : undefined}
+                  className={[
+                    "bg-white rounded-xl border shadow-sm overflow-hidden transition-all duration-150 select-none",
+                    isDraggingThis ? "opacity-40 scale-[0.98] ring-2 ring-orange-400" : "",
+                    isDropTarget ? "ring-2 ring-orange-500 shadow-lg" : "",
+                  ].join(" ")}
+                >
+                  {editAlbumId === album.id ? (
+                    // Edit form inline
+                    <div className="p-4 space-y-3">
+                      <input
+                        type="text"
+                        value={editAlbumTitle}
+                        onChange={(e) => setEditAlbumTitle(e.target.value)}
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+                        autoFocus
+                      />
+                      <input
+                        type="text"
+                        value={editAlbumDesc}
+                        onChange={(e) => setEditAlbumDesc(e.target.value)}
+                        placeholder="விளக்கம்"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+                      />
+                      <div className="flex gap-2 justify-end">
+                        <button onClick={() => setEditAlbumId(null)} className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">ரத்து</button>
+                        <button onClick={saveAlbumEdit} disabled={savingAlbum} className="px-3 py-1.5 text-sm bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 flex items-center gap-1">
+                          <Check className="w-3.5 h-3.5" /> {savingAlbum ? "..." : "சேமி"}
+                        </button>
                       </div>
-                      {album.description && <p className="text-xs text-gray-400 truncate">{album.description}</p>}
-                      <p className="text-xs text-gray-400 mt-0.5">{album.photos.length} படங்கள்</p>
                     </div>
+                  ) : (
+                    <div className="flex items-center gap-4 p-4">
+                      {/* Drag handle — touch drag starts here only, keeping normal row touches scroll-safe */}
+                      <div
+                        className="text-gray-300 hover:text-gray-500 flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
+                        title="இழுத்து வரிசை மாற்றுங்கள்"
+                        onTouchStart={() => handleAlbumTouchStart(albumIdx)}
+                      >
+                        <GripVertical className="w-5 h-5" />
+                      </div>
+                      {/* Cover thumbnail */}
+                      <div
+                        className="w-16 h-16 rounded-lg overflow-hidden bg-orange-50 flex-shrink-0 cursor-pointer"
+                        onClick={() => setSelectedAlbum(album)}
+                      >
+                        {album.photos.length > 0 ? (
+                          <img src={photoSrc(album.photos[0].url)} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Image className="w-6 h-6 text-orange-200" />
+                          </div>
+                        )}
+                      </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <button
-                        onClick={() => togglePublished(album)}
-                        title={album.published ? "Draft-ஆக மாற்று" : "Publish செய்"}
-                        className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      {/* Info */}
+                      <div
+                        className="flex-1 min-w-0 cursor-pointer"
+                        onClick={() => setSelectedAlbum(album)}
                       >
-                        {album.published ? <Eye className="w-4 h-4 text-green-500" /> : <EyeOff className="w-4 h-4" />}
-                      </button>
-                      <button
-                        onClick={() => { setEditAlbumId(album.id); setEditAlbumTitle(album.title); setEditAlbumDesc(album.description ?? ""); }}
-                        className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => deleteAlbum(album)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-semibold text-gray-800 truncate">{album.title}</h3>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${album.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                            {album.published ? "Published" : "Draft"}
+                          </span>
+                        </div>
+                        {album.description && <p className="text-xs text-gray-400 truncate">{album.description}</p>}
+                        <p className="text-xs text-gray-400 mt-0.5">{album.photos.length} படங்கள்</p>
+                      </div>
+
+                      {/* Actions — e.preventDefault() on onTouchEnd suppresses the synthetic click that follows touch */}
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <button
+                          onTouchEnd={(e) => { e.preventDefault(); togglePublished(album); }}
+                          onClick={() => togglePublished(album)}
+                          title={album.published ? "Draft-ஆக மாற்று" : "Publish செய்"}
+                          className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                          {album.published ? <Eye className="w-4 h-4 text-green-500" /> : <EyeOff className="w-4 h-4" />}
+                        </button>
+                        <button
+                          onTouchEnd={(e) => { e.preventDefault(); setEditAlbumId(album.id); setEditAlbumTitle(album.title); setEditAlbumDesc(album.description ?? ""); }}
+                          onClick={() => { setEditAlbumId(album.id); setEditAlbumTitle(album.title); setEditAlbumDesc(album.description ?? ""); }}
+                          className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onTouchEnd={(e) => { e.preventDefault(); deleteAlbum(album); }}
+                          onClick={() => deleteAlbum(album)}
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
