@@ -160,8 +160,9 @@ export function Navbar() {
 
   /* Fetch live news + events for badges / ticker */
   useEffect(() => {
-    apiFetch<NewsItem[]>('/news/all').then(setNews).catch(() => {});
-    apiFetch<EventItem[]>('/events/all').then(setEvents).catch(() => {});
+    // Use public endpoints — /news/all and /events/all require admin auth
+    apiFetch<NewsItem[]>('/news').then(setNews).catch(() => {});
+    apiFetch<EventItem[]>('/events').then(setEvents).catch(() => {});
   }, []);
 
   const publishedNews   = news.filter(n => (n as any).published !== false);

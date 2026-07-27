@@ -200,7 +200,7 @@ function SubmissionReceipt({ receipt, onDone }: { receipt: ReceiptData; onDone: 
   const strokeDash = RING_CIRC * (1 - remaining / RECEIPT_TIMEOUT);
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[300] p-4">
       <motion.div
         initial={{ scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -931,7 +931,7 @@ export function Donation() {
 
       {/* ── Donation Form Modal ── */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[300] p-4">
           <div className="bg-background rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">

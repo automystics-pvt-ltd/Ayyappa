@@ -252,7 +252,7 @@ export function DonorWall({
             </h4>
             <button
               onClick={() => setShowAmounts(v => !v)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-2.5 py-1.5 transition-colors"
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-2 transition-colors min-h-[36px]"
             >
               {showAmounts ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               {showAmounts ? 'தொகை மறை' : 'தொகை காட்டு'}

@@ -58,10 +58,20 @@ router.post("/logout", (req, res) => {
   });
 });
 
-// GET /api/auth/me
-router.get("/me", requireAuth, async (req, res) => {
+// GET /api/auth/me — public; returns { admin: null } when not logged in
+router.get("/me", async (req, res) => {
   const session = (req as any).session;
-  res.json({ adminId: session.adminId, role: session.role, displayName: session.displayName });
+  if (!session?.adminId) {
+    res.json({ admin: null });
+    return;
+  }
+  res.json({
+    admin: {
+      adminId: session.adminId,
+      role: session.role,
+      displayName: session.displayName,
+    },
+  });
 });
 
 // POST /api/auth/create-admin (super_admin only, or first time setup)

@@ -18,16 +18,16 @@ export function Appeal() {
             பக்தர்களுக்கான வேண்டுகோள்
           </h2>
           
-          <p className="text-xl md:text-2xl font-medium leading-relaxed mb-8 opacity-90">
+          <p className="text-base md:text-xl font-medium leading-relaxed mb-8 opacity-90">
             அன்பார்ந்த ஐயப்ப பக்தர்களே, ஆலய திருப்பணி மற்றும் மகா கும்பாபிஷேகம் என்பது ஒரு தலைமுறைக்கு ஒருமுறை கிடைக்கும் புனித வாய்ப்பாகும். இந்த திருப்பணியில் தங்களால் இயன்ற அளவு நிதி, பொருள் அல்லது சேவையாக பங்களித்து இறைவனின் அருளைப் பெறுமாறு அன்புடன் கேட்டுக்கொள்கிறோம்.
           </p>
 
-          <p className="text-2xl md:text-3xl font-serif font-bold text-white mb-12 drop-shadow-lg">
+          <p className="text-xl md:text-3xl font-serif font-bold text-white mb-12 drop-shadow-lg">
             நாம் கட்டும் கோவில்... நம் சந்ததியினர் வழிபடும் தெய்வீக தலம்.
           </p>
 
-          <div className="inline-block border-y-2 border-secondary/50 py-4 px-8">
-            <h3 className="text-3xl md:text-4xl font-serif font-bold text-secondary">
+          <div className="inline-block border-y-2 border-secondary/50 py-4 px-6 md:px-8">
+            <h3 className="text-2xl md:text-4xl font-serif font-bold text-secondary">
               ஸ்வாமியே சரணம் ஐயப்பா
             </h3>
           </div>

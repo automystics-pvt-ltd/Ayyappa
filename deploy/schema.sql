@@ -132,3 +132,6 @@ CREATE TABLE IF NOT EXISTS visits (
   created_at  TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS visits_day_key_idx ON visits(day_key);
+-- If visits table was created with the old schema (ip/user_agent/page columns),
+-- add the day_key column that the current code expects.
+ALTER TABLE visits ADD COLUMN IF NOT EXISTS day_key VARCHAR(10);

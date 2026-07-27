@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, { type Express, type Request, type Response, type NextFunction } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import session from "express-session";
@@ -96,5 +96,14 @@ app.use(
 );
 
 app.use("/api", router);
+
+// CORS violation → 403, not 500
+app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
+  if (err.message?.startsWith("CORS:")) {
+    res.status(403).json({ error: err.message });
+    return;
+  }
+  next(err);
+});
 
 export default app;

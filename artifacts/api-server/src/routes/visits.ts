@@ -16,15 +16,22 @@ function todayKey(): string {
 router.post("/track", async (req, res) => {
   try {
     const day = todayKey();
-    const session = req.session as typeof req.session & {
+    const sess = req.session as typeof req.session & {
       lastVisitDay?: string;
     };
-    if (session.lastVisitDay !== day) {
+    // Only insert once per session per calendar day
+    if (!sess.lastVisitDay || sess.lastVisitDay !== day) {
       await db.insert(visitsTable).values({ dayKey: day });
-      session.lastVisitDay = day;
+      // Mark session so we don't double-count on refresh
+      sess.lastVisitDay = day;
+      // Fire-and-forget session save — don't block the response on it.
+      // express-session will also try to auto-save at response end, but
+      // with saveUninitialized:false we need at least one explicit save.
+      sess.save(() => { /* ignore errors — visit is already recorded in DB */ });
     }
     res.status(204).end();
-  } catch {
+  } catch (err) {
+    req.log?.error({ err }, "visits/track failed");
     res.status(500).json({ error: "Failed to record visit" });
   }
 });

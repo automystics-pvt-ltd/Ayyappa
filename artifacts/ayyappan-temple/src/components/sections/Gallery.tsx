@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -30,6 +30,10 @@ export function Gallery() {
   const [activeAlbumId, setActiveAlbumId] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
 
+  // Touch swipe state
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -37,7 +41,6 @@ export function Gallery() {
         const albumsRaw = (await api.getPublicAlbums()) as AlbumRaw[];
         if (!albumsRaw.length) { setLoaded(true); return; }
 
-        // Fetch photos from all albums in parallel
         const photoArrays = await Promise.all(
           albumsRaw.map((album) => api.getAlbumPhotos(album.id) as Promise<PhotoRaw[]>)
         );
@@ -66,7 +69,6 @@ export function Gallery() {
     return () => { cancelled = true; };
   }, []);
 
-  // Determine which photos to show
   const useLive = loaded && albums.length > 0;
   const showTabs = useLive && albums.length > 1;
 
@@ -74,7 +76,6 @@ export function Gallery() {
     ? (albums.find((a) => a.id === activeAlbumId)?.photos ?? albums[0].photos)
     : staticPhotos;
 
-  // Reset lightbox when tab changes
   const switchAlbum = (id: number) => {
     setLightboxIndex(null);
     setActiveAlbumId(id);
@@ -82,8 +83,45 @@ export function Gallery() {
 
   const openLightbox = (i: number) => setLightboxIndex(i);
   const closeLightbox = () => setLightboxIndex(null);
-  const prev = () => setLightboxIndex((i) => (i! - 1 + activePhotos.length) % activePhotos.length);
-  const next = () => setLightboxIndex((i) => (i! + 1) % activePhotos.length);
+  const prev = useCallback(() => setLightboxIndex((i) => (i! - 1 + activePhotos.length) % activePhotos.length), [activePhotos.length]);
+  const next = useCallback(() => setLightboxIndex((i) => (i! + 1) % activePhotos.length), [activePhotos.length]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') prev();
+      else if (e.key === 'ArrowRight') next();
+      else if (e.key === 'Escape') closeLightbox();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [lightboxIndex, prev, next]);
+
+  // Prevent body scroll when lightbox is open
+  useEffect(() => {
+    document.body.style.overflow = lightboxIndex !== null ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [lightboxIndex]);
+
+  // Touch swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    // Only trigger if horizontal swipe is dominant and ≥ 50 px
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) next();
+      else prev();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
 
   return (
     <section id="gallery" className="py-20 md:py-32 bg-background relative overflow-hidden">
@@ -180,24 +218,30 @@ export function Gallery() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-[250] bg-black/92 backdrop-blur-sm flex items-center justify-center"
             onClick={closeLightbox}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
-            {/* Close */}
+            {/* Close — larger touch target on mobile */}
             <button
-              className="absolute top-4 right-4 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors z-10"
-              onClick={closeLightbox}
+              className="absolute top-3 right-3 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors z-10"
+              onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
+              aria-label="Close"
             >
               <X className="w-6 h-6" />
             </button>
 
-            {/* Prev */}
-            <button
-              className="absolute left-3 md:left-6 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors z-10"
-              onClick={(e) => { e.stopPropagation(); prev(); }}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
+            {/* Prev — full-height left zone on mobile, visible button on desktop */}
+            {activePhotos.length > 1 && (
+              <button
+                className="absolute left-0 md:left-4 top-0 bottom-0 md:top-auto md:bottom-auto md:translate-y-0 w-14 md:w-auto flex items-center justify-start md:justify-center pl-2 md:pl-0 text-white/80 hover:text-white md:bg-white/10 md:hover:bg-white/20 md:rounded-full md:p-3 transition-colors z-10"
+                onClick={(e) => { e.stopPropagation(); prev(); }}
+                aria-label="Previous photo"
+              >
+                <ChevronLeft className="w-8 h-8 drop-shadow-lg" />
+              </button>
+            )}
 
             {/* Image */}
             <motion.div
@@ -205,30 +249,39 @@ export function Gallery() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.25 }}
-              className="max-w-3xl w-full flex flex-col items-center gap-4"
+              transition={{ duration: 0.2 }}
+              className="w-full h-full flex flex-col items-center justify-center gap-3 px-14 md:px-20 py-16"
               onClick={(e) => e.stopPropagation()}
             >
               <img
                 src={activePhotos[lightboxIndex].src}
                 alt={activePhotos[lightboxIndex].caption}
-                className="max-h-[75vh] w-auto rounded-xl shadow-2xl object-contain"
+                className="max-h-[78vh] max-w-full w-auto rounded-xl shadow-2xl object-contain select-none"
+                draggable={false}
               />
-              <p className="text-white/90 text-center text-base font-medium px-4">
+              <p className="text-white/90 text-center text-sm md:text-base font-medium px-4 max-w-xl leading-snug">
                 {activePhotos[lightboxIndex].caption}
               </p>
-              <p className="text-white/40 text-sm">
+              <p className="text-white/40 text-xs md:text-sm">
                 {lightboxIndex + 1} / {activePhotos.length}
               </p>
             </motion.div>
 
-            {/* Next */}
-            <button
-              className="absolute right-3 md:right-6 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors z-10"
-              onClick={(e) => { e.stopPropagation(); next(); }}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
+            {/* Next — full-height right zone on mobile, visible button on desktop */}
+            {activePhotos.length > 1 && (
+              <button
+                className="absolute right-0 md:right-4 top-0 bottom-0 md:top-auto md:bottom-auto w-14 md:w-auto flex items-center justify-end md:justify-center pr-2 md:pr-0 text-white/80 hover:text-white md:bg-white/10 md:hover:bg-white/20 md:rounded-full md:p-3 transition-colors z-10"
+                onClick={(e) => { e.stopPropagation(); next(); }}
+                aria-label="Next photo"
+              >
+                <ChevronRight className="w-8 h-8 drop-shadow-lg" />
+              </button>
+            )}
+
+            {/* Swipe hint — shows briefly on touch devices */}
+            <p className="absolute bottom-4 left-0 right-0 text-center text-white/25 text-xs pointer-events-none md:hidden">
+              ← swipe →
+            </p>
           </motion.div>
         )}
       </AnimatePresence>

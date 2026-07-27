@@ -25,8 +25,8 @@ export function Hero() {
           className="absolute inset-0 w-full h-full object-cover"
           style={{
             objectPosition: 'center 22%',
-            imageRendering: 'high-quality',
-            filter: 'contrast(1.12) saturate(1.25) brightness(0.95) sharpen(1)',
+            imageRendering: 'auto',
+            filter: 'contrast(1.12) saturate(1.25) brightness(0.95)',
           }}
           fetchPriority="high"
           decoding="sync"
