@@ -84,7 +84,7 @@ export const api = {
 
   // Public - Visitor counter
   trackVisit: () => apiFetch("/visits/track", { method: "POST" }),
-  getVisitorCount: () => apiFetch<{ total: number }>("/visits/count"),
+  getVisitorCount: () => apiFetch<{ total: number; today: number }>("/visits/count"),
 
   // Public - Donation receipt by non-guessable UUID token
   getDonationReceipt: (token: string) => apiFetch(`/donations/receipt/${token}`),

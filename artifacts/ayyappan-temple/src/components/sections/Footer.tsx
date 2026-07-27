@@ -8,11 +8,11 @@ const DEFAULT_MAPS_LINK  = 'https://www.google.com/maps/place/Ayyapa+Temple/@10.
 
 export function Footer() {
   const s = useSiteSettings();
-  const [visitorCount, setVisitorCount] = useState<number | null>(null);
+  const [visitorCount, setVisitorCount] = useState<{ total: number; today: number } | null>(null);
 
   useEffect(() => {
     api.getVisitorCount()
-      .then((d) => setVisitorCount(d.total))
+      .then((d) => setVisitorCount({ total: d.total, today: d.today }))
       .catch(() => {});
   }, []);
 
@@ -106,11 +106,20 @@ export function Footer() {
 
         {visitorCount !== null && (
           <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-secondary/30 text-white/70 text-sm">
-              <Eye className="w-4 h-4 text-secondary" />
-              <span>பார்வையாளர்கள் / Visitors:</span>
-              <span className="font-bold text-secondary tracking-wide">
-                {visitorCount.toLocaleString('en-IN')}
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-secondary/30 text-white/70 text-sm">
+              <Eye className="w-4 h-4 text-secondary flex-shrink-0" />
+              <span className="flex items-center gap-1.5">
+                <span>மொத்தம் / Total:</span>
+                <span className="font-bold text-secondary tracking-wide">
+                  {visitorCount.total.toLocaleString('en-IN')}
+                </span>
+              </span>
+              <span className="text-white/30">|</span>
+              <span className="flex items-center gap-1.5">
+                <span>இன்று / Today:</span>
+                <span className="font-bold text-secondary tracking-wide">
+                  {visitorCount.today.toLocaleString('en-IN')}
+                </span>
               </span>
             </div>
           </div>

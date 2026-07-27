@@ -128,10 +128,15 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS visits (
   id          SERIAL PRIMARY KEY,
-  day_key     VARCHAR(10) NOT NULL,
+  ip          VARCHAR(100),
+  user_agent  TEXT,
+  page        TEXT,
+  day_key     VARCHAR(10),
   created_at  TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS visits_day_key_idx ON visits(day_key);
+CREATE INDEX IF NOT EXISTS visits_created_at_idx ON visits(created_at DESC);
+CREATE INDEX IF NOT EXISTS visits_ip_idx ON visits(ip);
 -- If visits table was created with the old schema (ip/user_agent/page columns),
 -- add the day_key column that the current code expects.
 ALTER TABLE visits ADD COLUMN IF NOT EXISTS day_key VARCHAR(10);

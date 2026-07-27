@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { visitsTable } from "@workspace/db/schema";
-import { count, isNotNull } from "drizzle-orm";
+import { count, eq, isNotNull } from "drizzle-orm";
 
 const router = Router();
 
@@ -36,15 +36,23 @@ router.post("/track", async (req, res) => {
   }
 });
 
-// GET /api/visits/count — public total for the site footer.
+// GET /api/visits/count — public total + today's count for the site footer.
 // Only count rows with a day_key; legacy rows (from the old ip-based schema) have NULL.
 router.get("/count", async (_req, res) => {
   try {
-    const [row] = await db
+    const day = todayKey();
+    const [totalRow] = await db
       .select({ cnt: count() })
       .from(visitsTable)
       .where(isNotNull(visitsTable.dayKey));
-    res.json({ total: Number(row?.cnt ?? 0) });
+    const [todayRow] = await db
+      .select({ cnt: count() })
+      .from(visitsTable)
+      .where(eq(visitsTable.dayKey, day));
+    res.json({
+      total: Number(totalRow?.cnt ?? 0),
+      today: Number(todayRow?.cnt ?? 0),
+    });
   } catch {
     res.status(500).json({ error: "Failed to fetch visitor count" });
   }
