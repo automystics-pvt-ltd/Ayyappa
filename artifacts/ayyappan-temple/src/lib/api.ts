@@ -122,6 +122,10 @@ export const api = {
   createAdmin: (data: Record<string, unknown>) =>
     apiFetch("/auth/create-admin", { method: "POST", body: JSON.stringify(data) }),
 
+  // Admin - Change own password
+  changePassword: (currentPassword: string, newPassword: string) =>
+    apiFetch("/auth/change-password", { method: "PATCH", body: JSON.stringify({ currentPassword, newPassword }) }),
+
   // Screenshot / object storage URL helper (admin-only, requires auth)
   screenshotUrl: (objectPath: string) =>
     `${API_BASE}/storage${objectPath}`,

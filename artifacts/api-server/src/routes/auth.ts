@@ -1,7 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { db } from "@workspace/db";
-import { adminsTable } from "@workspace/db/schema";
+import { adminsTable, auditLogsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth";
 
@@ -91,6 +91,60 @@ router.post("/create-admin", requireAuth, async (req, res) => {
     } else {
       res.status(500).json({ error: "Failed to create admin" });
     }
+  }
+});
+
+// PATCH /api/auth/change-password
+router.patch("/change-password", requireAuth, async (req, res) => {
+  const session = (req as any).session;
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    res.status(400).json({ error: "Current password and new password are required" });
+    return;
+  }
+
+  if (newPassword.length < 8) {
+    res.status(400).json({ error: "New password must be at least 8 characters" });
+    return;
+  }
+
+  try {
+    const [admin] = await db
+      .select()
+      .from(adminsTable)
+      .where(eq(adminsTable.id, session.adminId))
+      .limit(1);
+
+    if (!admin) {
+      res.status(404).json({ error: "Admin not found" });
+      return;
+    }
+
+    const valid = await bcrypt.compare(currentPassword, admin.passwordHash);
+    if (!valid) {
+      res.status(401).json({ error: "Current password is incorrect" });
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await db
+      .update(adminsTable)
+      .set({ passwordHash })
+      .where(eq(adminsTable.id, admin.id));
+
+    // Audit log
+    await db.insert(auditLogsTable).values({
+      adminId: admin.id,
+      action: "change_password",
+      entityType: "admin",
+      entityId: admin.id,
+      details: { username: admin.username },
+    });
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to change password" });
   }
 });
 
