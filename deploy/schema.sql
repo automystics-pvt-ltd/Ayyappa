@@ -107,22 +107,40 @@ INSERT INTO site_settings (key, value) VALUES
 ON CONFLICT (key) DO NOTHING;
 
 -- Session store table (used by connect-pg-simple)
+-- Create as the app user so it owns the table and no GRANT is needed.
+-- If the table already exists and is owned by a different role, the ALTER/GRANT
+-- below will be skipped (IF NOT EXISTS + DO block guard).
 CREATE TABLE IF NOT EXISTS "sessions" (
   "sid"    varchar   NOT NULL COLLATE "default",
   "sess"   json      NOT NULL,
   "expire" timestamp(6) NOT NULL
 ) WITH (OIDS=FALSE);
 
-ALTER TABLE "sessions"
-  ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+DO $$
+BEGIN
+  -- Add primary key only if it doesn't already exist
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'session_pkey'
+  ) THEN
+    ALTER TABLE "sessions"
+      ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "sessions" ("expire");
 
--- Grant session table access to the app user
+-- Grant session table access to the app user (no-op if already granted or if role missing)
 DO $$
 BEGIN
   IF EXISTS (SELECT FROM pg_roles WHERE rolname = 'ayyappan_user') THEN
-    GRANT ALL PRIVILEGES ON TABLE sessions TO ayyappan_user;
+    BEGIN
+      GRANT ALL PRIVILEGES ON TABLE sessions TO ayyappan_user;
+    EXCEPTION WHEN insufficient_privilege THEN
+      -- Table is owned by a superuser; run the GRANT manually as postgres:
+      -- sudo -u postgres psql ayyappan_temple -c "GRANT ALL ON TABLE sessions TO ayyappan_user;"
+      RAISE NOTICE 'Could not GRANT sessions to ayyappan_user — run the GRANT manually as the postgres superuser.';
+    END;
   END IF;
 END $$;
 
