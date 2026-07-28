@@ -1,6 +1,6 @@
 import { MapPin, Phone, Mail, ExternalLink, Eye } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 
 const DEFAULT_MAPS_EMBED = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d123.5!2d78.1003317!3d10.4371753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baa07d265880d21%3A0x8e9624bb1f4bed9a!2sAyyapa%20Temple!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin';
@@ -9,12 +9,22 @@ const DEFAULT_MAPS_LINK  = 'https://www.google.com/maps/place/Ayyapa+Temple/@10.
 export function Footer() {
   const s = useSiteSettings();
   const [visitorCount, setVisitorCount] = useState<{ total: number; today: number } | null>(null);
+  const [countAnimKey, setCountAnimKey] = useState(0);
+  const prevCountRef = useRef<{ total: number; today: number } | null>(null);
 
   useEffect(() => {
     const fetchCount = () => {
       if (document.visibilityState === 'hidden') return;
       api.getVisitorCount()
-        .then((d) => setVisitorCount({ total: d.total, today: d.today }))
+        .then((d) => {
+          const prev = prevCountRef.current;
+          if (prev !== null && (d.total !== prev.total || d.today !== prev.today)) {
+            // Count changed — bump key to restart the CSS animation
+            setCountAnimKey((k) => k + 1);
+          }
+          prevCountRef.current = { total: d.total, today: d.today };
+          setVisitorCount({ total: d.total, today: d.today });
+        })
         .catch(() => {});
     };
 
@@ -126,14 +136,20 @@ export function Footer() {
               <Eye className="w-4 h-4 text-secondary flex-shrink-0" />
               <span className="flex items-center gap-1.5 whitespace-nowrap">
                 <span className="text-white/50">இதுவரை பார்வையிட்டவர்கள்:</span>
-                <span className="font-bold text-secondary tracking-wide">
+                <span
+                  key={`total-${countAnimKey}`}
+                  className={`font-bold text-secondary tracking-wide${countAnimKey > 0 ? ' visitor-count-animate' : ''}`}
+                >
                   {visitorCount.total.toLocaleString('en-IN')}
                 </span>
               </span>
               <span className="text-white/30 hidden xs:inline">|</span>
               <span className="flex items-center gap-1.5 whitespace-nowrap">
                 <span className="text-white/50">இன்று பார்வையிட்டவர்கள்:</span>
-                <span className="font-bold text-secondary tracking-wide">
+                <span
+                  key={`today-${countAnimKey}`}
+                  className={`font-bold text-secondary tracking-wide${countAnimKey > 0 ? ' visitor-count-animate' : ''}`}
+                >
                   {visitorCount.today.toLocaleString('en-IN')}
                 </span>
               </span>
