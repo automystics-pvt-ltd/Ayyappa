@@ -109,14 +109,14 @@ export function Footer() {
             <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-secondary/30 text-white/70 text-sm">
               <Eye className="w-4 h-4 text-secondary flex-shrink-0" />
               <span className="flex items-center gap-1.5">
-                <span>மொத்தம் / Total:</span>
+                <span>இதுவரை பார்வையிட்டவர்கள்:</span>
                 <span className="font-bold text-secondary tracking-wide">
                   {visitorCount.total.toLocaleString('en-IN')}
                 </span>
               </span>
               <span className="text-white/30">|</span>
               <span className="flex items-center gap-1.5">
-                <span>இன்று / Today:</span>
+                <span>இன்று பார்வையிட்டவர்கள்:</span>
                 <span className="font-bold text-secondary tracking-wide">
                   {visitorCount.today.toLocaleString('en-IN')}
                 </span>
