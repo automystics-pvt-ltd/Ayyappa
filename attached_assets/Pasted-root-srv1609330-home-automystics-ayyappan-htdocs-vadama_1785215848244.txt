@@ -1,0 +1,93 @@
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# # Fix the deploy script on the server
+sed -i 's/pull origin master/pull origin clean-main/' /opt/ayyappan-source/deploy/deploy.sh
+
+# Pull and deploy
+git -C /opt/ayyappan-source pull origin clean-main
+bash /opt/ayyappan-source/deploy/deploy.sh
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+=== [1/7] Resetting local changes & pulling latest ===
+remote: Enumerating objects: 202, done.
+remote: Counting objects: 100% (198/198), done.
+remote: Compressing objects: 100% (65/65), done.
+remote: Total 202 (delta 136), reused 193 (delta 132), pack-reused 4 (from 1)
+Receiving objects: 100% (202/202), 45.28 KiB | 459.00 KiB/s, done.
+Resolving deltas: 100% (136/136), completed with 41 local objects.
+From github.com:automystics-pvt-ltd/Ayyappa
+ * branch            clean-main -> FETCH_HEAD
+ * [new branch]      clean-main -> origin/clean-main
+Updating b54906c..dac2202
+Fast-forward
+ .agents/memory/MEMORY.md                                              |   1 +
+ .agents/memory/drizzle-push.md                                        |   7 +
+ .github/workflows/deploy.yml                                          |  81 ------------
+ .replit                                                               |  35 +++++
+ artifacts/api-server/package.json                                     |   5 +-
+ artifacts/api-server/src/app.ts                                       |  11 +-
+ artifacts/api-server/src/middlewares/auth.ts                          |  45 ++++++-
+ artifacts/api-server/src/routes/auth.ts                               | 208 ++++++++++++++++++++++++++++-
+ artifacts/api-server/src/routes/dashboard.ts                          |  11 +-
+ artifacts/api-server/src/routes/index.ts                              |   2 +
+ artifacts/api-server/src/routes/visits.ts                             |  62 +++++++++
+ artifacts/api-server/tests/admin-deleted-session.test.mjs             | 206 +++++++++++++++++++++++++++++
+ artifacts/api-server/tests/admin-self-protect.test.mjs                | 204 +++++++++++++++++++++++++++++
+ artifacts/api-server/tests/visits-dedup.test.mjs                      | 179 +++++++++++++++++++++++++
+ artifacts/ayyappan-temple/src/components/sections/About.tsx           |  10 +-
+ artifacts/ayyappan-temple/src/components/sections/Appeal.tsx          |  12 +-
+ artifacts/ayyappan-temple/src/components/sections/Donation.tsx        |   4 +-
+ artifacts/ayyappan-temple/src/components/sections/DonorWall.tsx       |   6 +-
+ artifacts/ayyappan-temple/src/components/sections/EventsSection.tsx   |   2 +-
+ artifacts/ayyappan-temple/src/components/sections/Faq.tsx             |  10 +-
+ artifacts/ayyappan-temple/src/components/sections/Footer.tsx          |  37 +++++-
+ artifacts/ayyappan-temple/src/components/sections/Gallery.tsx         | 113 +++++++++++-----
+ artifacts/ayyappan-temple/src/components/sections/Gurus.tsx           |   6 +-
+ artifacts/ayyappan-temple/src/components/sections/Hero.tsx            |  22 ++--
+ artifacts/ayyappan-temple/src/components/sections/Kumbhabhishekam.tsx |  12 +-
+ artifacts/ayyappan-temple/src/components/sections/Navbar.tsx          |   7 +-
+ artifacts/ayyappan-temple/src/components/sections/NewsSection.tsx     |   2 +-
+ artifacts/ayyappan-temple/src/components/sections/Renovation.tsx      |   6 +-
+ artifacts/ayyappan-temple/src/components/sections/SpecialPujas.tsx    |   2 +-
+ artifacts/ayyappan-temple/src/hooks/useAdmin.ts                       |  10 +-
+ artifacts/ayyappan-temple/src/lib/api.ts                              |  26 +++-
+ artifacts/ayyappan-temple/src/pages/Home.tsx                          |   7 +
+ artifacts/ayyappan-temple/src/pages/admin/AdminManagement.tsx         | 547 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---------
+ artifacts/ayyappan-temple/src/pages/admin/Dashboard.tsx               |   7 +-
+ artifacts/ayyappan-temple/src/pages/admin/Donations.tsx               |  33 ++++-
+ artifacts/ayyappan-temple/src/pages/admin/Gallery.tsx                 | 251 +++++++++++++++++++++++------------
+ artifacts/ayyappan-temple/src/pages/admin/Settings.tsx                | 117 ++++++++++++++++-
+ deploy/schema.sql                                                     |  15 +++
+ lib/db/src/schema/index.ts                                            |   1 +
+ lib/db/src/schema/visits.ts                                           |  10 ++
+ replit.nix                                                            |   1 +
+ 41 files changed, 1995 insertions(+), 338 deletions(-)
+ create mode 100644 .agents/memory/drizzle-push.md
+ delete mode 100644 .github/workflows/deploy.yml
+ create mode 100644 artifacts/api-server/src/routes/visits.ts
+ create mode 100644 artifacts/api-server/tests/admin-deleted-session.test.mjs
+ create mode 100644 artifacts/api-server/tests/admin-self-protect.test.mjs
+ create mode 100644 artifacts/api-server/tests/visits-dedup.test.mjs
+ create mode 100644 lib/db/src/schema/visits.ts
+=== [2/7] Approving build scripts ===
+There are no packages awaiting approval
+=== [3/7] Installing dependencies ===
+Scope: all 10 workspace projects
+Already up to date
+Done in 3.7s using pnpm v11.17.0
+=== [4/7] Building frontend ===
+$ vite build --config vite.config.ts
+failed to load config from /opt/ayyappan-source/artifacts/ayyappan-temple/vite.config.ts
+error during build:
+Error: PORT environment variable is required but was not provided.
+    at file:///opt/ayyappan-source/artifacts/ayyappan-temple/node_modules/.vite-temp/vite.config.ts.timestamp-1785215832100-edd70f69de8d6.mjs:10:9
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:633:26
+    at async loadConfigFromBundledFile (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35996:12)
+    at async bundleAndLoadConfigFile (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35884:17)
+    at async loadConfigFromFile (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35851:42)
+    at async resolveConfig (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35500:22)
+    at async createBuilder (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:33955:19)
+    at async CAC.<anonymous> (file:///opt/ayyappan-source/node_modules/.pnpm/vite@7.3.6_@types+node@25.9.5_jiti@2.7.0_lightningcss@1.32.0_tsx@4.23.1_yaml@2.9.0/node_modules/vite/dist/node/cli.js:629:10)
+/opt/ayyappan-source/artifacts/ayyappan-temple:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @workspace/ayyappan-temple@0.0.0 build: `vite build --config vite.config.ts`
+Exit status 1
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# 
