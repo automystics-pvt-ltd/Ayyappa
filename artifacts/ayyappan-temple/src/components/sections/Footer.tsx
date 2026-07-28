@@ -11,9 +11,25 @@ export function Footer() {
   const [visitorCount, setVisitorCount] = useState<{ total: number; today: number } | null>(null);
 
   useEffect(() => {
-    api.getVisitorCount()
-      .then((d) => setVisitorCount({ total: d.total, today: d.today }))
-      .catch(() => {});
+    const fetchCount = () => {
+      if (document.visibilityState === 'hidden') return;
+      api.getVisitorCount()
+        .then((d) => setVisitorCount({ total: d.total, today: d.today }))
+        .catch(() => {});
+    };
+
+    fetchCount();
+    const interval = setInterval(fetchCount, 5 * 60 * 1000); // every 5 minutes
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') fetchCount();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   const phone     = s.temple_phone;
