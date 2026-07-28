@@ -20,6 +20,10 @@ author = "agent"
 task = "workflow.run"
 args = "test:visits-dedup"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test:admin-self-protect"
+
 [[workflows.workflow]]
 name = "test:visits-dedup"
 author = "agent"
@@ -27,6 +31,17 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pnpm --filter @workspace/api-server run test:visits"
+
+[workflows.workflow.metadata]
+isValidation = true
+
+[[workflows.workflow]]
+name = "test:admin-self-protect"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/api-server run test:admin-self-protect"
 
 [workflows.workflow.metadata]
 isValidation = true
