@@ -139,6 +139,8 @@ export const api = {
     apiFetch(`/auth/admins/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteAdmin: (id: number) =>
     apiFetch(`/auth/admins/${id}`, { method: "DELETE" }),
+  resetAdminPassword: (id: number, newPassword: string) =>
+    apiFetch(`/auth/admins/${id}/reset-password`, { method: "PATCH", body: JSON.stringify({ newPassword }) }),
 
   // Admin - Change own password
   changePassword: (currentPassword: string, newPassword: string) =>

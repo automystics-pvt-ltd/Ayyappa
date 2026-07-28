@@ -1,6 +1,6 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
-import { db } from "@workspace/db";
+import { db, pool } from "@workspace/db";
 import { adminsTable, auditLogsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth";
@@ -180,6 +180,61 @@ router.delete("/admins/:id", requireAuth, async (req, res) => {
     res.status(204).end();
   } catch {
     res.status(500).json({ error: "Failed to delete admin" });
+  }
+});
+
+// PATCH /api/auth/admins/:id/reset-password (super_admin only, cannot reset own)
+router.patch("/admins/:id/reset-password", requireAuth, async (req, res) => {
+  const session = (req as any).session;
+  if (session.role !== "super_admin") {
+    res.status(403).json({ error: "Only super_admin can reset passwords" });
+    return;
+  }
+  const targetId = Number(req.params.id);
+  if (targetId === session.adminId) {
+    res.status(400).json({ error: "Use change-password to update your own password" });
+    return;
+  }
+  const { newPassword } = req.body;
+  if (!newPassword) {
+    res.status(400).json({ error: "New password is required" });
+    return;
+  }
+  if (newPassword.length < 8) {
+    res.status(400).json({ error: "Password must be at least 8 characters" });
+    return;
+  }
+  try {
+    const [admin] = await db
+      .select({ id: adminsTable.id, username: adminsTable.username })
+      .from(adminsTable)
+      .where(eq(adminsTable.id, targetId))
+      .limit(1);
+    if (!admin) {
+      res.status(404).json({ error: "Admin not found" });
+      return;
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await db.update(adminsTable).set({ passwordHash }).where(eq(adminsTable.id, targetId));
+
+    // Invalidate all active sessions for the target user
+    await pool.query(
+      `DELETE FROM sessions WHERE sess->>'adminId' = $1`,
+      [String(targetId)]
+    );
+
+    // Audit log
+    await db.insert(auditLogsTable).values({
+      adminId: session.adminId,
+      action: "reset_password",
+      entityType: "admin",
+      entityId: targetId,
+      details: { targetUsername: admin.username },
+    });
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to reset password" });
   }
 });
 

@@ -5,7 +5,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 import {
   ShieldCheck, UserPlus, CheckCircle2, XCircle,
   Eye, EyeOff, Lock, Trash2, Pencil, X, Check,
-  RefreshCw, Crown, Edit3, UserCheck,
+  RefreshCw, Crown, Edit3, UserCheck, KeyRound,
 } from "lucide-react";
 
 // ─── Role config ─────────────────────────────────────────────────────────────
@@ -57,6 +57,151 @@ function formatDate(iso: string | null) {
   });
 }
 
+// ─── Reset Password Modal ─────────────────────────────────────────────────────
+function ResetPasswordModal({
+  user,
+  onClose,
+}: {
+  user: AdminUser;
+  onClose: () => void;
+}) {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (newPassword.length < 8) {
+      setError("கடவுச்சொல் குறைந்தது 8 எழுத்துகள் வேண்டும்");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("கடவுச்சொற்கள் பொருந்தவில்லை");
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.resetAdminPassword(user.id, newPassword);
+      setSuccess(true);
+    } catch (err: any) {
+      setError(err.message ?? "கடவுச்சொல் மாற்றம் தோல்வி");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.45)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+        {/* Header */}
+        <div
+          className="flex items-center justify-between px-5 py-4 border-b border-orange-100"
+          style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
+        >
+          <div className="flex items-center gap-2.5">
+            <KeyRound className="w-5 h-5 text-white" />
+            <div>
+              <p className="text-sm font-bold text-white">கடவுச்சொல் மீட்டமை</p>
+              <p className="text-[10px] text-white/70">Reset Password · @{user.username}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="text-white/70 hover:text-white">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {success ? (
+          <div className="px-5 py-8 flex flex-col items-center gap-3 text-center">
+            <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+            <p className="text-sm font-semibold text-emerald-700">கடவுச்சொல் மாற்றப்பட்டது!</p>
+            <p className="text-xs text-orange-500">@{user.username} இன் session நீக்கப்பட்டது. அவர் மீண்டும் உள்நுழைய வேண்டும்.</p>
+            <button
+              onClick={onClose}
+              className="mt-2 px-5 py-2 rounded-xl text-sm font-bold text-white"
+              style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
+            >
+              மூடு
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="px-5 py-5 space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-orange-700 mb-1.5">
+                புதிய கடவுச்சொல் *
+              </label>
+              <div className="relative">
+                <input
+                  type={showPw ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className={`${inputCls} pr-10`}
+                  autoFocus
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-400 hover:text-orange-600"
+                >
+                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-orange-700 mb-1.5">
+                உறுதிப்படுத்து *
+              </label>
+              <input
+                type={showPw ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                className={inputCls}
+                required
+              />
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs border bg-rose-50 text-rose-700 border-rose-200">
+                <XCircle className="w-4 h-4 shrink-0" />
+                {error}
+              </div>
+            )}
+
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-orange-200 text-orange-600 hover:bg-orange-50"
+              >
+                ரத்து
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
+              >
+                {saving ? <RefreshCw className="w-4 h-4 animate-spin mx-auto" /> : "மீட்டமை"}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Row: inline role edit ────────────────────────────────────────────────────
 function AdminRow({
   user,
@@ -74,6 +219,7 @@ function AdminRow({
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const isSelf = user.id === currentAdminId;
   const ri = roleInfo(user.role);
@@ -98,115 +244,127 @@ function AdminRow({
   };
 
   return (
-    <tr className="border-b border-orange-50 last:border-0 hover:bg-orange-50/30 transition-colors">
-      {/* User info */}
-      <td className="px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div
-            className={`w-8 h-8 rounded-full bg-gradient-to-br ${ri.color} flex items-center justify-center flex-shrink-0`}
-          >
-            <ri.Icon className="w-4 h-4 text-white" />
+    <>
+      {showResetModal && (
+        <ResetPasswordModal user={user} onClose={() => setShowResetModal(false)} />
+      )}
+      <tr className="border-b border-orange-50 last:border-0 hover:bg-orange-50/30 transition-colors">
+        {/* User info */}
+        <td className="px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-8 h-8 rounded-full bg-gradient-to-br ${ri.color} flex items-center justify-center flex-shrink-0`}
+            >
+              <ri.Icon className="w-4 h-4 text-white" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-orange-900 truncate">
+                {user.displayName || user.username}
+                {isSelf && (
+                  <span className="ml-1.5 text-[10px] bg-orange-100 text-orange-500 border border-orange-200 rounded-full px-1.5 py-0.5 font-normal align-middle">
+                    நீங்கள்
+                  </span>
+                )}
+              </p>
+              <p className="text-xs text-orange-400 truncate">@{user.username}</p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-orange-900 truncate">
-              {user.displayName || user.username}
-              {isSelf && (
-                <span className="ml-1.5 text-[10px] bg-orange-100 text-orange-500 border border-orange-200 rounded-full px-1.5 py-0.5 font-normal align-middle">
-                  நீங்கள்
-                </span>
-              )}
-            </p>
-            <p className="text-xs text-orange-400 truncate">@{user.username}</p>
-          </div>
-        </div>
-      </td>
+        </td>
 
-      {/* Role */}
-      <td className="px-4 py-3">
-        {editing ? (
-          <select
-            value={newRole}
-            onChange={(e) => setNewRole(e.target.value)}
-            className="text-xs border border-orange-300 rounded-lg px-2 py-1.5 bg-white text-orange-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
-          >
-            {ROLES.map((r) => (
-              <option key={r.value} value={r.value}>{r.label}</option>
-            ))}
-          </select>
-        ) : (
-          <span
-            className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${ri.badge}`}
-          >
-            <ri.Icon className="w-3 h-3" />
-            {ri.label}
-          </span>
-        )}
-      </td>
+        {/* Role */}
+        <td className="px-4 py-3">
+          {editing ? (
+            <select
+              value={newRole}
+              onChange={(e) => setNewRole(e.target.value)}
+              className="text-xs border border-orange-300 rounded-lg px-2 py-1.5 bg-white text-orange-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+            >
+              {ROLES.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
+            </select>
+          ) : (
+            <span
+              className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${ri.badge}`}
+            >
+              <ri.Icon className="w-3 h-3" />
+              {ri.label}
+            </span>
+          )}
+        </td>
 
-      {/* Last login */}
-      <td className="px-4 py-3 text-xs text-orange-400 hidden sm:table-cell">
-        {formatDate(user.lastLogin)}
-      </td>
+        {/* Last login */}
+        <td className="px-4 py-3 text-xs text-orange-400 hidden sm:table-cell">
+          {formatDate(user.lastLogin)}
+        </td>
 
-      {/* Actions */}
-      <td className="px-4 py-3 text-right">
-        {isSelf ? (
-          <span className="text-xs text-orange-300 italic">—</span>
-        ) : editing ? (
-          <div className="flex items-center justify-end gap-1.5">
-            <button
-              onClick={saveRole}
-              disabled={saving}
-              className="p-1.5 rounded-lg bg-emerald-100 text-emerald-600 hover:bg-emerald-200 disabled:opacity-50"
-              title="Save"
-            >
-              {saving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-            </button>
-            <button
-              onClick={() => { setEditing(false); setNewRole(user.role); }}
-              className="p-1.5 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200"
-              title="Cancel"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        ) : confirmDelete ? (
-          <div className="flex items-center justify-end gap-1.5">
-            <span className="text-xs text-rose-500 mr-1">நீக்கவா?</span>
-            <button
-              onClick={doDelete}
-              disabled={deleting}
-              className="p-1.5 rounded-lg bg-rose-100 text-rose-600 hover:bg-rose-200 disabled:opacity-50"
-            >
-              {deleting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-            </button>
-            <button
-              onClick={() => setConfirmDelete(false)}
-              className="p-1.5 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        ) : (
-          <div className="flex items-center justify-end gap-1.5">
-            <button
-              onClick={() => setEditing(true)}
-              className="p-1.5 rounded-lg bg-violet-50 text-violet-500 hover:bg-violet-100"
-              title="Edit role"
-            >
-              <Pencil className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => setConfirmDelete(true)}
-              className="p-1.5 rounded-lg bg-rose-50 text-rose-400 hover:bg-rose-100"
-              title="Delete"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
-      </td>
-    </tr>
+        {/* Actions */}
+        <td className="px-4 py-3 text-right">
+          {isSelf ? (
+            <span className="text-xs text-orange-300 italic">—</span>
+          ) : editing ? (
+            <div className="flex items-center justify-end gap-1.5">
+              <button
+                onClick={saveRole}
+                disabled={saving}
+                className="p-1.5 rounded-lg bg-emerald-100 text-emerald-600 hover:bg-emerald-200 disabled:opacity-50"
+                title="Save"
+              >
+                {saving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+              </button>
+              <button
+                onClick={() => { setEditing(false); setNewRole(user.role); }}
+                className="p-1.5 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200"
+                title="Cancel"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : confirmDelete ? (
+            <div className="flex items-center justify-end gap-1.5">
+              <span className="text-xs text-rose-500 mr-1">நீக்கவா?</span>
+              <button
+                onClick={doDelete}
+                disabled={deleting}
+                className="p-1.5 rounded-lg bg-rose-100 text-rose-600 hover:bg-rose-200 disabled:opacity-50"
+              >
+                {deleting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+              </button>
+              <button
+                onClick={() => setConfirmDelete(false)}
+                className="p-1.5 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-end gap-1.5">
+              <button
+                onClick={() => setShowResetModal(true)}
+                className="p-1.5 rounded-lg bg-amber-50 text-amber-500 hover:bg-amber-100"
+                title="Reset password"
+              >
+                <KeyRound className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setEditing(true)}
+                className="p-1.5 rounded-lg bg-violet-50 text-violet-500 hover:bg-violet-100"
+                title="Edit role"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="p-1.5 rounded-lg bg-rose-50 text-rose-400 hover:bg-rose-100"
+                title="Delete"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+        </td>
+      </tr>
+    </>
   );
 }
 
