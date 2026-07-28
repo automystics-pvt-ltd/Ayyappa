@@ -48,7 +48,7 @@ info "[1/6] Pulling latest code…"
 cd "$SOURCE_DIR"
 git fetch --all --prune
 git checkout -- .
-git pull origin main
+git pull origin clean-main
 COMMIT=$(git rev-parse --short HEAD)
 ok "At commit $COMMIT"
 
