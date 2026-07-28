@@ -42,6 +42,28 @@ export default function Donations() {
   const [rejectReason, setRejectReason] = useState("");
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+
+  const openScreenshot = async (objectPath: string) => {
+    setPreviewLoading(true);
+    try {
+      const apiUrl = api.screenshotUrl(objectPath);
+      const res = await fetch(apiUrl, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to load screenshot");
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      setPreviewUrl(blobUrl);
+    } catch {
+      alert("Screenshot ஏற்றமுடியவில்லை");
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
+  const closePreview = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+  };
 
   const fetchDonations = async () => {
     setLoading(true);
@@ -186,9 +208,10 @@ export default function Donations() {
                         </div>
                       )}
                       {d.screenshotUrl && (
-                        <button onClick={() => setPreviewUrl(api.screenshotUrl(d.screenshotUrl!))}
-                          className="flex items-center gap-1 text-xs text-orange-600 bg-orange-50 hover:bg-orange-100 px-2.5 py-1 rounded-lg border border-orange-200 transition-colors mt-1">
-                          <Image className="w-3 h-3" />Screenshot பார்க்க
+                        <button onClick={() => openScreenshot(d.screenshotUrl!)}
+                          disabled={previewLoading}
+                          className="flex items-center gap-1 text-xs text-orange-600 bg-orange-50 hover:bg-orange-100 px-2.5 py-1 rounded-lg border border-orange-200 transition-colors mt-1 disabled:opacity-50">
+                          <Image className="w-3 h-3" />{previewLoading ? "ஏற்றுகிறது..." : "Screenshot பார்க்க"}
                         </button>
                       )}
                     </div>
@@ -242,9 +265,9 @@ export default function Donations() {
       {/* Screenshot modal */}
       {previewUrl && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={() => setPreviewUrl(null)}>
+          onClick={closePreview}>
           <div className="relative max-w-2xl w-full" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setPreviewUrl(null)}
+            <button onClick={closePreview}
               className="absolute -top-10 right-0 text-white/70 hover:text-white text-sm font-medium flex items-center gap-1">
               ✕ மூடு
             </button>
