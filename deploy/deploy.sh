@@ -61,10 +61,9 @@ ok "Dependencies up to date"
 
 # ── Step 3 — build frontend ──────────────────────────────────
 info "[3/6] Building frontend…"
-# PORT is required by vite.config.ts but unused in the static build output
-export PORT=3000
-export BASE_PATH=/
-pnpm --filter @workspace/ayyappan-temple run build
+# Run in a subshell so PORT/BASE_PATH don't leak into the parent environment
+# and get picked up by `pm2 restart --update-env` later.
+(export PORT=3000; export BASE_PATH=/; pnpm --filter @workspace/ayyappan-temple run build)
 ok "Frontend built → artifacts/ayyappan-temple/dist/public/"
 
 info "        Syncing frontend to $WEB_ROOT …"

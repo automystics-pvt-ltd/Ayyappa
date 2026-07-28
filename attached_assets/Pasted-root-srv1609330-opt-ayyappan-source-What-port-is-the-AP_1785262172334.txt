@@ -1,0 +1,84 @@
+root@srv1609330:/opt/ayyappan-source# # What port is the API actually on?
+node -e "const c=require('/opt/ayyappan-api/ecosystem.config.cjs'); console.log(JSON.stringify(c.apps[0].env, null, 2))"
+
+# Is the API process actually running?
+pm2 status ayyappan-api
+
+# What is it logging?
+pm2 logs ayyappan-api --lines 30 --nostream
+{
+  "NODE_ENV": "production",
+  "PORT": "3019",
+  "SESSION_SECRET": "55fa7b2d2316456662ff92c16d6a22eb047475458d6c841cd3e0193b38b1f871",
+  "ALLOWED_ORIGINS": "https://vadamadurai-ayyappan-temple.automystics.tech",
+  "REPLIT_DEV_DOMAIN": "vadamadurai-ayyappan-temple.automystics.tech",
+  "INITIAL_ADMIN_PASSWORD": "Admin@2026$",
+  "DATABASE_URL": "postgresql://ayyappan_user:Temple2026secure@127.0.0.1:5432/ayyappan_temple"
+}
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 39 │ automystics-api       │ default     │ 0.0.0   │ fork    │ 3380868  │ 3D     │ 74   │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 38 │ ayyappan-api          │ default     │ N/A     │ fork    │ 2001600  │ 4s     │ 6033 │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 32 │ docscan-api           │ default     │ 0.0.0   │ fork    │ 1392181  │ 4D     │ 9    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 11 │ erp-automystics       │ default     │ N/A     │ fork    │ 342673   │ 4D     │ 11   │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 1  │ fitro360              │ default     │ 1.0.0   │ fork    │ 3843201  │ 3D     │ 5    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 2  │ kalvicore-api         │ default     │ 0.0.0   │ fork    │ 198081   │ 5D     │ 8    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 13 │ mmwear-erp            │ default     │ 0.0.0   │ fork    │ 3396013  │ 7D     │ 137  │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 14 │ mystics-audit         │ default     │ 0.0.0   │ fork    │ 1035800  │ 13D    │ 586  │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 5  │ mysticscivil-api      │ default     │ N/A     │ fork    │ 1524242  │ 17D    │ 4    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 26 │ mysticshr-api         │ default     │ 0.0.0   │ fork    │ 852146   │ 12D    │ 14   │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 12 │ mysticsinventory      │ default     │ N/A     │ fork    │ N/A      │ 25h    │ 268… │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 3  │ people-connect-api    │ default     │ 0.0.0   │ fork    │ 1524209  │ 17D    │ 4    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 41 │ solarepc-api          │ default     │ 0.0.0   │ fork    │ 3857173  │ 3D     │ 24   │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 6  │ solarnexus-api        │ default     │ 0.0.0   │ fork    │ 1524251  │ 17D    │ 4    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 4  │ tkprabhu-api          │ default     │ 0.0.0   │ fork    │ 1524217  │ 17D    │ 4    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 8  │ ungalrajeev-api       │ default     │ N/A     │ fork    │ 2001392  │ 17s    │ 991… │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 7  │ ungaludan-sarath      │ default     │ 0.0.0   │ fork    │ 1524287  │ 17D    │ 4    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 9  │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 2001515  │ 10s    │ 323… │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 10 │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1524307  │ 17D    │ 199… │ online    │ 0%       │ 0b       │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 99.1% | ram usage: 34.4% | lo: ⇓ 0.021mb/s ⇑ 0.021mb/s | eth0: ⇓ 0.001mb/s ⇑ 0.001mb/s | disk: ⇓ 0mb/s ⇑ 0.193mb/s |
+[TAILING] Tailing last 30 lines for [ayyappan-api] process (change the value with --lines option)
+/root/.pm2/logs/ayyappan-api-error-38.log last 30 lines:
+38|ayyappa |     at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:12)
+38|ayyappa |     at node:internal/modules/esm/loader:622:32
+38|ayyappa |     at TracingChannel.tracePromise (node:diagnostics_channel:362:14)
+38|ayyappa | SyntaxError: Unexpected token '<'
+38|ayyappa |     at compileSourceTextModule (node:internal/modules/esm/utils:318:16)
+38|ayyappa |     at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:90:18)
+38|ayyappa |     at #translate (node:internal/modules/esm/loader:435:20)
+38|ayyappa |     at afterLoad (node:internal/modules/esm/loader:491:29)
+38|ayyappa |     at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:496:12)
+38|ayyappa |     at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:549:36)
+38|ayyappa |     at afterResolve (node:internal/modules/esm/loader:597:52)
+38|ayyappa |     at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:12)
+38|ayyappa |     at node:internal/modules/esm/loader:622:32
+38|ayyappa |     at TracingChannel.tracePromise (node:diagnostics_channel:362:14)
+38|ayyappa | error: permission denied for table sessions
+38|ayyappa |     at <anonymous> (/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+38|ayyappa |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+38|ayyappa |     at async PGStore._asyncQuery (/node_modules/.pnpm/connect-pg-simple@10.0.0/node_modules/connect-pg-simple/index.js:322:21)
+38|ayyappa | error: permission denied for table sessions
+38|ayyappa |     at <anonymous> (/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+38|ayyappa |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+38|ayyappa |     at async PGStore._asyncQuery (/node_modules/.pnpm/connect-pg-simple@10.0.0/node_modules/connect-pg-simple/index.js:322:21)
+38|ayyappa | error: permission denied for table sessions
+38|ayyappa |     at <anonymous> (/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+38|ayyappa |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+38|ayyappa |     at async PGStore._asyncQuery (/node_modules/.pnpm/connect-pg-simple@10.0.0/node_modules/connect-pg-simple/index.js:322:21)
+38|ayyappa | error: permission denied for table sessions
+38|ayyappa |     at <anonymous> (/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+38|ayyappa |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+38|ayyappa |     at async PGStore._asyncQuery (/node_modules/.pnpm/connect-pg-simple@10.0.0/node_modules/connect-pg-simple/index.js:322:21)
+
+/root/.pm2/logs/ayyappan-api-out-38.log last 30 lines:
+38|ayyappa | ssTicksAndRejections (node:internal/process/task_queues:104:5)","code":"EADDRINUSE","errno":-98,"syscall":"listen","address":"::","port":3000},"msg":"Error listening on port"}
+38|ayyappa | {"level":50,"time":1785262075118,"pid":2000583,"hostname":"srv1609330","err":{"type":"Error","message":"listen EADDRINUSE: address already in use :::3000","stack":"Error: listen EADDRINUSE: address already in use :::3000\n    at Server.setupListenHandle [as _listen2] (node:net:2008:16)\n    at listenInCluster (node:net:2065:12)\n    at Server.listen (node:net:2170:7)\n    at app2.listen (/node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js:605:24)\n    at <anonymous> (/opt/ayyappan-api/src/index.ts:22:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)","code":"EADDRINUSE","errno":-98,"syscall":"listen","address":"::","port":3000},"msg":"Error listening on port"}
+38|ayyappa | {"level":50,"time":1785262083897,"pid":2000725,"hostname":"srv1609330","err":{"type":"Error","message":"listen EADDRINUSE: address already in use :::3000","stack":"Error: listen EADDRINUSE: address already in use :::3000\n    at Server.setupListenHandle [as _listen2] (node:net:2008:16)\n    at listenInCluster (node:net:2065:12)\n    at Server.listen (node:net:2170:7)\n    at app2.listen (/node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js:605:24)\n    at <anonymous> (/opt/ayyappan-api/src/index.ts:22:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)","code":"EADDRINUSE","errno":-98,"syscall":"listen","address":"::","port":3000},"msg":"Error listening on port"}
+38|ayyappa | {"level":50,"time":1785262091921,"pid":2000852,"hostname":"srv1609330","err":{"type":"Error","message":"listen EADDRINUSE: address already in use :::3000","stack":"Error: listen EADDRINUSE: address already in use :::3000\n    at Server.setupListenHandle [as _listen2] (node:net:2008:16)\n    at listenInCluster (node:net:2065:12)\n    at Server.listen (node:net:2170:7)\n    at app2.listen (/node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js:605:24)\n    at <anonymous> (/opt/ayyappan-api/src/index.ts:22:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)","code":"EADDRINUSE","errno":-98,"syscall":"listen","address":"::","port":3000},"msg":"Error listening on port"}
+38|ayyappa | {"level":50,"time":1785262099828,"pid":2000972,"hostname":"srv1609330","err":{"type":"Error","message":"listen EADDRINUSE: address already in use :::3000","stack":"Error: listen EADDRINUSE: address already in use :::3000\n    at Server.setupListenHandle [as _listen2] (node:net:2008:16)\n    at listenInCluster (node:net:2065:12)\n    at Server.listen (node:net:2170:7)\n    at app2.listen (/node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js:605:24)\n    at <anonymous> (/opt/ayyappan-api/src/index.ts:22:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)","code":"EADDRINUSE","errno":-98,"syscall":"listen","address":"::","port":3000},"msg":"Error listening on port"}
+38|ayyappa | {"level":50,"time":1785262108506,"pid":2001100,"hostname":"srv1609330","err":{"type":"Error","message":"listen EADDRINUSE: address already in use :::3000","stack":"Error: listen EADDRINUSE: address already in use :::3000\n    at Server.setupListenHandle [as _listen2] (node:net:2008:16)\n    at listenInCluster (node:net:2065:12)\n    at Server.listen (node:net:2170:7)\n    at app2.listen (/node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js:605:24)\n    at <anonymous> (/opt/ayyappan-api/src/index.ts:22:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)","code":"EADDRINUSE","errno":-98,"syscall":"listen","address":"::","port":3000},"msg":"Error listening on port"}
+38|ayyappa | {"level":50,"time":1785262116511,"pid":2001240,"hostname":"srv1609330","err":{"type":"Error","message":"listen EADDRINUSE: address already in use :::3000","stack":"Error: listen EADDRINUSE: address already in use :::3000\n    at Server.setupListenHandle [as _listen2] (node:net:2008:16)\n    at listenInCluster (node:net:2065:12)\n    at Server.listen (node:net:2170:7)\n    at app2.listen (/node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js:605:24)\n    at <anonymous> (/opt/ayyappan-api/src/index.ts:22:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)","code":"EADDRINUSE","errno":-98,"syscall":"listen","address":"::","port":3000},"msg":"Error listening on port"}
+38|ayyappa | {"level":50,"time":1785262124015,"pid":2001343,"hostname":"srv1609330","err":{"type":"Error","message":"listen EADDRINUSE: address already in use :::3000","stack":"Error: listen EADDRINUSE: address already in use :::3000\n    at Server.setupListenHandle [as _listen2] (node:net:2008:16)\n    at listenInCluster (node:net:2065:12)\n    at Server.listen (node:net:2170:7)\n    at app2.listen (/node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js:605:24)\n    at <anonymous> (/opt/ayyappan-api/src/index.ts:22:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)","code":"EADDRINUSE","errno":-98,"syscall":"listen","address":"::","port":3000},"msg":"Error listening on port"}
+38|ayyappa | {"level":50,"time":1785262131626,"pid":2001479,"hostname":"srv1609330","err":{"type":"Error","message":"listen EADDRINUSE: address already in use :::3000","stack":"Error: listen EADDRINUSE: address already in use :::3000\n    at Server.setupListenHandle [as _listen2] (node:net:2008:16)\n    at listenInCluster (node:net:2065:12)\n    at Server.listen (node:net:2170:7)\n    at app2.listen (/node_modules/.pnpm/express@5.2.1/node_modules/express/lib/application.js:605:24)\n    at <anonymous> (/opt/ayyappan-api/src/index.ts:22:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)","code":"EADDRINUSE","errno":-98,"syscall":"listen","address":"::","port":3000},"msg":"Error listening on port"}
