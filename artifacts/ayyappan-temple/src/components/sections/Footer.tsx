@@ -12,27 +12,43 @@ export function Footer() {
   const [countAnimKey, setCountAnimKey] = useState(0);
   const prevCountRef = useRef<{ total: number; today: number } | null>(null);
 
+  const lastFetchRef = useRef<number>(0);
+  const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
   useEffect(() => {
-    const fetchCount = () => {
-      if (document.visibilityState === 'hidden') return;
-      api.getVisitorCount()
-        .then((d) => {
-          const prev = prevCountRef.current;
-          if (prev !== null && (d.total !== prev.total || d.today !== prev.today)) {
-            // Count changed — bump key to restart the CSS animation
-            setCountAnimKey((k) => k + 1);
-          }
-          prevCountRef.current = { total: d.total, today: d.today };
-          setVisitorCount({ total: d.total, today: d.today });
-        })
-        .catch(() => {});
+    const applyCount = (d: { total: number; today: number }) => {
+      const prev = prevCountRef.current;
+      if (prev !== null && (d.total !== prev.total || d.today !== prev.today)) {
+        // Count changed — bump key to restart the CSS animation
+        setCountAnimKey((k) => k + 1);
+      }
+      prevCountRef.current = { total: d.total, today: d.today };
+      setVisitorCount({ total: d.total, today: d.today });
+      lastFetchRef.current = Date.now();
     };
 
-    fetchCount();
-    const interval = setInterval(fetchCount, 5 * 60 * 1000); // every 5 minutes
+    const fetchWithRetry = (attempt = 0): void => {
+      if (document.visibilityState === 'hidden') return;
+      api.getVisitorCount()
+        .then(applyCount)
+        .catch(() => {
+          if (attempt < 3) {
+            // Exponential backoff: 1s, 2s, 4s
+            setTimeout(() => fetchWithRetry(attempt + 1), 1000 * Math.pow(2, attempt));
+          }
+        });
+    };
+
+    fetchWithRetry();
+    const interval = setInterval(() => fetchWithRetry(), REFRESH_INTERVAL);
 
     const handleVisibility = () => {
-      if (document.visibilityState === 'visible') fetchCount();
+      if (document.visibilityState === 'visible') {
+        const idleMs = Date.now() - lastFetchRef.current;
+        if (idleMs >= REFRESH_INTERVAL) {
+          fetchWithRetry();
+        }
+      }
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
