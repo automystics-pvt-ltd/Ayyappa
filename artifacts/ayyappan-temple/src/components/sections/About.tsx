@@ -14,7 +14,7 @@ export function About() {
   return (
     <section id="about" className="py-20 md:py-32 bg-background relative overflow-hidden">
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
         <motion.div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20"
           variants={staggerContainer} initial="hidden" whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}>
@@ -25,16 +25,16 @@ export function About() {
               <img src={templeView} alt="அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்"
                 className="w-full h-full object-cover" />
             </div>
-            <div className="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-primary/50 rounded-tl-xl" />
-            <div className="absolute -bottom-4 -right-4 w-24 h-24 border-b-2 border-r-2 border-primary/50 rounded-br-xl" />
+            <div className="absolute -top-3 -left-3 sm:-top-4 sm:-left-4 w-14 h-14 sm:w-20 sm:h-20 border-t-2 border-l-2 border-primary/50 rounded-tl-xl" />
+            <div className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 w-14 h-14 sm:w-20 sm:h-20 border-b-2 border-r-2 border-primary/50 rounded-br-xl" />
           </motion.div>
 
           <motion.div variants={fadeUpVariant} className="w-full lg:w-1/2">
-            <h2 className="text-3xl md:text-5xl font-serif font-bold text-foreground mb-6 inline-flex flex-col">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4 sm:mb-6 inline-flex flex-col">
               ஆலய வரலாறு
               <span className="h-1 w-24 bg-primary mt-3 rounded-full" />
             </h2>
-            <p className="text-lg md:text-xl text-foreground/80 leading-relaxed mb-10 font-medium whitespace-pre-line">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-foreground/80 leading-relaxed mb-6 sm:mb-10 font-medium whitespace-pre-line">
               {history}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

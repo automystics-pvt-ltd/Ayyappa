@@ -16,12 +16,12 @@ export function Faq() {
 
   return (
     <section id="faq" className="py-20 bg-background">
-      <div className="container mx-auto px-4 md:px-6 max-w-3xl">
+      <div className="container mx-auto px-4 sm:px-6 max-w-3xl">
         <motion.div initial="hidden" whileInView="visible"
           viewport={{ once: true, margin: '-100px' }} variants={fadeUpVariant}>
-          <div className="flex items-center justify-center gap-3 mb-10">
-            <HelpCircle className="w-8 h-8 text-primary" />
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
+          <div className="flex flex-col xs:flex-row items-center justify-center gap-2 xs:gap-3 mb-8 sm:mb-10 text-center xs:text-left">
+            <HelpCircle className="w-7 h-7 sm:w-8 sm:h-8 text-primary flex-shrink-0" />
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-foreground leading-tight">
               அடிக்கடி கேட்கப்படும் கேள்விகள்
             </h2>
           </div>

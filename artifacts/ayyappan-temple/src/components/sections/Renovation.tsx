@@ -23,17 +23,17 @@ export function Renovation() {
 
   return (
     <section id="renovation" className="py-20 md:py-32 bg-[#F9F7F1] relative">
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
         <motion.div className="text-center mb-16" initial="hidden" whileInView="visible"
           viewport={{ once: true, margin: '-100px' }} variants={fadeUpVariant}>
-          <h2 className="text-3xl md:text-5xl font-serif font-bold text-foreground mb-4">திருப்பணி விவரங்கள்</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground mb-4">திருப்பணி விவரங்கள்</h2>
           <div className="h-1 w-24 bg-primary mx-auto rounded-full mb-6" />
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             பக்தர்களின் பேராதரவுடன் நடைபெறும் திருப்பணிகளின் விவரங்கள்
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
           {/* Works list */}
           <motion.div variants={staggerContainer} initial="hidden" whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}>

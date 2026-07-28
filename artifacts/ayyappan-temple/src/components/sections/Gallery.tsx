@@ -127,7 +127,7 @@ export function Gallery() {
     <section id="gallery" className="py-20 md:py-32 bg-background relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(46_65%_52%_/_0.06)_0%,_transparent_60%)] pointer-events-none" />
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
         {/* Heading */}
         <motion.div
           className="text-center mb-12"

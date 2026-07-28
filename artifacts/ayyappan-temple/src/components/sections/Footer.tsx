@@ -24,10 +24,10 @@ export function Footer() {
 
   return (
     <footer id="contact" className="bg-foreground text-white pt-20 pb-8 border-t-[8px] border-secondary">
-      <div className="container mx-auto px-4 md:px-6 max-w-6xl">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         <div className="grid md:grid-cols-2 gap-12 mb-12">
           <div>
-            <h3 className="text-3xl font-serif font-bold text-secondary mb-6">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-secondary mb-4 sm:mb-6 leading-snug">
               அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்
             </h3>
             <p className="text-white/70 text-lg max-w-md">
@@ -105,18 +105,18 @@ export function Footer() {
         </div>
 
         {visitorCount !== null && (
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-secondary/30 text-white/70 text-sm">
+          <div className="flex justify-center mb-6 px-2">
+            <div className="flex flex-col xs:flex-row flex-wrap items-center justify-center gap-2 xs:gap-3 px-4 py-3 rounded-2xl bg-white/5 border border-secondary/30 text-white/70 text-xs sm:text-sm w-full xs:w-auto max-w-full">
               <Eye className="w-4 h-4 text-secondary flex-shrink-0" />
-              <span className="flex items-center gap-1.5">
-                <span>இதுவரை பார்வையிட்டவர்கள்:</span>
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
+                <span className="text-white/50">இதுவரை பார்வையிட்டவர்கள்:</span>
                 <span className="font-bold text-secondary tracking-wide">
                   {visitorCount.total.toLocaleString('en-IN')}
                 </span>
               </span>
-              <span className="text-white/30">|</span>
-              <span className="flex items-center gap-1.5">
-                <span>இன்று பார்வையிட்டவர்கள்:</span>
+              <span className="text-white/30 hidden xs:inline">|</span>
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
+                <span className="text-white/50">இன்று பார்வையிட்டவர்கள்:</span>
                 <span className="font-bold text-secondary tracking-wide">
                   {visitorCount.today.toLocaleString('en-IN')}
                 </span>

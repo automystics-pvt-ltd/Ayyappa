@@ -27,7 +27,7 @@ export function EventsSection() {
 
   return (
     <section id="events" className="py-20 bg-[#F9F7F1]">
-      <div className="container mx-auto px-4 md:px-6 max-w-5xl">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         <motion.div
           className="text-center mb-12"
           initial="hidden"

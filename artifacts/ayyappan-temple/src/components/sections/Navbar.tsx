@@ -209,7 +209,7 @@ export function Navbar() {
           ? 'bg-background/95 backdrop-blur-md shadow-md py-2'
           : 'bg-transparent py-4'
       }`}>
-        <div className="container mx-auto px-4 md:px-6">
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
           <div className="flex items-center justify-between gap-4">
 
             {/* Logo */}

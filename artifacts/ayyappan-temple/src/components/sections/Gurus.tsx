@@ -21,7 +21,7 @@ export function Gurus() {
       <div className="absolute top-0 left-0 w-80 h-80 bg-secondary/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/3 pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/8 rounded-full blur-3xl translate-x-1/3 translate-y-1/4 pointer-events-none" />
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
         <motion.div className="text-center mb-14" variants={staggerContainer}
           initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}>
           <motion.p variants={fadeUpVariant} className="text-secondary font-semibold tracking-widest uppercase text-sm mb-3">
@@ -41,12 +41,12 @@ export function Gurus() {
               className="flex flex-col items-center group">
               <div className="relative mb-6">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-secondary via-primary to-secondary opacity-30 blur-sm scale-105" />
-                <div className="relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-secondary/60 shadow-2xl ring-4 ring-primary/20">
+                <div className="relative w-44 h-44 xs:w-52 xs:h-52 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-secondary/60 shadow-2xl ring-4 ring-primary/20">
                   <img src={guru.image} alt={guru.name}
                     className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
                 </div>
               </div>
-              <h3 className="font-serif text-xl md:text-2xl font-bold text-primary text-center leading-snug mt-4 px-4">
+              <h3 className="font-serif text-lg xs:text-xl md:text-2xl font-bold text-primary text-center leading-snug mt-3 sm:mt-4 px-2 sm:px-4">
                 {guru.name}
               </h3>
             </motion.div>

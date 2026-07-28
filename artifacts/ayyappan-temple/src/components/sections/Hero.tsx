@@ -39,28 +39,28 @@ export function Hero() {
 
       <div className="absolute inset-0 z-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-secondary/40 via-transparent to-transparent pointer-events-none mix-blend-overlay" />
 
-      <div className="relative z-10 text-center px-4 md:px-6 max-w-5xl mx-auto mt-20 sm:mt-0">
+      <div className="relative z-10 text-center px-4 sm:px-6 max-w-5xl mx-auto mt-20 sm:mt-0 w-full">
         <motion.div variants={staggerContainer} initial="hidden" animate="visible"
           className="flex flex-col items-center">
-          <motion.div variants={fadeUpVariant} className="mb-6">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
+          <motion.div variants={fadeUpVariant} className="mb-4 sm:mb-6">
+            <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] leading-tight">
               <span className="bg-gradient-to-b from-secondary via-secondary to-yellow-600 bg-clip-text text-transparent">
                 {title}
               </span>
             </h1>
           </motion.div>
 
-          <motion.div variants={fadeUpVariant} className="space-y-4 mb-8">
-            <h2 className="text-2xl md:text-4xl font-serif font-bold text-white tracking-wide shadow-black/50 drop-shadow-md">
+          <motion.div variants={fadeUpVariant} className="space-y-2 sm:space-y-4 mb-6 sm:mb-8">
+            <h2 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-white tracking-wide drop-shadow-md leading-snug">
               {subtitle}
             </h2>
-            <p className="text-lg md:text-2xl text-white/90 font-medium tracking-wider">{location}</p>
+            <p className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 font-medium tracking-wider">{location}</p>
           </motion.div>
 
           <motion.div variants={fadeUpVariant}
-            className="bg-black/40 backdrop-blur-sm border border-secondary/30 rounded-2xl py-4 px-6 md:px-10 max-w-3xl mb-4">
-            <p className="text-lg md:text-xl text-secondary font-medium mb-2">{tagline}</p>
-            <p className="text-base md:text-lg text-white/80 italic">{quote}</p>
+            className="bg-black/40 backdrop-blur-sm border border-secondary/30 rounded-2xl py-3 sm:py-4 px-4 sm:px-6 md:px-10 max-w-3xl w-full mb-4">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-secondary font-medium mb-1.5 sm:mb-2">{tagline}</p>
+            <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/80 italic">{quote}</p>
           </motion.div>
 
           <motion.div variants={fadeUpVariant} className="mb-8 w-full flex justify-center">

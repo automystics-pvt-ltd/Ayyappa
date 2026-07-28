@@ -11,7 +11,7 @@ export function SpecialPujas() {
 
   return (
     <section id="pujas" className="py-20 bg-[#F9F7F1]">
-      <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+      <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
         <motion.div initial="hidden" whileInView="visible"
           viewport={{ once: true, margin: '-100px' }} variants={staggerContainer}
           className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-border text-center">

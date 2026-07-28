@@ -130,7 +130,7 @@ function DonorCard({
       {/* Message */}
       {donor.message && !donor.anonymous && (
         <div className="bg-secondary/10 border-l-2 border-secondary/40 rounded-r-xl px-3 py-2">
-          <p className="text-xs text-foreground/70 italic leading-relaxed">
+          <p className="text-xs text-foreground/70 italic leading-relaxed break-words">
             "{donor.message}"
           </p>
         </div>
@@ -162,7 +162,7 @@ function PodiumCard({
       )}
       <div className="text-[10px] text-muted-foreground mt-1.5">{dateStr(donor.reviewedAt)}</div>
       {donor.message && !donor.anonymous && (
-        <div className="mt-3 text-[10px] italic text-muted-foreground leading-relaxed px-1">
+        <div className="mt-3 text-[10px] italic text-muted-foreground leading-relaxed px-1 break-words">
           "{donor.message}"
         </div>
       )}
