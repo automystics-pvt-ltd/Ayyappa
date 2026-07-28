@@ -1,5 +1,14 @@
 const API_BASE = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/api`;
 
+export interface AdminUser {
+  id: number;
+  username: string;
+  role: string;
+  displayName: string | null;
+  createdAt: string;
+  lastLogin: string | null;
+}
+
 export async function apiFetch<T = unknown>(
   path: string,
   options: RequestInit = {}
@@ -122,9 +131,14 @@ export const api = {
   updateSettings: (data: Record<string, string>) =>
     apiFetch("/settings", { method: "PATCH", body: JSON.stringify(data) }),
 
-  // Admin - Create admin user
+  // Admin - List / manage admin users (super_admin only)
+  listAdmins: () => apiFetch<AdminUser[]>("/auth/admins"),
   createAdmin: (data: Record<string, unknown>) =>
     apiFetch("/auth/create-admin", { method: "POST", body: JSON.stringify(data) }),
+  updateAdmin: (id: number, data: { role?: string; displayName?: string }) =>
+    apiFetch(`/auth/admins/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteAdmin: (id: number) =>
+    apiFetch(`/auth/admins/${id}`, { method: "DELETE" }),
 
   // Admin - Change own password
   changePassword: (currentPassword: string, newPassword: string) =>

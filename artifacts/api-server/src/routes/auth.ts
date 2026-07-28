@@ -104,6 +104,85 @@ router.post("/create-admin", requireAuth, async (req, res) => {
   }
 });
 
+// GET /api/auth/admins — list all admins (super_admin only)
+router.get("/admins", requireAuth, async (req, res) => {
+  const session = (req as any).session;
+  if (session.role !== "super_admin") {
+    res.status(403).json({ error: "Only super_admin can list admins" });
+    return;
+  }
+  try {
+    const admins = await db
+      .select({
+        id: adminsTable.id,
+        username: adminsTable.username,
+        role: adminsTable.role,
+        displayName: adminsTable.displayName,
+        createdAt: adminsTable.createdAt,
+        lastLogin: adminsTable.lastLogin,
+      })
+      .from(adminsTable)
+      .orderBy(adminsTable.createdAt);
+    res.json(admins);
+  } catch {
+    res.status(500).json({ error: "Failed to fetch admins" });
+  }
+});
+
+// PATCH /api/auth/admins/:id — update role / displayName (super_admin only)
+router.patch("/admins/:id", requireAuth, async (req, res) => {
+  const session = (req as any).session;
+  if (session.role !== "super_admin") {
+    res.status(403).json({ error: "Only super_admin can update admins" });
+    return;
+  }
+  const targetId = Number(req.params.id);
+  if (targetId === session.adminId) {
+    res.status(400).json({ error: "Cannot modify your own account here" });
+    return;
+  }
+  const { role, displayName } = req.body;
+  const allowed = ["super_admin", "editor", "volunteer"];
+  if (role && !allowed.includes(role)) {
+    res.status(400).json({ error: "Invalid role" });
+    return;
+  }
+  try {
+    const updates: Record<string, unknown> = {};
+    if (role) updates.role = role;
+    if (displayName !== undefined) updates.displayName = displayName;
+    const [updated] = await db
+      .update(adminsTable)
+      .set(updates)
+      .where(eq(adminsTable.id, targetId))
+      .returning({ id: adminsTable.id, username: adminsTable.username, role: adminsTable.role, displayName: adminsTable.displayName });
+    if (!updated) { res.status(404).json({ error: "Admin not found" }); return; }
+    res.json(updated);
+  } catch {
+    res.status(500).json({ error: "Failed to update admin" });
+  }
+});
+
+// DELETE /api/auth/admins/:id (super_admin only, cannot delete self)
+router.delete("/admins/:id", requireAuth, async (req, res) => {
+  const session = (req as any).session;
+  if (session.role !== "super_admin") {
+    res.status(403).json({ error: "Only super_admin can delete admins" });
+    return;
+  }
+  const targetId = Number(req.params.id);
+  if (targetId === session.adminId) {
+    res.status(400).json({ error: "Cannot delete your own account" });
+    return;
+  }
+  try {
+    await db.delete(adminsTable).where(eq(adminsTable.id, targetId));
+    res.status(204).end();
+  } catch {
+    res.status(500).json({ error: "Failed to delete admin" });
+  }
+});
+
 // PATCH /api/auth/change-password
 router.patch("/change-password", requireAuth, async (req, res) => {
   const session = (req as any).session;
