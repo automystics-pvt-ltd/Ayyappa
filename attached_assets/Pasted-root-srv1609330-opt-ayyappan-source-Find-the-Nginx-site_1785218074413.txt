@@ -1,0 +1,63 @@
+root@srv1609330:/opt/ayyappan-source# # Find the Nginx site config
+grep -r "vadamadurai-ayyappan" /etc/nginx/sites-enabled/ -l
+/etc/nginx/sites-enabled/ayyappan-temple
+root@srv1609330:/opt/ayyappan-source# location / {
+    root /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech;
+    index index.html;
+    try_files $uri $uri/ /index.html;
+
+    # Never cache the HTML entry point — JS/CSS are content-hashed by Vite
+    location ~* \.html$ {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+        expires 0;
+    }
+}
+Command 'location' not found, but can be installed with:
+apt install location
+Command 'root' not found, did you mean:
+  command 'foot' from deb foot (1.16.2-2ubuntu0.1)
+  command 'proot' from deb proot (5.1.0-1.3)
+  command 'rootv' from deb xawtv (3.107-1.1)
+  command 'rott' from deb rott (20230810-1)
+  command 'toot' from deb toot (0.39.0-1)
+Try: apt install <deb name>
+Command 'index' not found, did you mean:
+  command 'sindex' from deb biosquid (1.9g+cvs20050121-12)
+  command 'xindex' from deb texlive-extra-utils (2023.20231207-3)
+  command 'cindex' from deb codesearch (0.0~hg20120502-3ubuntu0.24.04.3)
+Try: apt install <deb name>
+try_files: command not found
+Command 'location' not found, but can be installed with:
+apt install location
+add_header: command not found
+add_header: command not found
+expires: command not found
+-bash: syntax error near unexpected token `}'
+-bash: syntax error near unexpected token `}'
+root@srv1609330:/opt/ayyappan-source# nginx -t && systemctl reload nginx
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/automystics.com.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/automystics.com.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/vadamadurai-ayyappan-temple.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/ctr.tamilagavetrikalagam.com.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/docscan.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/erp.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/erp.mmwear.in.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/kalvicore.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/kuralai.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/mysticsaudit.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/mysticscivil.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/mysticshr.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/mysticsinv.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/scada.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/solarepc.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/solarnexus.automystics.tech.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/tkprabhu.tamilagavetrikalagam.com.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/ungalrajeev.tamilagavetrikalagam.com.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/ungaludansarath.tamilagavetrikalagam.com.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/ungalvignesh.tamilagavetrikalagam.com.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/www.fitro360.com.crt"
+nginx: [warn] "ssl_stapling" ignored, no OCSP responder URL in the certificate "/etc/nginx/ssl-certificates/www.fitro360.com.crt"
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+root@srv1609330:/opt/ayyappan-source# 
