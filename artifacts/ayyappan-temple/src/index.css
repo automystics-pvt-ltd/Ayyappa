@@ -172,7 +172,11 @@
 }
 
 .visitor-count-animate {
-  animation: visitor-count-pop 0.6s ease-out;
+  /* inline-block is required so transform:scale() applies in Safari and Firefox */
+  display: inline-block;
+  transform-origin: center center;
+  will-change: transform;
+  animation: visitor-count-pop 0.6s ease-out both;
 }
 
 @layer base {
