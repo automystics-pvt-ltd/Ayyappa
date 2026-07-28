@@ -1,0 +1,156 @@
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# cat > /opt/ayyappan-source/deploy/deploy.sh << 'EOF'
+#!/bin/bash
+set -euo pipefail
+
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
+CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
+info()    { echo -e "${CYAN}[INFO]${NC}  $*"; }
+ok()      { echo -e "${GREEN}[ OK ]${NC}  $*"; }
+warn()    { echo -e "${YELLOW}[WARN]${NC}  $*"; }
+die()     { echo -e "${RED}[FAIL]${NC}  $*"; exit 1; }
+
+SOURCE_DIR="${SOURCE_DIR:-/opt/ayyappan-source}"
+API_DIR="${API_DIR:-/opt/ayyappan-api}"
+WEB_ROOT="${WEB_ROOT:-/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech}"
+API_PORT="${API_PORT:-3001}"
+PM2_APP="${PM2_APP:-ayyappan-api}"
+
+echo ""
+echo -e "${BOLD}╔══════════════════════════════════════════╗${NC}"
+echo -e "${BOLD}║  Ayyappan Temple — Deploy $(date '+%Y-%m-%d %H:%M')  ║${NC}"
+echo -e "${BOLD}╚══════════════════════════════════════════╝${NC}"
+echo ""
+
+[[ -d "$SOURCE_DIR" ]]   || die "Source dir not found: $SOURCE_DIR"
+[[ -d "$API_DIR/dist" ]] || die "API dir not found: $API_DIR/dist"
+command -v pnpm &>/dev/null || die "pnpm not installed"
+command -v pm2  &>/dev/null || die "PM2 not installed"
+command -v psql &>/dev/null || die "psql not installed"
+
+info "[1/6] Pulling latest code..."
+cd "$SOURCE_DIR"
+git fetch --all --prune
+git checkout -- .
+git pull origin clean-main
+COMMIT=$(git rev-parse --short HEAD)
+ok "At commit $COMMIT"
+
+info "[2/6] Installing dependencies..."
+pnpm approve-builds 2>/dev/null || true
+pnpm install --frozen-lockfile
+ok "Dependencies up to date"
+
+info "[3/6] Building frontend..."
+export PORT=3000
+bash /opt/ayyappan-source/deploy/deploy.sh50"I health check failed (HTTP $HTTP_STATUS)${NC}"2>/dev/null || true)
+
+╔══════════════════════════════════════════╗
+║  Ayyappan Temple — Deploy 2026-07-28 05:28  ║
+╚══════════════════════════════════════════╝
+
+[INFO]  [1/6] Pulling latest code...
+From github.com:automystics-pvt-ltd/Ayyappa
+ - [deleted]         (none)     -> origin/main
+   (refs/remotes/origin/HEAD has become dangling)
+From github.com:automystics-pvt-ltd/Ayyappa
+ * branch            clean-main -> FETCH_HEAD
+Already up to date.
+[ OK ]  At commit dac2202
+[INFO]  [2/6] Installing dependencies...
+There are no packages awaiting approval
+Scope: all 10 workspace projects
+Already up to date
+Done in 2.9s using pnpm v11.17.0
+[ OK ]  Dependencies up to date
+[INFO]  [3/6] Building frontend...
+$ vite build --config vite.config.ts
+vite v7.3.6 building client environment for production...
+src/hooks/use-toast.ts (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+✓ 2213 modules transformed.
+dist/public/index.html                                    1.69 kB │ gzip:   0.63 kB
+dist/public/assets/image_1784877158070-l568Kf0t.png     216.92 kB
+dist/public/assets/image_1784865355458-CEngj5Xi.png     977.06 kB
+dist/public/assets/image_1784877148291-DLga0aQi.png   1,114.70 kB
+dist/public/assets/temple_actual_photo-C9zGscdt.png   1,772.99 kB
+dist/public/assets/image_1784877330565-BwjdCJQ9.png   2,571.13 kB
+dist/public/assets/image_1784877335449-4hg-DZXn.png   2,659.74 kB
+dist/public/assets/image_1784877197239-B3PwVSYL.png   2,912.02 kB
+dist/public/assets/image_1784877450501-Bt-ZmIT-.png  11,638.10 kB
+dist/public/assets/image_1784877459509-Bxeyi4pZ.png  13,398.20 kB
+dist/public/assets/image_1784877437971-Dcq6Xfnj.png  17,213.39 kB
+dist/public/assets/index-BQHyUQLy.css                   170.38 kB │ gzip:  25.03 kB
+dist/public/assets/index-BpSORy4v.js                    702.67 kB │ gzip: 204.45 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 39.32s
+[ OK ]  Frontend built
+[INFO]          Syncing to /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech ...
+[ OK ]  Frontend deployed
+[INFO]  [4/6] Building API...
+$ node ./build.mjs
+
+  dist/index.mjs                      10.1mb ⚠️
+  dist/pino-worker.mjs               153.4kb
+  dist/pino-file.mjs                 142.1kb
+  dist/pino-pretty.mjs               114.4kb
+  dist/thread-stream-worker.mjs        7.3kb
+  dist/index.mjs.map                  16.9mb
+  dist/pino-worker.mjs.map           256.9kb
+  dist/pino-file.mjs.map             229.0kb
+  dist/pino-pretty.mjs.map           203.6kb
+  dist/thread-stream-worker.mjs.map   12.0kb
+
+⚡ Done in 15008ms
+[ OK ]  API built
+[INFO]          Syncing to /opt/ayyappan-api/dist/ ...
+[ OK ]  API bundle deployed
+[INFO]  [5/6] Applying DB migrations...
+psql:/opt/ayyappan-source/deploy/schema.sql:12: NOTICE:  relation "admins" already exists, skipping
+psql:/opt/ayyappan-source/deploy/schema.sql:24: NOTICE:  relation "news_posts" already exists, skipping
+psql:/opt/ayyappan-source/deploy/schema.sql:38: NOTICE:  relation "events" already exists, skipping
+psql:/opt/ayyappan-source/deploy/schema.sql:49: NOTICE:  relation "gallery_albums" already exists, skipping
+psql:/opt/ayyappan-source/deploy/schema.sql:58: NOTICE:  relation "gallery_photos" already exists, skipping
+psql:/opt/ayyappan-source/deploy/schema.sql:76: NOTICE:  relation "donations" already exists, skipping
+psql:/opt/ayyappan-source/deploy/schema.sql:77: NOTICE:  relation "donations_transaction_id_idx" already exists, skipping
+psql:/opt/ayyappan-source/deploy/schema.sql:84: NOTICE:  relation "site_settings" already exists, skipping
+psql:/opt/ayyappan-source/deploy/schema.sql:94: NOTICE:  relation "audit_logs" already exists, skipping
+psql:/opt/ayyappan-source/deploy/schema.sql:114: NOTICE:  relation "sessions" already exists, skipping
+psql:/opt/ayyappan-source/deploy/schema.sql:117: ERROR:  must be owner of table sessions
+psql:/opt/ayyappan-source/deploy/schema.sql:119: ERROR:  must be owner of table sessions
+psql:/opt/ayyappan-source/deploy/schema.sql:127: WARNING:  no privileges were granted for "sessions"
+psql:/opt/ayyappan-source/deploy/schema.sql:142: NOTICE:  column "day_key" of relation "visits" already exists, skipping
+[ OK ]  Migrations applied
+[INFO]  [6/6] Restarting API...
+[PM2] Applying action restartProcessId on app [ayyappan-api](ids: [ 38 ])
+[PM2] [ayyappan-api](38) ✓
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 39 │ automystics-api       │ default     │ 0.0.0   │ fork    │ 3380868  │ 2D     │ 74   │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 38 │ ayyappan-api          │ default     │ N/A     │ fork    │ 1232619  │ 0s     │ 11   │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 32 │ docscan-api           │ default     │ 0.0.0   │ fork    │ 1392181  │ 3D     │ 9    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 11 │ erp-automystics       │ default     │ N/A     │ fork    │ 342673   │ 3D     │ 11   │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 1  │ fitro360              │ default     │ 1.0.0   │ fork    │ 3843201  │ 2D     │ 5    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 2  │ kalvicore-api         │ default     │ 0.0.0   │ fork    │ 198081   │ 4D     │ 8    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 13 │ mmwear-erp            │ default     │ 0.0.0   │ fork    │ 3396013  │ 6D     │ 137  │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 14 │ mystics-audit         │ default     │ 0.0.0   │ fork    │ 1035800  │ 13D    │ 586  │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 5  │ mysticscivil-api      │ default     │ N/A     │ fork    │ 1524242  │ 16D    │ 4    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 26 │ mysticshr-api         │ default     │ 0.0.0   │ fork    │ 852146   │ 11D    │ 14   │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 12 │ mysticsinventory      │ default     │ N/A     │ fork    │ N/A      │ 12h    │ 268… │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 3  │ people-connect-api    │ default     │ 0.0.0   │ fork    │ 1524209  │ 16D    │ 4    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 41 │ solarepc-api          │ default     │ 0.0.0   │ fork    │ 3857173  │ 2D     │ 24   │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 6  │ solarnexus-api        │ default     │ 0.0.0   │ fork    │ 1524251  │ 16D    │ 4    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 4  │ tkprabhu-api          │ default     │ 0.0.0   │ fork    │ 1524217  │ 16D    │ 4    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 8  │ ungalrajeev-api       │ default     │ N/A     │ fork    │ 1232424  │ 12s    │ 989… │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 7  │ ungaludan-sarath      │ default     │ 0.0.0   │ fork    │ 1524287  │ 16D    │ 4    │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 9  │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1232583  │ 2s     │ 319… │ online    │ 0%       │ 0b       │ root     │ disabled │
+│ 10 │ ungalvignesh-api      │ default     │ N/A     │ fork    │ 1524307  │ 16D    │ 199… │ online    │ 0%       │ 0b       │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 98.6% | ram usage: 35.6% | lo: ⇓ 0.03mb/s ⇑ 0.03mb/s | eth0: ⇓ 0.002mb/s ⇑ 0.002mb/s | disk: ⇓ 1.987mb/s ⇑ 2.6mb/s |
+
+✓  Deploy complete — API is healthy (HTTP 200)
+   Commit: dac2202  |  Web: /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# 
