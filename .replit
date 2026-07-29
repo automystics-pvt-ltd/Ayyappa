@@ -28,6 +28,10 @@ args = "test:admin-self-protect"
 task = "workflow.run"
 args = "test:receipt-long-name"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test:receipt-long-amount"
+
 [[workflows.workflow]]
 name = "test:visits-dedup"
 author = "agent"
@@ -57,6 +61,17 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pnpm --filter @workspace/api-server run test:receipt-long-name"
+
+[[workflows.workflow]]
+name = "test:receipt-long-amount"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/api-server run test:receipt-long-amount"
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [agent]
 stack = "PNPM_WORKSPACE"

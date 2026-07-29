@@ -341,10 +341,14 @@ export default function Receipt() {
           .amt-left   {
             padding:0 30px;
             display:flex; flex-direction:column; justify-content:center;
+            min-width:0; overflow:hidden;
           }
           .amt-lbl    { font-size:10pt; }
           .amt-ta     { font-size:11pt; margin-bottom:10px; }
-          .amt-val    { font-size:58pt; }
+          /* 46pt keeps ₹1,00,00,000 (11 chars) well within the left column;
+             overflow-wrap + word-break are last-resort safeguards for any
+             future amount that might still be too wide. */
+          .amt-val    { font-size:46pt; overflow-wrap:break-word; word-break:break-all; }
           .amt-right  {
             padding:0 26px;
             display:flex; align-items:center; justify-content:center;
