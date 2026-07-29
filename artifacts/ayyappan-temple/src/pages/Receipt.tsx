@@ -252,15 +252,7 @@ export default function Receipt() {
           display:flex; align-items:center; justify-content:center;
           padding:14px 20px;
         }
-        .stamp {
-          transform:rotate(-8deg);
-          border:2.5px solid #16a34a; border-radius:8px;
-          padding:10px 15px; text-align:center;
-          background:#f0fdf4;
-        }
-        .stamp-check { font-size:28px; color:#16a34a; line-height:1; }
-        .stamp-en { font:900 12px/1 'Cinzel',serif; letter-spacing:2px; color:#15803d; text-transform:uppercase; margin-top:4px; }
-        .stamp-ta { font-family:'Noto Serif Tamil',serif; font-size:9.5px; font-weight:700; color:#166534; margin-top:3px; }
+        .seal-svg { display:block; transform:rotate(-6deg); filter:drop-shadow(0 2px 6px rgba(22,163,74,.18)); }
 
         /* FOOTER */
         .ftr {
@@ -438,7 +430,7 @@ export default function Receipt() {
               </tbody>
             </table>
 
-            {/* AMOUNT + STAMP */}
+            {/* AMOUNT + SEAL */}
             <div className="amt">
               <div className="amt-left">
                 <div className="amt-lbl">Donation Amount</div>
@@ -446,11 +438,55 @@ export default function Receipt() {
                 <div className="amt-val">{amountFmt}</div>
               </div>
               <div className="amt-right">
-                <div className="stamp">
-                  <div className="stamp-check">✔</div>
-                  <div className="stamp-en">Approved</div>
-                  <div className="stamp-ta">அங்கீகரிக்கப்பட்டது</div>
-                </div>
+                {/* Round temple seal */}
+                <svg className="seal-svg" width="112" height="112" viewBox="0 0 112 112"
+                     xmlns="http://www.w3.org/2000/svg">
+                  {/* background fill */}
+                  <circle cx="56" cy="56" r="53" fill="#f0fdf4"/>
+                  {/* outer ring */}
+                  <circle cx="56" cy="56" r="53" fill="none" stroke="#16a34a" strokeWidth="2.5"/>
+                  {/* inner ring */}
+                  <circle cx="56" cy="56" r="45" fill="none" stroke="#16a34a" strokeWidth="1.5"/>
+                  {/* tiny decorative ring */}
+                  <circle cx="56" cy="56" r="42" fill="none" stroke="#16a34a" strokeWidth=".5" strokeDasharray="2 3"/>
+
+                  <defs>
+                    {/* top arc path — radius 48, so text sits between the two rings */}
+                    <path id="seal-top" d="M 8,56 A 48,48 0 0,1 104,56"/>
+                    {/* bottom arc — goes left→right via bottom for readable text */}
+                    <path id="seal-bot" d="M 104,56 A 48,48 0 0,1 8,56"/>
+                  </defs>
+
+                  {/* curved top text */}
+                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="9.5"
+                        fill="#15803d" fontWeight="700">
+                    <textPath href="#seal-top" startOffset="50%" textAnchor="middle">
+                      ஸ்வாமியே சரணம் ஐயப்பா
+                    </textPath>
+                  </text>
+
+                  {/* curved bottom text */}
+                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="8.5"
+                        fill="#15803d" fontWeight="600">
+                    <textPath href="#seal-bot" startOffset="50%" textAnchor="middle">
+                      ✦ &nbsp;ஐயப்பன் திருக்கோவில்&nbsp; ✦
+                    </textPath>
+                  </text>
+
+                  {/* centre main text */}
+                  <text x="56" y="50" textAnchor="middle"
+                        fontFamily="'Noto Serif Tamil',serif" fontSize="13.5"
+                        fill="#15803d" fontWeight="900">
+                    வடமதுரை
+                  </text>
+
+                  {/* centre sub text */}
+                  <text x="56" y="66" textAnchor="middle"
+                        fontFamily="'Noto Serif Tamil',serif" fontSize="9"
+                        fill="#166534" fontWeight="700">
+                    திருப்பணி குழு
+                  </text>
+                </svg>
               </div>
             </div>
 
