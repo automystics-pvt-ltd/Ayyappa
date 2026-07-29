@@ -239,10 +239,10 @@ export default function Receipt() {
         }
 
         /* AMOUNT */
-        .amt { display:grid; grid-template-columns:1fr auto; border-top:2px solid #7c2d12; border-bottom:2px solid #7c2d12; min-height:156px; }
+        .amt { display:grid; grid-template-columns:1fr auto; border-top:2px solid #7c2d12; border-bottom:2px solid #7c2d12; min-height:180px; }
         .amt-left {
           background:linear-gradient(140deg,#4a1000 0%,#7c2500 45%,#c24800 100%);
-          padding:14px 20px;
+          padding:16px 20px;
           display:flex; flex-direction:column; justify-content:center;
         }
         .amt-lbl { font:700 8.5px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.2px; color:#fde68a; }
@@ -251,9 +251,9 @@ export default function Receipt() {
         .amt-right {
           background:#f0fdf4; border-left:2px solid #7c2d12;
           display:flex; align-items:center; justify-content:center;
-          padding:14px 20px;
+          padding:16px 22px;
         }
-        .seal-svg { display:block; transform:rotate(-6deg); filter:drop-shadow(0 2px 6px rgba(22,163,74,.18)); }
+        .seal-svg { display:block; transform:rotate(-6deg); filter:drop-shadow(0 2px 8px rgba(22,163,74,.22)); overflow:visible; }
 
         /* FOOTER */
         .ftr {
@@ -443,55 +443,62 @@ export default function Receipt() {
                 <div className="amt-val">{amountFmt}</div>
               </div>
               <div className="amt-right">
-                {/* Round temple seal — 128×128, cx=cy=64 */}
-                <svg className="seal-svg" width="128" height="128" viewBox="0 0 128 128"
-                     xmlns="http://www.w3.org/2000/svg">
-                  {/* === FONTS === */}
-                  <style>{`@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:wght@700;800;900&display=swap');`}</style>
+                {/*
+                  Round temple seal — 150×150, cx=cy=75
+                  ┌─ r=72  outer ring (3px)
+                  ├─ r=63  inner solid ring (1.5px)
+                  └─ r=58  dashed accent (0.7px)
 
+                  Arc radius = 67.5 → top semicircle ≈ π×67.5 ≈ 212px
+                  "ஸ்வாமியே சரணம் ஐயப்பா" ≈ 18 Tamil chars × ~11px ≈ 198px → fits ✓
+
+                  Main text sits at y=78 (centre=75, so baseline just below centre).
+                  Sub text at y=99.  Bottom dots at y=123.
+                */}
+                <svg className="seal-svg" width="150" height="150" viewBox="0 0 150 150"
+                     xmlns="http://www.w3.org/2000/svg">
                   <defs>
-                    {/*
-                      Top arc: centre (64,64), radius 57.
-                      Path goes from left (7,64) clockwise over the top to right (121,64).
-                      Text sits on this arc — centred at 50% = the topmost point (64,7).
-                    */}
-                    <path id="sarc" d="M 7,64 A 57,57 0 0,1 121,64"/>
+                    <path id="sarc"
+                      d="M 7.5,75 A 67.5,67.5 0 0,1 142.5,75"/>
                   </defs>
 
-                  {/* mint fill */}
-                  <circle cx="64" cy="64" r="61" fill="#f0fdf4"/>
-                  {/* outer ring */}
-                  <circle cx="64" cy="64" r="61" fill="none" stroke="#15803d" strokeWidth="3"/>
+                  {/* mint background */}
+                  <circle cx="75" cy="75" r="72" fill="#f0fdf4"/>
+                  {/* outer bold ring */}
+                  <circle cx="75" cy="75" r="72" fill="none" stroke="#15803d" strokeWidth="3"/>
                   {/* inner solid ring */}
-                  <circle cx="64" cy="64" r="53" fill="none" stroke="#15803d" strokeWidth="1.5"/>
+                  <circle cx="75" cy="75" r="63" fill="none" stroke="#15803d" strokeWidth="1.5"/>
                   {/* dashed accent ring */}
-                  <circle cx="64" cy="64" r="49" fill="none" stroke="#16a34a"
-                          strokeWidth="0.7" strokeDasharray="3 3"/>
+                  <circle cx="75" cy="75" r="58" fill="none" stroke="#16a34a"
+                          strokeWidth="0.8" strokeDasharray="3.5 3"/>
 
-                  {/* ── CURVED TOP TEXT ── */}
-                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="10"
+                  {/* CURVED TOP TEXT — no decorators so it doesn't overflow */}
+                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="11.5"
                         fill="#15803d" fontWeight="700">
                     <textPath href="#sarc" startOffset="50%" textAnchor="middle">
-                      ✦ ஸ்வாமியே சரணம் ஐயப்பா ✦
+                      ஸ்வாமியே சரணம் ஐயப்பா
                     </textPath>
                   </text>
 
-                  {/* divider line */}
-                  <line x1="22" y1="73" x2="106" y2="73"
-                        stroke="#86efac" strokeWidth="1.2"/>
-
-                  {/* ── MAIN TEXT: வடமதுரை ── */}
-                  <text x="64" y="91" textAnchor="middle"
+                  {/* MAIN: வடமதுரை  — baseline at y=80, centre of inner circle */}
+                  <text x="75" y="80" textAnchor="middle"
                         fontFamily="'Noto Serif Tamil',serif"
-                        fontSize="18" fontWeight="900" fill="#15803d">
+                        fontSize="20" fontWeight="900" fill="#15803d">
                     வடமதுரை
                   </text>
 
-                  {/* ── SUB TEXT: திருப்பணி குழு ── */}
-                  <text x="64" y="109" textAnchor="middle"
+                  {/* SUB: திருப்பணி குழு */}
+                  <text x="75" y="100" textAnchor="middle"
                         fontFamily="'Noto Serif Tamil',serif"
-                        fontSize="10" fontWeight="700" fill="#166534">
+                        fontSize="11" fontWeight="700" fill="#166534">
                     திருப்பணி குழு
+                  </text>
+
+                  {/* bottom decorative dots */}
+                  <text x="75" y="124" textAnchor="middle"
+                        fontFamily="sans-serif" fontSize="8"
+                        fill="#16a34a" letterSpacing="5">
+                    ◆◆◆
                   </text>
                 </svg>
               </div>
