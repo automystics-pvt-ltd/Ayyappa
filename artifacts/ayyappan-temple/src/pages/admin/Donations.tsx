@@ -43,7 +43,7 @@ export default function Donations() {
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [justApproved, setJustApproved] = useState<{ id: number; name: string; amount: string; token: string } | null>(null);
+  const [justApproved, setJustApproved] = useState<{ id: number; name: string; amount: string; token: string; mobile: string; anonymous: boolean } | null>(null);
 
   const openScreenshot = async (objectPath: string) => {
     setPreviewLoading(true);
@@ -77,7 +77,7 @@ export default function Donations() {
 
   const canApprove = admin?.role === "super_admin" || admin?.role === "editor";
 
-  const approve = async (id: number, donorName: string, amount: string) => {
+  const approve = async (id: number, donorName: string, amount: string, mobile: string, anonymous: boolean) => {
     setActionLoading(id);
     try {
       await api.approveDonation(id);
@@ -86,7 +86,7 @@ export default function Donations() {
       const updated = await api.getAllDonations(undefined) as Donation[];
       const approved = updated.find(d => d.id === id);
       if (approved?.receiptToken) {
-        setJustApproved({ id, name: donorName, amount, token: approved.receiptToken });
+        setJustApproved({ id, name: donorName, amount, token: approved.receiptToken, mobile, anonymous });
       }
     }
     catch (e: any) { alert(e.message); }
@@ -102,6 +102,31 @@ export default function Donations() {
   };
 
   const fmt = (a: string) => `₹${Number(a).toLocaleString("en-IN")}`;
+
+  /** Normalize an Indian mobile number to E.164 (+91XXXXXXXXXX). Returns null if unrecognisable. */
+  const toE164 = (raw: string): string | null => {
+    const digits = raw.replace(/\D/g, "");
+    if (digits.length === 10) return `+91${digits}`;
+    if (digits.length === 11 && digits.startsWith("0")) return `+91${digits.slice(1)}`;
+    if (digits.length === 12 && digits.startsWith("91")) return `+${digits}`;
+    if (digits.length === 13 && digits.startsWith("091")) return `+91${digits.slice(3)}`;
+    return null;
+  };
+
+  const shareWhatsApp = (donorName: string, amount: string, token: string, anonymous: boolean, mobile: string) => {
+    const name = anonymous ? "அடையாளம் தெரியாதவர்" : donorName;
+    const amountFmt = fmt(amount);
+    const receiptUrl = `${window.location.origin}${import.meta.env.BASE_URL}receipt/${token}`;
+    const text = encodeURIComponent(
+      `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n\nநன்கொடையாளர்: ${name}\nதொகை: ${amountFmt}\n\nரசீது இணைப்பு:\n${receiptUrl}`
+    );
+    const e164 = toE164(mobile);
+    // wa.me expects digits only (no + prefix) — strip it before embedding in the URL path
+    const waPhone = e164 ? e164.replace(/^\+/, "") : null;
+    // Open a direct chat if phone is recognisable, otherwise open composer
+    const url = waPhone ? `https://wa.me/${waPhone}?text=${text}` : `https://wa.me/?text=${text}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <AdminLayout>
@@ -157,7 +182,7 @@ export default function Donations() {
                   <div className="flex flex-wrap gap-2">
                     {canApprove && d.status === "pending" && (
                       <>
-                        <button onClick={() => approve(d.id, d.donorName, d.amount)} disabled={actionLoading === d.id}
+                        <button onClick={() => approve(d.id, d.donorName, d.amount, d.mobile, d.anonymous)} disabled={actionLoading === d.id}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all disabled:opacity-50"
                           style={{ background: "linear-gradient(135deg,#10b981,#059669)" }}>
                           {actionLoading === d.id ? "..." : "✓ அங்கீகரி"}
@@ -179,6 +204,12 @@ export default function Donations() {
                           onClick={() => window.open(`${import.meta.env.BASE_URL}receipt/${d.receiptToken}`, "_blank")}
                           className="inline-flex items-center gap-1.5 text-xs text-orange-700 hover:text-orange-900 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200 transition-colors">
                           <Printer className="w-3.5 h-3.5" />Print
+                        </button>
+                        <button
+                          onClick={() => shareWhatsApp(d.donorName, d.amount, d.receiptToken!, d.anonymous, d.mobile)}
+                          className="inline-flex items-center gap-1.5 text-xs text-white px-3 py-1.5 rounded-lg transition-opacity hover:opacity-90"
+                          style={{ background: "linear-gradient(135deg,#15803d,#22c55e)" }}>
+                          💬 WhatsApp
                         </button>
                       </div>
                     )}
@@ -303,22 +334,33 @@ export default function Donations() {
               </div>
             </div>
             {/* Actions */}
-            <div className="px-6 pb-6 flex gap-3">
+            <div className="px-6 pb-6 flex flex-col gap-3">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    window.open(`${import.meta.env.BASE_URL}receipt/${justApproved.token}`, "_blank");
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-orange-200 transition-all active:scale-95"
+                  style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
+                >
+                  <Printer className="w-4 h-4" />
+                  Print Receipt
+                </button>
+                <button
+                  onClick={() => setJustApproved(null)}
+                  className="flex-1 border border-orange-200 py-3 rounded-xl font-medium text-orange-700 hover:bg-orange-50 text-sm transition-colors"
+                >
+                  பிறகு பார்க்கலாம்
+                </button>
+              </div>
               <button
                 onClick={() => {
-                  window.open(`${import.meta.env.BASE_URL}receipt/${justApproved.token}`, "_blank");
+                  shareWhatsApp(justApproved.name, justApproved.amount, justApproved.token, justApproved.anonymous, justApproved.mobile);
                 }}
-                className="flex-1 flex items-center justify-center gap-2 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-orange-200 transition-all active:scale-95"
-                style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
+                className="w-full flex items-center justify-center gap-2 text-white py-3 rounded-xl font-bold text-sm transition-all active:scale-95"
+                style={{ background: "linear-gradient(135deg,#15803d,#22c55e)" }}
               >
-                <Printer className="w-4 h-4" />
-                Print Receipt
-              </button>
-              <button
-                onClick={() => setJustApproved(null)}
-                className="flex-1 border border-orange-200 py-3 rounded-xl font-medium text-orange-700 hover:bg-orange-50 text-sm transition-colors"
-              >
-                பிறகு பார்க்கலாம்
+                💬 WhatsApp-ல் ரசீது அனுப்பு
               </button>
             </div>
           </div>
