@@ -238,7 +238,7 @@ export default function Receipt() {
               உங்களுக்கும் உங்கள் குடும்பத்திற்கும்
             </p>
             <p className="text-orange-700 text-sm font-bold leading-relaxed">
-              ஐயப்பன் அருள் கிடைக்கும் வண்ணம் நடக்கும்
+              ஐயப்பன் அருள் கிடைக்கும், நல்லதே நடக்கும்
             </p>
             <p className="text-amber-600 text-[11px] mt-1 italic">
               May Lord Ayyappan's blessings be upon you and your family 🙏
