@@ -458,8 +458,15 @@ export default function Receipt() {
                 <svg className="seal-svg" width="150" height="150" viewBox="0 0 150 150"
                      xmlns="http://www.w3.org/2000/svg">
                   <defs>
+                    {/*
+                      150° arc centred at the top of the circle.
+                      Start (9.8, 57.5) and end (140.2, 57.5) are 75° either
+                      side of the top.  Arc length ≈ 176 px.
+                      Tamil text at fontSize=9 ≈ 154 px → fits with margin.
+                      Path ends physically prevent any overflow into the sides.
+                    */}
                     <path id="sarc"
-                      d="M 7.5,75 A 67.5,67.5 0 0,1 142.5,75"/>
+                      d="M 9.8,57.5 A 67.5,67.5 0 0,1 140.2,57.5"/>
                   </defs>
 
                   {/* mint background */}
@@ -473,14 +480,13 @@ export default function Receipt() {
                           strokeWidth="0.8" strokeDasharray="3.5 3"/>
 
                   {/* CURVED TOP TEXT
-                      Top semicircle ≈ π × 67.5 = 212px.
-                      textLength="196" forces the text to fit within that arc
-                      so it never overflows into the sides.
+                      150° arc ≈ 177px.  Tamil at fontSize=9 ≈ 154px → fits.
+                      No textLength — browsers ignore it for complex Tamil script.
+                      Shorter arc path physically stops overflow at the endpoints.
                   */}
-                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="11"
+                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="9"
                         fill="#15803d" fontWeight="700">
-                    <textPath href="#sarc" startOffset="50%" textAnchor="middle"
-                              textLength="196" lengthAdjust="spacingAndGlyphs">
+                    <textPath href="#sarc" startOffset="50%" textAnchor="middle">
                       ஸ்வாமியே சரணம் ஐயப்பா
                     </textPath>
                   </text>
