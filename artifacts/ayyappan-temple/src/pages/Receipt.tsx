@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "wouter";
+import html2canvas from "html2canvas";
 import { api } from "@/lib/api";
 
 type ReceiptDonation = {
@@ -62,6 +63,8 @@ export default function Receipt() {
   const [donation, setDonation] = useState<ReceiptDonation | null>(null);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState<string | null>(null);
+  const docRef                  = useRef<HTMLDivElement>(null);
+  const [imgBusy, setImgBusy]   = useState(false);
 
   useEffect(() => {
     api.getDonationReceipt(token)
@@ -80,6 +83,48 @@ export default function Receipt() {
   const dateISO   = donation.reviewedAt ?? donation.createdAt;
   const amountFmt = `₹${Number(donation.amount).toLocaleString("en-IN")}`;
   const logo      = `${import.meta.env.BASE_URL}iyyappan-logo.png`;
+
+  const captureCanvas = () =>
+    html2canvas(docRef.current!, { scale: 2, useCORS: true, backgroundColor: "#d97706" });
+
+  const saveAsImage = async () => {
+    if (!docRef.current || imgBusy) return;
+    setImgBusy(true);
+    try {
+      const canvas = await captureCanvas();
+      const link = document.createElement("a");
+      link.download = `receipt-${receiptNo}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } finally { setImgBusy(false); }
+  };
+
+  const shareWhatsApp = async () => {
+    if (!docRef.current || imgBusy) return;
+    setImgBusy(true);
+    const waFallback = () => {
+      const txt = encodeURIComponent(
+        `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${name} — ${amountFmt}\nரசீது: ${window.location.href}`
+      );
+      window.open(`https://wa.me/?text=${txt}`, "_blank");
+    };
+    try {
+      const canvas = await captureCanvas();
+      const blob: Blob = await new Promise((res, rej) =>
+        canvas.toBlob(b => b ? res(b) : rej(new Error("blob failed")), "image/png")
+      );
+      const file = new File([blob], `receipt-${receiptNo}.png`, { type: "image/png" });
+      const nav = navigator as Navigator & { canShare?: (data?: ShareData) => boolean };
+      if (nav.canShare?.({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `நன்கொடை ரசீது ${receiptNo}`,
+          text: `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${name} — ${amountFmt}`,
+        });
+      } else { waFallback(); }
+    } catch (_) { waFallback(); }
+    finally { setImgBusy(false); }
+  };
 
   const rows: { lbl: string; val: string; mono?: boolean; isName?: boolean }[] = [
     { lbl: "பெயர் / NAME",               val: name,                        isName: true },
@@ -119,6 +164,23 @@ export default function Receipt() {
           font:600 13px/1 'Inter',sans-serif; text-decoration:none; transition:background .15s;
         }
         .btn-h:hover { background:#fff7ed; }
+        .btn-img {
+          display:flex; align-items:center; gap:8px; padding:11px 22px;
+          background:linear-gradient(135deg,#1e3a5f,#1d4ed8,#3b82f6);
+          color:#fff; border:none; border-radius:10px;
+          font:700 13px/1 'Inter',sans-serif; cursor:pointer;
+          box-shadow:0 4px 14px rgba(29,78,216,.28); transition:opacity .15s;
+        }
+        .btn-img:hover { opacity:.88; }
+        .btn-wa {
+          display:flex; align-items:center; gap:8px; padding:11px 22px;
+          background:linear-gradient(135deg,#14532d,#15803d,#22c55e);
+          color:#fff; border:none; border-radius:10px;
+          font:700 13px/1 'Inter',sans-serif; cursor:pointer;
+          box-shadow:0 4px 14px rgba(21,128,61,.28); transition:opacity .15s;
+        }
+        .btn-wa:hover { opacity:.88; }
+        .btn-p:disabled,.btn-img:disabled,.btn-wa:disabled { opacity:.55; cursor:not-allowed; }
 
         /* DOCUMENT — outer maroon border + amber inner border via background */
         .doc {
@@ -372,12 +434,14 @@ export default function Receipt() {
       <div className="pg">
 
         <div className="acts">
-          <button className="btn-p" onClick={() => window.print()}>🖨️ &nbsp;Print / Save PDF</button>
+          <button className="btn-p" onClick={() => window.print()}>🖨️ &nbsp;Print / PDF</button>
+          <button className="btn-img" onClick={saveAsImage} disabled={imgBusy}>📷 &nbsp;{imgBusy ? "தயாராகிறது…" : "படமாக சேமி"}</button>
+          <button className="btn-wa"  onClick={shareWhatsApp} disabled={imgBusy}>💬 &nbsp;WhatsApp</button>
           <a href={import.meta.env.BASE_URL} className="btn-h">🏠 முகப்பு</a>
         </div>
 
         {/* ══ DOCUMENT ══ */}
-        <div className="doc">
+        <div className="doc" ref={docRef}>
           {/* inner amber border — real CSS, prints correctly */}
           <div className="doc-inner">
 
@@ -515,7 +579,9 @@ export default function Receipt() {
         </div>{/* doc */}
 
         <div className="acts" style={{ marginTop:20, marginBottom:0 }}>
-          <button className="btn-p" onClick={() => window.print()}>🖨️ &nbsp;Print / Save PDF</button>
+          <button className="btn-p" onClick={() => window.print()}>🖨️ &nbsp;Print / PDF</button>
+          <button className="btn-img" onClick={saveAsImage} disabled={imgBusy}>📷 &nbsp;{imgBusy ? "தயாராகிறது…" : "படமாக சேமி"}</button>
+          <button className="btn-wa"  onClick={shareWhatsApp} disabled={imgBusy}>💬 &nbsp;WhatsApp</button>
           <a href={import.meta.env.BASE_URL} className="btn-h">🏠 முகப்பு</a>
         </div>
 
