@@ -272,81 +272,103 @@ export default function Receipt() {
         .ftr-org-en { font-size:10px; font-weight:600; color:rgba(255,255,255,.80); margin-top:3px; letter-spacing:.4px; }
         .ftr-rcpt   { font-size:8px; color:rgba(255,255,255,.45); margin-top:7px; letter-spacing:.3px; }
 
-        /* ══ PRINT ══ */
+        /* ══ PRINT — full A4 fill ══ */
         @media print {
-          @page { size:A4 portrait; margin:8mm 10mm; }
+          @page { size:A4 portrait; margin:0; }
 
-          /* force all colours & backgrounds */
+          /* force colours */
           * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
 
-          body { background:#fff !important; }
+          body,html { margin:0; padding:0; }
 
-          /* page wrapper — stretch to fill A4 width, no padding */
+          /* wrapper fills exactly A4 */
           .pg {
-            min-height:unset; padding:0;
-            background:#fff; align-items:stretch;
+            width:210mm; min-height:297mm; padding:0;
+            background:#d97706; /* amber shows as outer border strip */
+            align-items:stretch;
+            display:flex; flex-direction:column;
           }
           .acts { display:none !important; }
 
-          /* document — full page width, no screen shadow */
-          .doc       { max-width:100%; box-shadow:none; }
-          .doc-inner { margin:3px; }
+          /* doc = full A4 sheet, amber background = real inner border */
+          .doc {
+            width:210mm; height:297mm;
+            max-width:100%; box-shadow:none;
+            background:#d97706;
+            border:3px solid #7c2d12;
+            display:flex; flex-direction:column;
+          }
 
-          /* ── HEADER: bigger logo, larger fonts ── */
-          .hdr      { padding:22px 30px 18px; }
-          .hdr-logo { width:90px; height:90px; margin-bottom:12px; }
-          .hdr-en   { font-size:21pt; }
-          .hdr-ta   { font-size:15pt; margin-top:6px; }
-          .hdr-addr { font-size:11pt; margin-top:5px; }
-          .hdr-pill { margin-top:13px; padding:7px 24px; font-size:13pt; }
+          /* doc-inner is a flex column that fills the page */
+          .doc-inner {
+            margin:3px; flex:1;
+            display:flex; flex-direction:column;
+            overflow:hidden;
+          }
 
-          /* ── TITLE STRIP ── */
-          .strip    { padding:9px 28px; }
-          .strip-en { font-size:13pt; letter-spacing:4px; }
+          /* all sections shrink, only .amt grows to fill */
+          .hdr,.strip,.bless,.meta,.ftr { flex-shrink:0; }
+          .tbl { flex-shrink:0; }
+          .amt { flex:1; }          /* ← grows to fill remaining height */
 
-          /* ── BLESSING ── */
-          .bless     { padding:14px 30px; }
-          .bless-sub { font-size:13pt; margin-bottom:5px; }
-          .bless-main{ font-size:17pt; }
+          /* HEADER */
+          .hdr      { padding:22px 32px 18px; }
+          .hdr-logo { width:88px; height:88px; margin-bottom:11px; }
+          .hdr-en   { font-size:20pt; }
+          .hdr-ta   { font-size:14pt; margin-top:5px; }
+          .hdr-addr { font-size:11pt; margin-top:4px; }
+          .hdr-pill { margin-top:12px; padding:6px 24px; font-size:12pt; }
 
-          /* ── META ROW ── */
-          .mc        { padding:12px 24px; }
-          .mc-lbl    { font-size:9pt; margin-bottom:5px; }
-          .mc-no     { font-size:18pt; }
-          .mc-date   { font-size:15pt; }
-          .mc-date-ta{ font-size:11pt; margin-top:4px; }
+          /* STRIP */
+          .strip    { padding:8px 28px; }
+          .strip-en { font-size:12.5pt; letter-spacing:4px; }
 
-          /* ── DONOR TABLE ── */
-          .tbl-head td { padding:8px 20px; font-size:10pt; }
-          .tbl .lbl    { padding:9px 20px; font-size:10.5pt; }
-          .tbl .val    { padding:9px 20px 9px 0; font-size:12pt; }
+          /* BLESSING */
+          .bless     { padding:13px 32px; }
+          .bless-sub { font-size:12pt; margin-bottom:4px; }
+          .bless-main{ font-size:16pt; }
+
+          /* META */
+          .mc         { padding:11px 24px; }
+          .mc-lbl     { font-size:9pt; margin-bottom:5px; }
+          .mc-no      { font-size:17pt; }
+          .mc-date    { font-size:14pt; }
+          .mc-date-ta { font-size:10pt; margin-top:4px; }
+
+          /* DONOR TABLE */
+          .tbl-head td { padding:8px 22px; font-size:10.5pt; }
+          .tbl .lbl    { padding:10px 22px; font-size:10.5pt; }
+          .tbl .val    { padding:10px 22px 10px 0; font-size:12.5pt; }
           .tbl .val.mono { font-size:11pt; }
+          .tbl tr.name-row .lbl          { padding:11px 22px 11px 17px; font-size:10.5pt; }
+          .tbl tr.name-row .val.name-val { font-size:19pt !important; padding:11px 22px 11px 0 !important; }
 
-          /* name row stays large */
-          .tbl tr.name-row .lbl          { padding:10px 20px 10px 15px; font-size:10.5pt; }
-          .tbl tr.name-row .val.name-val { font-size:20pt !important; padding:10px 20px 10px 0 !important; }
-
-          /* ── AMOUNT BLOCK ── */
-          .amt-left   { padding:20px 28px; }
+          /* AMOUNT — flex:1 means it fills all leftover vertical space */
+          .amt        { display:grid; grid-template-columns:1fr auto; }
+          .amt-left   {
+            padding:0 30px;
+            display:flex; flex-direction:column; justify-content:center;
+          }
           .amt-lbl    { font-size:10pt; }
           .amt-ta     { font-size:11pt; margin-bottom:10px; }
-          .amt-val    { font-size:56pt; }
-          .amt-right  { padding:20px 24px; }
-          .stamp      { padding:14px 20px; border-radius:10px; border-width:3px; }
-          .stamp-check{ font-size:36px; }
-          .stamp-en   { font-size:13pt; margin-top:6px; }
-          .stamp-ta   { font-size:11pt; margin-top:4px; }
+          .amt-val    { font-size:58pt; }
+          .amt-right  {
+            padding:0 26px;
+            display:flex; align-items:center; justify-content:center;
+          }
+          .stamp       { padding:16px 22px; border-width:3px; border-radius:10px; }
+          .stamp-check { font-size:38px; }
+          .stamp-en    { font-size:14pt; margin-top:6px; }
+          .stamp-ta    { font-size:11.5pt; margin-top:4px; }
 
-          /* ── FOOTER ── */
-          .ftr        { padding:16px 30px; }
+          /* FOOTER */
+          .ftr        { padding:18px 32px; }
           .ftr-issued { font-size:9pt; margin-bottom:7px; }
           .ftr-org-ta { font-size:18pt; }
           .ftr-org-en { font-size:11pt; margin-top:4px; }
           .ftr-rcpt   { font-size:9pt; margin-top:8px; }
 
-          .doc,.doc-inner,.hdr,.strip,.bless,.meta,.tbl,.amt,.ftr {
-            page-break-inside:avoid; break-inside:avoid;
-          }
+          .doc,.doc-inner { page-break-inside:avoid; break-inside:avoid; }
         }
       `}</style>
 
