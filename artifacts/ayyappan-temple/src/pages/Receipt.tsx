@@ -353,12 +353,12 @@ export default function Receipt() {
           background:linear-gradient(140deg,#4a1000 0%,#7c2500 45%,#c24800 100%);
           padding:16px 24px;
           display:flex; flex-direction:column; justify-content:center; align-items:center;
-          text-align:center;
+          text-align:center; gap:6px;
         }
-        .amt-rcvd { font:700 8px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.4px; color:#86efac; margin-bottom:3px; }
-        .amt-lbl  { font:700 8.5px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.2px; color:#fde68a; }
-        .amt-ta   { font-family:'Noto Serif Tamil',serif; font-size:9.5px; font-weight:600; color:#fcd9a0; margin-top:2px; margin-bottom:10px; }
-        .amt-val  { font-family:'Oswald',sans-serif; font-size:50px; font-weight:700; color:#fff; line-height:1; letter-spacing:1px; }
+        .amt-rcvd { font:700 8px/1.2 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.4px; color:#86efac; }
+        .amt-lbl  { font:700 8.5px/1.2 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.2px; color:#fde68a; }
+        .amt-ta   { font-family:'Noto Serif Tamil',serif; font-size:9.5px; font-weight:600; color:#fcd9a0; line-height:1.4; }
+        .amt-val  { font-family:'Oswald',sans-serif; font-size:50px; font-weight:700; color:#fff; line-height:1.15; letter-spacing:1px; }
         .amt-right {
           background:#f0fdf4; border-left:2px solid #7c2d12;
           display:flex; align-items:center; justify-content:center;
