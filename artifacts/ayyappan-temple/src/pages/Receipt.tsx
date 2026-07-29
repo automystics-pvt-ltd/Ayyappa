@@ -126,10 +126,10 @@ export default function Receipt() {
     finally { setImgBusy(false); }
   };
 
-  const rows: { lbl: string; val: string; mono?: boolean; isName?: boolean }[] = [
-    { lbl: "பெயர் / NAME",               val: name,                        isName: true },
-    { lbl: "ஊர் / PLACE",                val: donation.place ?? ""         },
-    { lbl: "பரிவர்த்தனை / TXN ID",       val: donation.transactionId,      mono: true   },
+  const rows: { lbl: string; val: string; mono?: boolean; isName?: boolean; isPlace?: boolean }[] = [
+    { lbl: "பெயர் / NAME",               val: name,                        isName: true  },
+    { lbl: "ஊர் / PLACE",                val: donation.place ?? "",         isPlace: true },
+    { lbl: "பரிவர்த்தனை / TXN ID",       val: donation.transactionId,      mono: true    },
     { lbl: "செய்தி / MESSAGE",            val: donation.message ?? ""       },
   ].filter(r => r.val);
 
@@ -288,28 +288,38 @@ export default function Receipt() {
         }
         .tbl .val.mono { font-family:'Courier New',monospace; font-size:10px; color:#44403c; }
 
-        /* NAME ROW — highlighted */
-        .tbl tr.name-row td              { background:#fff7ed !important; border-bottom:1.5px solid #fcd9a0 !important; }
-        .tbl tr.name-row .lbl           { border-left:4px solid #ea580c; padding-left:12px; color:#c2410c !important; font-weight:800; font-size:9.5px; vertical-align:middle; }
-        .tbl tr.name-row .val.name-val  {
+        /* DONOR HERO — name + place centred highlight */
+        .donor-hero {
+          background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 50%,#fde8c8 100%);
+          border-top:1px solid #fde8c8; border-bottom:2px solid #fcd9a0;
+          padding:20px 28px; text-align:center;
+        }
+        .donor-hero-lbl {
+          font:700 8px/1 'Inter',sans-serif; text-transform:uppercase;
+          letter-spacing:1.4px; color:#b45309; margin-bottom:10px;
+        }
+        .donor-hero-name {
           font-family:'Noto Serif Tamil',serif;
-          font-size:17px; font-weight:900;
-          color:#7c2d12;
-          padding:9px 16px 9px 0;
-          letter-spacing:.2px;
-          white-space:nowrap;
+          font-size:28px; font-weight:900; color:#7c2d12; line-height:1.25;
+        }
+        .donor-hero-place {
+          font-family:'Noto Serif Tamil',serif;
+          font-size:14px; font-weight:700; color:#92400e;
+          margin-top:7px; letter-spacing:.3px;
         }
 
         /* AMOUNT */
         .amt { display:grid; grid-template-columns:1fr auto; border-top:2px solid #7c2d12; border-bottom:2px solid #7c2d12; min-height:216px; }
         .amt-left {
           background:linear-gradient(140deg,#4a1000 0%,#7c2500 45%,#c24800 100%);
-          padding:16px 20px;
-          display:flex; flex-direction:column; justify-content:center;
+          padding:16px 24px;
+          display:flex; flex-direction:column; justify-content:center; align-items:center;
+          text-align:center;
         }
-        .amt-lbl { font:700 8.5px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.2px; color:#fde68a; }
-        .amt-ta  { font-family:'Noto Serif Tamil',serif; font-size:9.5px; font-weight:600; color:#fcd9a0; margin-top:2px; margin-bottom:8px; }
-        .amt-val { font-family:'Oswald',sans-serif; font-size:46px; font-weight:700; color:#fff; line-height:1; letter-spacing:1px; }
+        .amt-rcvd { font:700 8px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.4px; color:#86efac; margin-bottom:3px; }
+        .amt-lbl  { font:700 8.5px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.2px; color:#fde68a; }
+        .amt-ta   { font-family:'Noto Serif Tamil',serif; font-size:9.5px; font-weight:600; color:#fcd9a0; margin-top:2px; margin-bottom:10px; }
+        .amt-val  { font-family:'Oswald',sans-serif; font-size:50px; font-weight:700; color:#fff; line-height:1; letter-spacing:1px; }
         .amt-right {
           background:#f0fdf4; border-left:2px solid #7c2d12;
           display:flex; align-items:center; justify-content:center;
@@ -482,29 +492,35 @@ export default function Receipt() {
               </div>
             </div>
 
-            {/* DONOR TABLE */}
-            <table className="tbl" cellPadding={0} cellSpacing={0}>
-              <tbody>
-                <tr className="tbl-head">
-                  <td colSpan={2}>நன்கொடையாளர் விவரம் &nbsp;·&nbsp; Donor Details</td>
-                </tr>
-                {rows.map((r, i) => (
-                  <tr className={`row${r.isName ? " name-row" : ""}`} key={i}>
-                    <td className="lbl">{r.lbl}</td>
-                    <td className={r.isName ? "val name-val" : r.mono ? "val mono" : "val"}>
-                      {r.val}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {/* DONOR HERO — name + place centred */}
+            <div className="donor-hero">
+              <div className="donor-hero-lbl">நன்கொடையாளர் விவரம் &nbsp;·&nbsp; Donor Details</div>
+              <div className="donor-hero-name">{name}</div>
+              {donation.place && (
+                <div className="donor-hero-place">📍 &nbsp;{donation.place}</div>
+              )}
+            </div>
+
+            {/* DETAILS TABLE — TXN ID + Message only */}
+            {rows.some(r => !r.isName && !r.isPlace) && (
+              <table className="tbl" cellPadding={0} cellSpacing={0}>
+                <tbody>
+                  {rows.filter(r => !r.isName && !r.isPlace).map((r, i) => (
+                    <tr className="row" key={i}>
+                      <td className="lbl">{r.lbl}</td>
+                      <td className={r.mono ? "val mono" : "val"}>{r.val}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
 
             {/* AMOUNT + SEAL */}
             <div className="amt">
               <div className="amt-left">
-                <div className="amt-lbl">Donation Amount</div>
-                <div className="amt-ta">நன்கொடை தொகை</div>
+                <div className="amt-rcvd">✦ &nbsp;Received &nbsp;·&nbsp; பெறப்பட்டது&nbsp; ✦</div>
                 <div className="amt-val">{amountFmt}</div>
+                <div className="amt-ta">நன்கொடை தொகை</div>
               </div>
               <div className="amt-right">
                 {/*
