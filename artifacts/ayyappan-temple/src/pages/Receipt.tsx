@@ -472,10 +472,15 @@ export default function Receipt() {
                   <circle cx="75" cy="75" r="58" fill="none" stroke="#16a34a"
                           strokeWidth="0.8" strokeDasharray="3.5 3"/>
 
-                  {/* CURVED TOP TEXT — no decorators so it doesn't overflow */}
-                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="11.5"
+                  {/* CURVED TOP TEXT
+                      Top semicircle ≈ π × 67.5 = 212px.
+                      textLength="196" forces the text to fit within that arc
+                      so it never overflows into the sides.
+                  */}
+                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="11"
                         fill="#15803d" fontWeight="700">
-                    <textPath href="#sarc" startOffset="50%" textAnchor="middle">
+                    <textPath href="#sarc" startOffset="50%" textAnchor="middle"
+                              textLength="196" lengthAdjust="spacingAndGlyphs">
                       ஸ்வாமியே சரணம் ஐயப்பா
                     </textPath>
                   </text>
