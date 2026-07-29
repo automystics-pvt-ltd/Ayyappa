@@ -239,7 +239,7 @@ export default function Receipt() {
         }
 
         /* AMOUNT */
-        .amt { display:grid; grid-template-columns:1fr auto; border-top:2px solid #7c2d12; border-bottom:2px solid #7c2d12; min-height:180px; }
+        .amt { display:grid; grid-template-columns:1fr auto; border-top:2px solid #7c2d12; border-bottom:2px solid #7c2d12; min-height:216px; }
         .amt-left {
           background:linear-gradient(140deg,#4a1000 0%,#7c2500 45%,#c24800 100%);
           padding:16px 20px;
@@ -251,9 +251,9 @@ export default function Receipt() {
         .amt-right {
           background:#f0fdf4; border-left:2px solid #7c2d12;
           display:flex; align-items:center; justify-content:center;
-          padding:16px 22px;
+          padding:14px 18px;
         }
-        .seal-svg { display:block; transform:rotate(-6deg); filter:drop-shadow(0 2px 8px rgba(22,163,74,.22)); overflow:visible; }
+        .seal-svg { display:block; transform:rotate(-6deg); filter:drop-shadow(0 2px 8px rgba(22,163,74,.22)); }
 
         /* FOOTER */
         .ftr {
@@ -444,71 +444,53 @@ export default function Receipt() {
               </div>
               <div className="amt-right">
                 {/*
-                  Round temple seal — 150×150, cx=cy=75
-                  ┌─ r=72  outer ring (3px)
-                  ├─ r=63  inner solid ring (1.5px)
-                  └─ r=58  dashed accent (0.7px)
+                  180×180 seal — cx=cy=90
+                  ┌─ r=87  outer ring  (3 px)
+                  ├─ r=77  inner ring  (1.5 px)
+                  └─ r=71  dashed ring (0.8 px)
 
-                  Arc radius = 67.5 → top semicircle ≈ π×67.5 ≈ 212px
-                  "ஸ்வாமியே சரணம் ஐயப்பா" ≈ 18 Tamil chars × ~11px ≈ 198px → fits ✓
+                  Arc radius=82, 150° arc length = 5/12 × 2π × 82 ≈ 215 px
+                  Tamil "ஸ்வாமியே சரணம் ஐயப்பா" at fontSize=8.5 ≈ 200 px → fits ✓
 
-                  Main text sits at y=78 (centre=75, so baseline just below centre).
-                  Sub text at y=99.  Bottom dots at y=123.
+                  Arc endpoints (±75° from top):
+                    start SVG 345°: x=169.2  y=68.8
+                    end   SVG 195°: x=10.8   y=68.8
                 */}
-                <svg className="seal-svg" width="150" height="150" viewBox="0 0 150 150"
+                <svg className="seal-svg" width="180" height="180" viewBox="0 0 180 180"
                      xmlns="http://www.w3.org/2000/svg">
                   <defs>
-                    {/*
-                      150° arc centred at the top of the circle.
-                      Start (9.8, 57.5) and end (140.2, 57.5) are 75° either
-                      side of the top.  Arc length ≈ 176 px.
-                      Tamil text at fontSize=9 ≈ 154 px → fits with margin.
-                      Path ends physically prevent any overflow into the sides.
-                    */}
-                    <path id="sarc"
-                      d="M 9.8,57.5 A 67.5,67.5 0 0,1 140.2,57.5"/>
+                    <path id="sarc" d="M 10.8,68.8 A 82,82 0 0,1 169.2,68.8"/>
                   </defs>
 
-                  {/* mint background */}
-                  <circle cx="75" cy="75" r="72" fill="#f0fdf4"/>
-                  {/* outer bold ring */}
-                  <circle cx="75" cy="75" r="72" fill="none" stroke="#15803d" strokeWidth="3"/>
-                  {/* inner solid ring */}
-                  <circle cx="75" cy="75" r="63" fill="none" stroke="#15803d" strokeWidth="1.5"/>
-                  {/* dashed accent ring */}
-                  <circle cx="75" cy="75" r="58" fill="none" stroke="#16a34a"
-                          strokeWidth="0.8" strokeDasharray="3.5 3"/>
+                  <circle cx="90" cy="90" r="87" fill="#f0fdf4"/>
+                  <circle cx="90" cy="90" r="87" fill="none" stroke="#15803d" strokeWidth="3"/>
+                  <circle cx="90" cy="90" r="77" fill="none" stroke="#15803d" strokeWidth="1.5"/>
+                  <circle cx="90" cy="90" r="71" fill="none" stroke="#16a34a"
+                          strokeWidth="0.8" strokeDasharray="4 3.5"/>
 
-                  {/* CURVED TOP TEXT
-                      150° arc ≈ 177px.  Tamil at fontSize=9 ≈ 154px → fits.
-                      No textLength — browsers ignore it for complex Tamil script.
-                      Shorter arc path physically stops overflow at the endpoints.
-                  */}
-                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="9"
+                  {/* ARC TEXT — 215 px arc, text ≈ 200 px at fontSize=8.5 */}
+                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="8.5"
                         fill="#15803d" fontWeight="700">
                     <textPath href="#sarc" startOffset="50%" textAnchor="middle">
                       ஸ்வாமியே சரணம் ஐயப்பா
                     </textPath>
                   </text>
 
-                  {/* MAIN: வடமதுரை  — baseline at y=80, centre of inner circle */}
-                  <text x="75" y="80" textAnchor="middle"
+                  <text x="90" y="97" textAnchor="middle"
                         fontFamily="'Noto Serif Tamil',serif"
-                        fontSize="20" fontWeight="900" fill="#15803d">
+                        fontSize="23" fontWeight="900" fill="#15803d">
                     வடமதுரை
                   </text>
 
-                  {/* SUB: திருப்பணி குழு */}
-                  <text x="75" y="100" textAnchor="middle"
+                  <text x="90" y="120" textAnchor="middle"
                         fontFamily="'Noto Serif Tamil',serif"
-                        fontSize="11" fontWeight="700" fill="#166534">
+                        fontSize="12" fontWeight="700" fill="#166534">
                     திருப்பணி குழு
                   </text>
 
-                  {/* bottom decorative dots */}
-                  <text x="75" y="124" textAnchor="middle"
-                        fontFamily="sans-serif" fontSize="8"
-                        fill="#16a34a" letterSpacing="5">
+                  <text x="90" y="148" textAnchor="middle"
+                        fontFamily="sans-serif" fontSize="9"
+                        fill="#16a34a" letterSpacing="6">
                     ◆◆◆
                   </text>
                 </svg>
