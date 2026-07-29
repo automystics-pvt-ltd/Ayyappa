@@ -86,14 +86,26 @@ export default function Receipt() {
 
   /** Wait for all web fonts (Noto Serif Tamil, Cinzel, etc.) before capturing */
   const captureCanvas = async () => {
+    // Wait for all fonts (Noto Serif Tamil, Cinzel, Oswald, Inter) to load
     await document.fonts.ready;
     return html2canvas(docRef.current!, {
       scale: 2,
       useCORS: true,
       allowTaint: false,
       backgroundColor: "#d97706",
-      imageTimeout: 0,   // don't time-out the logo on slow connections
+      imageTimeout: 0,
       logging: false,
+      // html2canvas clones the DOM but doesn't re-fetch @import fonts.
+      // Inject a <link> so the cloned document also has the Google Fonts.
+      onclone: (_clonedDoc: Document, el: HTMLElement) => {
+        const link = document.createElement("link");
+        link.rel  = "stylesheet";
+        link.href = "https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+Tamil:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@600;700&display=swap";
+        el.ownerDocument.head.appendChild(link);
+        // Give the seal a tiny overflow buffer so the rotation is never clipped
+        const seal = el.querySelector<SVGElement>(".seal-svg");
+        if (seal) seal.style.overflow = "visible";
+      },
     });
   };
 
@@ -398,49 +410,48 @@ export default function Receipt() {
             overflow:hidden;
           }
 
-          /* all sections shrink, only .amt grows to fill */
-          .hdr,.strip,.bless,.meta,.ftr { flex-shrink:0; }
-          .tbl { flex-shrink:0; }
-          .amt { flex:1; }          /* ← grows to fill remaining height */
+          /* all fixed sections must not shrink — only .amt grows */
+          .hdr,.strip,.bless,.meta,.donor-hero,.tbl,.ftr { flex-shrink:0; }
+          .amt { flex:1; min-height:0; }
 
-          /* HEADER */
-          .hdr      { padding:22px 32px 18px; }
-          .hdr-logo { width:88px; height:88px; margin-bottom:11px; }
-          .hdr-en   { font-size:20pt; }
-          .hdr-ta   { font-size:14pt; margin-top:5px; }
-          .hdr-addr { font-size:11pt; margin-top:4px; }
-          .hdr-pill { margin-top:12px; padding:6px 24px; font-size:12pt; }
+          /* HEADER — tighter padding & smaller logo to save vertical space */
+          .hdr      { padding:12px 32px 10px; }
+          .hdr-logo { width:70px; height:70px; margin-bottom:8px; }
+          .hdr-en   { font-size:17pt; }
+          .hdr-ta   { font-size:12pt; margin-top:4px; }
+          .hdr-addr { font-size:10pt; margin-top:3px; }
+          .hdr-pill { margin-top:9px; padding:5px 20px; font-size:11pt; }
 
           /* STRIP */
-          .strip    { padding:8px 28px; }
-          .strip-en { font-size:12.5pt; letter-spacing:4px; }
+          .strip    { padding:6px 28px; }
+          .strip-en { font-size:11.5pt; letter-spacing:3px; }
 
           /* BLESSING */
-          .bless     { padding:13px 32px; }
-          .bless-sub { font-size:12pt; margin-bottom:4px; }
-          .bless-main{ font-size:16pt; }
+          .bless     { padding:9px 32px; }
+          .bless-sub { font-size:10pt; margin-bottom:3px; }
+          .bless-main{ font-size:14pt; }
 
           /* META */
-          .mc         { padding:11px 24px; }
-          .mc-lbl     { font-size:9pt; margin-bottom:5px; }
-          .mc-no      { font-size:17pt; }
-          .mc-date    { font-size:14pt; }
-          .mc-date-ta { font-size:10pt; margin-top:4px; }
+          .mc         { padding:8px 24px; }
+          .mc-lbl     { font-size:8pt; margin-bottom:4px; }
+          .mc-no      { font-size:15pt; }
+          .mc-date    { font-size:13pt; }
+          .mc-date-ta { font-size:9.5pt; margin-top:3px; }
 
           /* DONOR HERO */
-          .donor-hero      { padding:14px 32px; }
-          .donor-hero-lbl  { font-size:9pt; margin-bottom:8px; }
+          .donor-hero      { padding:10px 32px; }
+          .donor-hero-lbl  { font-size:8pt; margin-bottom:6px; }
           .donor-hero-name {
-            font-size:22pt; white-space:normal;
+            font-size:19pt; white-space:normal;
             word-break:break-word; overflow-wrap:break-word;
           }
-          .donor-hero-place { font-size:12pt; margin-top:6px; }
+          .donor-hero-place { font-size:11pt; margin-top:5px; }
 
           /* DETAILS TABLE */
-          .tbl-head td { padding:8px 22px; font-size:10.5pt; }
-          .tbl .lbl    { padding:10px 22px; font-size:10.5pt; }
-          .tbl .val    { padding:10px 22px 10px 0; font-size:12.5pt; }
-          .tbl .val.mono { font-size:11pt; }
+          .tbl-head td { padding:6px 22px; font-size:9.5pt; }
+          .tbl .lbl    { padding:8px 22px; font-size:9.5pt; }
+          .tbl .val    { padding:8px 22px 8px 0; font-size:11.5pt; }
+          .tbl .val.mono { font-size:10pt; }
 
           /* AMOUNT — flex:1 fills remaining A4 height */
           .amt        { display:grid; grid-template-columns:1fr auto; }
@@ -449,25 +460,22 @@ export default function Receipt() {
             display:flex; flex-direction:column; justify-content:center; align-items:center;
             text-align:center; min-width:0; overflow:hidden;
           }
-          .amt-rcvd   { font-size:9pt; margin-bottom:6px; }
-          .amt-ta     { font-size:11pt; margin-top:4px; margin-bottom:0; }
-          /* 46pt keeps ₹1,00,00,000 (11 chars) well within the left column */
+          .amt-rcvd   { font-size:8pt; margin-bottom:5px; }
+          .amt-ta     { font-size:10pt; margin-top:4px; margin-bottom:0; }
+          /* 46pt keeps ₹1,00,00,000 (11 chars) within the left column */
           .amt-val    { font-size:46pt; overflow-wrap:break-word; word-break:break-all; }
           .amt-right  {
-            padding:0 26px;
+            padding:0 22px;
             display:flex; align-items:center; justify-content:center;
+            overflow:visible;
           }
-          .stamp       { padding:16px 22px; border-width:3px; border-radius:10px; }
-          .stamp-check { font-size:38px; }
-          .stamp-en    { font-size:14pt; margin-top:6px; }
-          .stamp-ta    { font-size:11.5pt; margin-top:4px; }
 
           /* FOOTER */
-          .ftr        { padding:18px 32px; }
-          .ftr-issued { font-size:9pt; margin-bottom:7px; }
-          .ftr-org-ta { font-size:18pt; }
-          .ftr-org-en { font-size:11pt; margin-top:4px; }
-          .ftr-rcpt   { font-size:9pt; margin-top:8px; }
+          .ftr        { padding:12px 32px; }
+          .ftr-issued { font-size:8pt; margin-bottom:5px; }
+          .ftr-org-ta { font-size:15pt; }
+          .ftr-org-en { font-size:10pt; margin-top:3px; }
+          .ftr-rcpt   { font-size:8pt; margin-top:6px; }
 
           .doc,.doc-inner { page-break-inside:avoid; break-inside:avoid; }
         }
