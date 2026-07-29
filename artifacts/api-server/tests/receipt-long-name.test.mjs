@@ -2,14 +2,13 @@
  * Tests: Receipt layout handles very long donor names without overflow
  *
  * Asserts via static CSS analysis that:
- *   1. The screen CSS uses `white-space:nowrap` on .name-val (expected — prevents wrapping on-screen)
- *   2. The @media print block overrides .name-val with `white-space:normal` (so long names wrap instead of overflowing)
- *   3. The @media print block sets `word-break:break-word` on .name-val (so a 60+-char word cannot overflow)
- *   4. `.doc-inner` has `overflow:hidden` in the print block (hard containment of any overflow)
- *   5. `.doc` has a fixed `height:297mm` in the print block (receipt stays within A4 bounds)
- *   6. The `@page` rule uses `size:A4 portrait` (page is exactly one A4 sheet)
+ *   1. The print CSS sets `word-break:break-word` on .donor-hero-name (60+ char names wrap)
+ *   2. The print CSS sets `white-space:normal` on .donor-hero-name (no nowrap in print)
+ *   3. `.doc-inner` has `overflow:hidden` in the print block (hard containment of any overflow)
+ *   4. `.doc` has a fixed `height:297mm` in the print block (receipt stays within A4 bounds)
+ *   5. The `@page` rule uses `size:A4 portrait` (page is exactly one A4 sheet)
  *
- * These six rules together guarantee a very long donor name (Tamil or English, 60+ chars)
+ * These rules together guarantee a very long donor name (Tamil or English, 60+ chars)
  * cannot push the receipt past one A4 page in Chrome print preview.
  *
  * This is a pure static-analysis test — no live server required.
@@ -67,28 +66,22 @@ const screenCss = src.slice(0, printStart);   // everything before @media print
 // Test: screen CSS keeps white-space:nowrap on .name-val (baseline expectation)
 // ──────────────────────────────────────────────────────────────────────────────
 
-console.log("\n── Screen CSS ──");
-assert(
-  /\.name-val\s*\{[^}]*white-space\s*:\s*nowrap/.test(screenCss),
-  "Screen CSS: .name-val uses white-space:nowrap (correct baseline)"
-);
-
 // ──────────────────────────────────────────────────────────────────────────────
 // Tests: print CSS overrides that prevent overflow on long names
 // ──────────────────────────────────────────────────────────────────────────────
 
 console.log("\n── Print CSS (long-name overflow prevention) ──");
 
-// Rule 1 — white-space:normal overrides nowrap in print
+// Rule 1 — white-space:normal on donor-hero-name (allows wrapping in print)
 assert(
-  /\.name-val\b[^}]*white-space\s*:\s*normal/.test(printCss),
-  "Print CSS: .name-val overrides white-space to normal (long names wrap)"
+  /\.donor-hero-name\b[^}]*white-space\s*:\s*normal/.test(printCss),
+  "Print CSS: .donor-hero-name sets white-space:normal (long names wrap)"
 );
 
 // Rule 2 — word-break:break-word ensures a single 60+-char token wraps
 assert(
-  /\.name-val\b[^}]*word-break\s*:\s*break-word/.test(printCss),
-  "Print CSS: .name-val sets word-break:break-word (60+ char names cannot overflow)"
+  /\.donor-hero-name\b[^}]*word-break\s*:\s*break-word/.test(printCss),
+  "Print CSS: .donor-hero-name sets word-break:break-word (60+ char names cannot overflow)"
 );
 
 // ──────────────────────────────────────────────────────────────────────────────

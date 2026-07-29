@@ -427,26 +427,31 @@ export default function Receipt() {
           .mc-date    { font-size:14pt; }
           .mc-date-ta { font-size:10pt; margin-top:4px; }
 
-          /* DONOR TABLE */
+          /* DONOR HERO */
+          .donor-hero      { padding:14px 32px; }
+          .donor-hero-lbl  { font-size:9pt; margin-bottom:8px; }
+          .donor-hero-name {
+            font-size:22pt; white-space:normal;
+            word-break:break-word; overflow-wrap:break-word;
+          }
+          .donor-hero-place { font-size:12pt; margin-top:6px; }
+
+          /* DETAILS TABLE */
           .tbl-head td { padding:8px 22px; font-size:10.5pt; }
           .tbl .lbl    { padding:10px 22px; font-size:10.5pt; }
           .tbl .val    { padding:10px 22px 10px 0; font-size:12.5pt; }
           .tbl .val.mono { font-size:11pt; }
-          .tbl tr.name-row .lbl          { padding:11px 22px 11px 17px; font-size:10.5pt; }
-          .tbl tr.name-row .val.name-val { font-size:19pt !important; padding:11px 22px 11px 0 !important; white-space:normal !important; word-break:break-word; }
 
-          /* AMOUNT — flex:1 means it fills all leftover vertical space */
+          /* AMOUNT — flex:1 fills remaining A4 height */
           .amt        { display:grid; grid-template-columns:1fr auto; }
           .amt-left   {
-            padding:0 30px;
-            display:flex; flex-direction:column; justify-content:center;
-            min-width:0; overflow:hidden;
+            padding:0 32px;
+            display:flex; flex-direction:column; justify-content:center; align-items:center;
+            text-align:center; min-width:0; overflow:hidden;
           }
-          .amt-lbl    { font-size:10pt; }
-          .amt-ta     { font-size:11pt; margin-bottom:10px; }
-          /* 46pt keeps ₹1,00,00,000 (11 chars) well within the left column;
-             overflow-wrap + word-break are last-resort safeguards for any
-             future amount that might still be too wide. */
+          .amt-rcvd   { font-size:9pt; margin-bottom:6px; }
+          .amt-ta     { font-size:11pt; margin-top:4px; margin-bottom:0; }
+          /* 46pt keeps ₹1,00,00,000 (11 chars) well within the left column */
           .amt-val    { font-size:46pt; overflow-wrap:break-word; word-break:break-all; }
           .amt-right  {
             padding:0 26px;
