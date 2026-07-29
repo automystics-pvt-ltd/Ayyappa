@@ -274,59 +274,75 @@ export default function Receipt() {
 
         /* ══ PRINT ══ */
         @media print {
-          @page { size:A4 portrait; margin:10mm 12mm; }
+          @page { size:A4 portrait; margin:8mm 10mm; }
 
-          /* force all backgrounds/colours */
+          /* force all colours & backgrounds */
           * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
 
           body { background:#fff !important; }
-          .pg   { min-height:unset; padding:0; background:#fff; align-items:stretch; }
+
+          /* page wrapper — stretch to fill A4 width, no padding */
+          .pg {
+            min-height:unset; padding:0;
+            background:#fff; align-items:stretch;
+          }
           .acts { display:none !important; }
 
-          /* doc: keep amber background (= inner border) but no screen shadow */
-          .doc  { max-width:100%; box-shadow:none; }
+          /* document — full page width, no screen shadow */
+          .doc       { max-width:100%; box-shadow:none; }
           .doc-inner { margin:3px; }
 
-          /* tighten header */
-          .hdr       { padding:13px 20px 11px; }
-          .hdr-logo  { width:62px; height:62px; margin-bottom:8px; }
-          .hdr-en    { font-size:15px; }
-          .hdr-ta    { font-size:12px; }
-          .hdr-addr  { font-size:9.5px; }
-          .hdr-pill  { margin-top:8px; padding:4px 16px; font-size:10px; }
+          /* ── HEADER: bigger logo, larger fonts ── */
+          .hdr      { padding:22px 30px 18px; }
+          .hdr-logo { width:90px; height:90px; margin-bottom:12px; }
+          .hdr-en   { font-size:21pt; }
+          .hdr-ta   { font-size:15pt; margin-top:6px; }
+          .hdr-addr { font-size:11pt; margin-top:5px; }
+          .hdr-pill { margin-top:13px; padding:7px 24px; font-size:13pt; }
 
-          .strip     { padding:5px 20px; }
-          .strip-en  { font-size:11px; }
+          /* ── TITLE STRIP ── */
+          .strip    { padding:9px 28px; }
+          .strip-en { font-size:13pt; letter-spacing:4px; }
 
-          .bless     { padding:8px 20px; }
-          .bless-sub { font-size:10.5px; }
-          .bless-main{ font-size:13.5px; }
+          /* ── BLESSING ── */
+          .bless     { padding:14px 30px; }
+          .bless-sub { font-size:13pt; margin-bottom:5px; }
+          .bless-main{ font-size:17pt; }
 
-          .mc        { padding:7px 15px; }
-          .mc-no     { font-size:14px; }
-          .mc-date   { font-size:12px; }
-          .mc-date-ta{ font-size:9px; }
+          /* ── META ROW ── */
+          .mc        { padding:12px 24px; }
+          .mc-lbl    { font-size:9pt; margin-bottom:5px; }
+          .mc-no     { font-size:18pt; }
+          .mc-date   { font-size:15pt; }
+          .mc-date-ta{ font-size:11pt; margin-top:4px; }
 
-          .tbl-head td { padding:5px 14px; }
-          .tbl .lbl  { padding:5px 14px; font-size:8.5px; }
-          .tbl .val  { padding:5px 14px 5px 0; font-size:10.5px; }
-          .tbl .val.mono { font-size:9.5px; }
+          /* ── DONOR TABLE ── */
+          .tbl-head td { padding:8px 20px; font-size:10pt; }
+          .tbl .lbl    { padding:9px 20px; font-size:10.5pt; }
+          .tbl .val    { padding:9px 20px 9px 0; font-size:12pt; }
+          .tbl .val.mono { font-size:11pt; }
 
-          /* keep name row prominent even in print */
-          .tbl tr.name-row .val.name-val { font-size:17px !important; padding:8px 14px 8px 0 !important; }
-          .tbl tr.name-row .lbl { padding:5px 14px 5px 11px; }
+          /* name row stays large */
+          .tbl tr.name-row .lbl          { padding:10px 20px 10px 15px; font-size:10.5pt; }
+          .tbl tr.name-row .val.name-val { font-size:20pt !important; padding:10px 20px 10px 0 !important; }
 
-          .amt-left  { padding:12px 18px; }
-          .amt-val   { font-size:40px; }
-          .amt-right { padding:12px 16px; }
-          .stamp     { padding:8px 12px; }
-          .stamp-check { font-size:24px; }
-          .stamp-en  { font-size:10.5px; }
-          .stamp-ta  { font-size:9px; }
+          /* ── AMOUNT BLOCK ── */
+          .amt-left   { padding:20px 28px; }
+          .amt-lbl    { font-size:10pt; }
+          .amt-ta     { font-size:11pt; margin-bottom:10px; }
+          .amt-val    { font-size:56pt; }
+          .amt-right  { padding:20px 24px; }
+          .stamp      { padding:14px 20px; border-radius:10px; border-width:3px; }
+          .stamp-check{ font-size:36px; }
+          .stamp-en   { font-size:13pt; margin-top:6px; }
+          .stamp-ta   { font-size:11pt; margin-top:4px; }
 
-          .ftr       { padding:10px 20px; }
-          .ftr-org-ta{ font-size:14px; }
-          .ftr-org-en{ font-size:9.5px; }
+          /* ── FOOTER ── */
+          .ftr        { padding:16px 30px; }
+          .ftr-issued { font-size:9pt; margin-bottom:7px; }
+          .ftr-org-ta { font-size:18pt; }
+          .ftr-org-en { font-size:11pt; margin-top:4px; }
+          .ftr-rcpt   { font-size:9pt; margin-top:8px; }
 
           .doc,.doc-inner,.hdr,.strip,.bless,.meta,.tbl,.amt,.ftr {
             page-break-inside:avoid; break-inside:avoid;
