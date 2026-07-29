@@ -400,16 +400,68 @@ export default function Receipt() {
 
         /* ─── PRINT ─── */
         @media print{
-          @page{ margin:6mm 8mm; size:A5 portrait; }
+          @page{
+            margin:5mm 8mm;
+            size:A4 portrait;
+          }
           body{ background:#fff !important; }
           .rp-screen{
             min-height:unset;padding:0;background:#fff;
+            justify-content:flex-start;
           }
           .rp-actions{ display:none !important; }
           .rp-card{
             max-width:100%;box-shadow:none;
             border-radius:0;border:none;
+            page-break-inside:avoid;
           }
+          /* Compress all sections for single-page fit */
+          .rp-header{ padding:10px 18px 10px; }
+          .rp-logo{ width:46px;height:46px;margin-bottom:6px; }
+          .rp-h-name{ font-size:13px; }
+          .rp-h-name-ta{ font-size:10.5px; }
+          .rp-h-addr{ font-size:9px; }
+          .rp-h-saranam{ margin-top:8px;padding:3px 14px;font-size:10.5px; }
+
+          .rp-bless{ padding:6px 18px; }
+          .rp-bless-sub{ font-size:10px; }
+          .rp-bless-main{ font-size:12px; }
+          .rp-bless-en{ font-size:8.5px; }
+
+          .rp-meta{ padding:5px 18px; }
+          .rp-meta-val{ font-size:12px; }
+          .rp-meta-date{ font-size:11px; }
+          .rp-meta-date-ta{ font-size:8.5px; }
+
+          .rp-donor{ margin:8px 16px 0; }
+          .rp-donor-header{ padding:5px 12px;font-size:8px; }
+          .rp-name-row{ padding:8px 12px; }
+          .rp-name-avatar{ width:30px;height:30px;font-size:13px;border-radius:8px; }
+          .rp-name-label{ font-size:8px; }
+          .rp-name-text{ font-size:14px; }
+          .rp-detail-row{ padding:5px 12px; }
+          .rp-d-label{ font-size:8.5px; }
+          .rp-d-val{ font-size:10.5px; }
+          .rp-d-val.mono{ font-size:9.5px; }
+
+          .rp-amount{ margin:8px 16px;padding:11px 16px;border-radius:10px; }
+          .rp-amount-label{ font-size:8px; }
+          .rp-amount-label-ta{ font-size:9px;margin-bottom:3px; }
+          .rp-amount-val{ font-size:28px; }
+          .rp-stamp{ padding:5px 10px; }
+          .rp-stamp-check{ font-size:17px; }
+          .rp-stamp-en{ font-size:10px; }
+          .rp-stamp-ta{ font-size:8px; }
+
+          .rp-divider{ margin:6px 16px 5px; }
+          .rp-divider-text{ font-size:10px; }
+
+          .rp-footer{ padding:8px 18px; }
+          .rp-footer-issued{ font-size:7.5px; }
+          .rp-footer-org{ font-size:12px; }
+          .rp-footer-org-en{ font-size:9px; }
+          .rp-footer-note{ font-size:7.5px;margin-top:5px; }
+
           *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
         }
       `}</style>
