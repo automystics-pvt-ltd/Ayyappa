@@ -13,6 +13,7 @@ const fmtEn = (iso: string) =>
 const fmtTa = (iso: string) =>
   new Date(iso).toLocaleDateString("ta-IN", { day: "numeric", month: "long", year: "numeric" });
 
+/* ─── utility screens ─── */
 function Spinner() {
   return (
     <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#fef9f0" }}>
@@ -35,8 +36,8 @@ function StatusPage({ donation, isPending }: { donation: ReceiptDonation; isPend
   return (
     <div style={{ minHeight:"100vh", background:"#fef9f0", display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
       <div style={{ background:"#fff", width:"100%", maxWidth:380, borderRadius:16, overflow:"hidden", boxShadow:"0 4px 24px rgba(0,0,0,.10)" }}>
-        <div style={{ padding:"18px 22px", background: isPending?"#f59e0b":"#ef4444", color:"#fff", textAlign:"center" }}>
-          <div style={{ fontSize:26 }}>{isPending?"⏳":"❌"}</div>
+        <div style={{ padding:"18px 22px", background: isPending ? "#f59e0b" : "#ef4444", color:"#fff", textAlign:"center" }}>
+          <div style={{ fontSize:26 }}>{isPending ? "⏳" : "❌"}</div>
           <div style={{ fontWeight:800, fontSize:14, marginTop:4 }}>அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்</div>
         </div>
         <div style={{ padding:"18px 22px", textAlign:"center" }}>
@@ -57,16 +58,9 @@ function StatusPage({ donation, isPending }: { donation: ReceiptDonation; isPend
   );
 }
 
-/* ── tiny ornament ── */
-const Ornament = () => (
-  <span style={{ fontSize:9, color:"#b45309", letterSpacing:3, display:"block", textAlign:"center", lineHeight:1 }}>
-    ◆ &nbsp; ◆ &nbsp; ◆
-  </span>
-);
-
-/* ══════════════════════════════════════════════
-   RECEIPT PAGE
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   RECEIPT
+══════════════════════════════════════════ */
 export default function Receipt() {
   const { token } = useParams<{ token: string }>();
   const [donation, setDonation] = useState<ReceiptDonation | null>(null);
@@ -86,386 +80,368 @@ export default function Receipt() {
     return <StatusPage donation={donation} isPending={donation.status === "pending"} />;
 
   const name      = donation.anonymous ? "அடையாளம் தெரியாதவர்" : donation.donorName;
+  const initial   = (donation.anonymous ? "A" : name.charAt(0)).toUpperCase();
   const receiptNo = `RCP-${String(donation.id).padStart(6, "0")}`;
   const dateISO   = donation.reviewedAt ?? donation.createdAt;
-  const amountNum = Number(donation.amount).toLocaleString("en-IN");
+  const amountFmt = `₹${Number(donation.amount).toLocaleString("en-IN")}`;
   const logo      = `${import.meta.env.BASE_URL}iyyappan-logo.png`;
 
-  /* detail rows — only non-empty ones */
-  const rows: { label: string; labelTa: string; value: string; mono?: boolean }[] = [
-    { label: "Mobile / தொலைபேசி", labelTa: "", value: donation.mobile, mono: true },
-    { label: "Place / ஊர்",        labelTa: "", value: donation.place ?? "" },
-    { label: "Transaction ID",     labelTa: "பரிவர்த்தனை எண்", value: donation.transactionId, mono: true },
-    { label: "Message / செய்தி",   labelTa: "", value: donation.message ?? "" },
-  ].filter(r => r.value);
+  const rows: { lbl: string; val: string; mono?: boolean }[] = [
+    { lbl: "பெயர் / Name",               val: name },
+    { lbl: "தொலைபேசி / Mobile",           val: donation.mobile, mono: true },
+    { lbl: "ஊர் / Place",                val: donation.place ?? "",           },
+    { lbl: "பரிவர்த்தனை / Txn ID",       val: donation.transactionId, mono: true },
+    { lbl: "செய்தி / Message",            val: donation.message ?? "" },
+  ].filter(r => r.val);
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Noto+Serif+Tamil:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@600;700&display=swap');
-
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+Tamil:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@600;700&display=swap');
         *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 
-        /* ── Screen wrapper ── */
-        .page {
-          min-height:100vh;
-          background:radial-gradient(ellipse at top,#fde8c8 0%,#f5ede0 50%,#ede0cf 100%);
-          display:flex; flex-direction:column; align-items:center;
-          padding:32px 16px 40px;
-          font-family:'Inter',sans-serif;
+        /* ── PAGE ── */
+        .pg {
+          min-height: 100vh;
+          background: radial-gradient(ellipse at 30% 20%, #fde8c8 0%, #f0e0cc 60%, #e8d5be 100%);
+          display: flex; flex-direction: column; align-items: center;
+          padding: 28px 16px 36px;
+          font-family: 'Inter', sans-serif;
         }
 
-        /* ── Action bar ── */
-        .actions { display:flex; gap:10px; margin-bottom:24px; }
-        .btn-print {
-          display:flex; align-items:center; gap:7px;
-          padding:11px 28px;
-          background:linear-gradient(135deg,#9a1c00,#c2410c,#ea580c);
+        /* ── BUTTONS ── */
+        .acts { display:flex; gap:10px; margin-bottom:22px; }
+        .btn-p {
+          display:flex; align-items:center; gap:8px; padding:11px 28px;
+          background: linear-gradient(135deg,#7c2d12,#c2410c,#ea580c);
           color:#fff; border:none; border-radius:10px;
           font:700 13px/1 'Inter',sans-serif; cursor:pointer;
-          box-shadow:0 4px 16px rgba(194,65,12,.30);
-          letter-spacing:.3px;
-          transition:opacity .15s;
+          box-shadow:0 4px 14px rgba(194,65,12,.28); transition:opacity .15s;
         }
-        .btn-print:hover { opacity:.88; }
-        .btn-home {
-          display:flex; align-items:center; gap:6px;
-          padding:11px 22px;
-          background:#fff; color:#92400e;
-          border:1.5px solid #fcd9a0; border-radius:10px;
-          font:600 13px/1 'Inter',sans-serif;
-          text-decoration:none;
-          transition:background .15s;
+        .btn-p:hover { opacity:.88; }
+        .btn-h {
+          display:flex; align-items:center; gap:6px; padding:11px 22px;
+          background:#fff; color:#92400e; border:1.5px solid #fcd9a0; border-radius:10px;
+          font:600 13px/1 'Inter',sans-serif; text-decoration:none; transition:background .15s;
         }
-        .btn-home:hover { background:#fff7ed; }
+        .btn-h:hover { background:#fff7ed; }
 
         /* ════════════════════════════
-           RECEIPT DOCUMENT
+           DOCUMENT SHELL
         ════════════════════════════ */
-        .receipt {
-          width:100%; max-width:580px;
-          /* Outer border — maroon */
-          border:2.5px solid #7c2d12;
-          background:#fff;
-        }
-
-        /* Inner padding layer with inner border */
-        .receipt-inner {
-          border:1px solid #d97706;
-          margin:4px;
-          background:#fff;
-          overflow:hidden;
+        .doc {
+          width:100%; max-width:560px;
+          border: 2.5px solid #7c2d12;
+          background: #fff;
+          /* subtle inner glow for screen */
+          box-shadow: 0 8px 40px rgba(100,30,0,.14), inset 0 0 0 3px #fff, inset 0 0 0 4px #d97706;
         }
 
         /* ── HEADER ── */
-        .hd {
-          background:linear-gradient(170deg,#5c1500 0%,#8b2500 40%,#a83800 75%,#c24f00 100%);
-          padding:18px 24px 14px;
-          display:flex; align-items:center; gap:18px;
+        .hdr {
+          background: linear-gradient(170deg, #4a1000 0%, #7c2500 38%, #a83500 72%, #c24800 100%);
+          padding: 20px 24px 16px;
+          text-align: center;
+          position: relative;
         }
-        .hd-logo {
-          width:70px; height:70px; border-radius:50%; object-fit:cover; flex-shrink:0;
-          border:2px solid rgba(253,230,138,.50);
+        /* decorative top border inside header */
+        .hdr::after {
+          content:'';
+          display:block;
+          height:2px;
+          background:linear-gradient(90deg,transparent,rgba(253,230,138,.40),transparent);
+          position:absolute; bottom:0; left:0; right:0;
         }
-        .hd-text { flex:1; }
-        .hd-en {
-          font-family:'Cinzel',serif; font-size:17px; font-weight:900;
-          color:#fff; letter-spacing:.5px; line-height:1.25;
+        .hdr-logo {
+          width: 74px; height: 74px; border-radius: 50%; object-fit: cover;
+          border: 3px solid rgba(253,230,138,.55);
+          box-shadow: 0 4px 18px rgba(0,0,0,.40);
+          display: block; margin: 0 auto 10px;
         }
-        .hd-ta {
-          font-family:'Noto Serif Tamil',serif; font-size:13px; font-weight:700;
-          color:#fde68a; margin-top:4px;
+        .hdr-en {
+          font-family: 'Cinzel', serif; font-weight: 900; font-size: 17px;
+          color: #fff; letter-spacing: .6px; line-height: 1.25;
         }
-        .hd-addr {
-          font-size:10.5px; color:#fcd9a0; margin-top:4px; letter-spacing:.2px;
+        .hdr-ta {
+          font-family: 'Noto Serif Tamil', serif; font-weight: 700; font-size: 13px;
+          color: #fde68a; margin-top: 4px;
         }
-        .hd-saranam {
-          display:inline-block; margin-top:10px;
-          background:rgba(255,255,255,.12); border:1px solid rgba(253,230,138,.35);
-          border-radius:30px; padding:5px 18px;
-          font-family:'Noto Serif Tamil',serif; font-size:11px; font-weight:700;
-          color:#fef3c7; letter-spacing:.8px;
+        .hdr-addr {
+          font-size: 10px; color: #fcd9a0; margin-top: 4px; letter-spacing: .25px;
         }
-
-        /* ── TITLE BAND ── */
-        .title-band {
-          background:#fff7ed; border-top:1.5px solid #fde8c8; border-bottom:1.5px solid #fde8c8;
-          padding:8px 24px; text-align:center;
-        }
-        .title-en {
-          font-family:'Cinzel',serif; font-size:13.5px; font-weight:700;
-          color:#7c2d12; letter-spacing:3px; text-transform:uppercase;
-        }
-        .title-ta {
-          font-family:'Noto Serif Tamil',serif; font-size:11.5px; font-weight:700;
-          color:#b45309; margin-top:2px; letter-spacing:.5px;
+        .hdr-pill {
+          display: inline-block; margin-top: 11px;
+          background: rgba(255,255,255,.12); border: 1px solid rgba(253,230,138,.40);
+          border-radius: 30px; padding: 5px 20px;
+          font-family: 'Noto Serif Tamil', serif; font-size: 11.5px; font-weight: 700;
+          color: #fef3c7; letter-spacing: .8px;
         }
 
-        /* ── BLESSING ── */
+        /* ── RECEIPT TITLE STRIP ── */
+        .strip {
+          background: #fff7ed;
+          border-top: 1.5px solid #fde8c8; border-bottom: 1.5px solid #fde8c8;
+          padding: 7px 24px; text-align: center;
+          display: flex; align-items: center; justify-content: center; gap: 12px;
+        }
+        .strip-line { flex:1; height:1px; background:linear-gradient(90deg,transparent,#e8c99a); }
+        .strip-line.r { background:linear-gradient(90deg,#e8c99a,transparent); }
+        .strip-en {
+          font-family:'Cinzel',serif; font-weight:700; font-size:12px;
+          color:#7c2d12; letter-spacing:3px; white-space:nowrap; text-transform:uppercase;
+        }
+
+        /* ── BLESSING BAND ── */
         .bless {
-          background:linear-gradient(90deg,#fffbeb 0%,#fef9e7 50%,#fffbeb 100%);
-          border-bottom:1px solid #fde8c8;
-          padding:9px 24px; text-align:center;
+          background: linear-gradient(90deg,#fef3c7 0%,#fef9e6 50%,#fef3c7 100%);
+          border-bottom: 1.5px solid #fcd9a0;
+          padding: 10px 24px; text-align: center;
         }
         .bless-sub {
-          font-family:'Noto Serif Tamil',serif; font-size:10.5px; font-weight:600;
-          color:#92400e;
+          font-family:'Noto Serif Tamil',serif; font-size:11px; font-weight:600;
+          color:#92400e; margin-bottom:3px;
         }
         .bless-main {
-          font-family:'Noto Serif Tamil',serif; font-size:14px; font-weight:800;
-          color:#7c2d12; margin-top:3px; line-height:1.5;
+          font-family:'Noto Serif Tamil',serif; font-size:15px; font-weight:800;
+          color:#c2410c; line-height:1.45;
         }
 
-        /* ── META ROW ── */
+        /* ── META: receipt no + date ── */
         .meta {
           display:grid; grid-template-columns:1fr 1px 1fr;
-          border-bottom:1px solid #f0ece4;
-          background:#fdf9f5;
+          background:#fdfaf6; border-bottom:1px solid #f0ece4;
         }
-        .meta-cell { padding:10px 20px; }
-        .meta-cell.right { text-align:right; }
-        .meta-sep { background:#e8ddd0; }
-        .meta-lbl { font:700 8.5px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1px; color:#d97706; margin-bottom:4px; }
-        .meta-val { font:800 15px/1 'Inter',sans-serif; color:#6b1700; letter-spacing:.5px; }
-        .meta-date { font:700 13px/1 'Inter',sans-serif; color:#6b1700; }
-        .meta-date-ta { font-family:'Noto Serif Tamil',serif; font-size:10px; font-weight:600; color:#b45309; margin-top:3px; }
+        .mc { padding:8px 18px; }
+        .mc.r { text-align:right; }
+        .mc-sep { background:#e8ddd0; }
+        .mc-lbl { font:700 8px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1px; color:#d97706; margin-bottom:4px; }
+        .mc-no  { font:900 15px/1 'Cinzel',serif; color:#6b1700; letter-spacing:.5px; }
+        .mc-date { font:700 13px/1 'Inter',sans-serif; color:#6b1700; }
+        .mc-date-ta { font-family:'Noto Serif Tamil',serif; font-size:9.5px; font-weight:600; color:#b45309; margin-top:3px; }
 
-        /* ── DONOR TABLE ── */
-        .donor-section { padding:0 20px 14px; }
-        .donor-head {
-          display:flex; align-items:center; gap:8px;
-          padding:10px 0 8px; border-bottom:1.5px solid #7c2d12;
-          margin-bottom:0;
+        /* ── COMPACT DETAILS TABLE ── */
+        .tbl { width:100%; border-collapse:collapse; }
+        .tbl-head td {
+          padding:6px 16px;
+          background:#fff7ed;
+          border-top:1px solid #fde8c8; border-bottom:1px dashed #f0dcc0;
+          font:700 8.5px/1 'Inter',sans-serif; text-transform:uppercase;
+          letter-spacing:1.2px; color:#b45309;
         }
-        .donor-head-label {
-          font:700 9px/1 'Inter',sans-serif; text-transform:uppercase;
-          letter-spacing:1.5px; color:#7c2d12;
+        .tbl tr.row { border-bottom:1px dashed #e8d9c0; }
+        .tbl tr.row:last-child { border-bottom:1px solid #e8c99a; }
+        .tbl tr.row:nth-child(even) td { background:#fdfaf7; }
+        .tbl .lbl {
+          padding:6px 16px;
+          font:600 9px/1.3 'Inter',sans-serif; text-transform:uppercase;
+          letter-spacing:.5px; color:#a8a29e; width:44%; white-space:nowrap;
         }
-        .donor-head-line { flex:1; height:1px; background:#e8c99a; }
+        .tbl .val {
+          padding:6px 16px 6px 0;
+          font:600 11px/1.4 'Inter',sans-serif; color:#1c1917;
+          text-align:right; word-break:break-all;
+        }
+        .tbl .val.ta {
+          font-family:'Noto Serif Tamil',serif; font-size:13px; font-weight:800;
+          color:#1c1917;
+        }
+        .tbl .val.mono { font-family:'Courier New',monospace; font-size:10px; color:#44403c; }
 
-        /* Name row */
-        .name-row {
-          display:flex; align-items:center; gap:14px;
-          padding:10px 0; border-bottom:1px solid #f0ece4;
-        }
-        .name-avatar {
-          width:40px; height:40px; border-radius:8px; flex-shrink:0;
-          background:linear-gradient(135deg,#7c2d12,#c2410c);
-          display:flex; align-items:center; justify-content:center;
-          font:900 18px/1 'Cinzel',serif; color:#fef3c7;
-          border:1.5px solid #fcd9a0;
-        }
-        .name-label { font:700 8px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:.8px; color:#a8a29e; margin-bottom:4px; }
-        .name-val {
-          font-family:'Noto Serif Tamil',serif; font-size:18px; font-weight:800;
-          color:#1c1917; line-height:1.2;
-        }
-
-        /* Detail rows */
-        .detail-row {
-          display:grid; grid-template-columns:140px 1fr;
-          border-bottom:1px solid #f5ede0;
-        }
-        .detail-row:last-child { border-bottom:none; }
-        .detail-row:nth-child(even) { background:#fdfaf7; }
-        .detail-lbl {
-          padding:7px 0 7px 0;
-          font:600 9.5px/1.3 'Inter',sans-serif; text-transform:uppercase;
-          letter-spacing:.6px; color:#a8a29e;
-        }
-        .detail-val {
-          padding:7px 0;
-          font:600 11px/1.4 'Inter',sans-serif; color:#292524;
-          text-align:right; word-break:break-word;
-        }
-        .detail-val.mono { font-family:'Courier New',monospace; font-size:10.5px; font-weight:700; color:#44403c; }
-
-        /* ── AMOUNT BLOCK ── */
-        .amount-block {
-          margin:0 20px 16px;
-          border:2px solid #7c2d12;
-          border-radius:6px;
-          overflow:hidden;
+        /* ── AMOUNT + STAMP ── */
+        .amt {
           display:grid; grid-template-columns:1fr auto;
+          border-top:2px solid #7c2d12;
+          border-bottom:2px solid #7c2d12;
         }
-        .amount-left {
+        .amt-left {
+          background:linear-gradient(140deg,#4a1000 0%,#7c2500 45%,#c24800 100%);
           padding:14px 20px;
-          background:linear-gradient(135deg,#5c1500 0%,#8b2500 50%,#c24f00 100%);
         }
-        .amount-lbl { font:700 9px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.2px; color:#fde68a; }
-        .amount-lbl-ta { font-family:'Noto Serif Tamil',serif; font-size:10px; font-weight:600; color:#fcd9a0; margin-top:2px; margin-bottom:8px; }
-        .amount-val { font-family:'Oswald',sans-serif; font-size:44px; font-weight:700; color:#fff; line-height:1; letter-spacing:1px; }
-        .amount-right {
-          padding:14px 18px;
+        .amt-lbl  { font:700 8.5px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.2px; color:#fde68a; }
+        .amt-ta   { font-family:'Noto Serif Tamil',serif; font-size:9.5px; font-weight:600; color:#fcd9a0; margin-top:2px; margin-bottom:8px; }
+        .amt-val  { font-family:'Oswald',sans-serif; font-size:46px; font-weight:700; color:#fff; line-height:1; letter-spacing:1px; }
+
+        .amt-right {
           background:#f0fdf4;
           border-left:2px solid #7c2d12;
-          display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+          display:flex; align-items:center; justify-content:center;
+          padding:14px 18px;
         }
-        .stamp-check { font-size:30px; line-height:1; color:#15803d; }
+        .stamp {
+          transform: rotate(-8deg);
+          border:2.5px solid #16a34a; border-radius:8px;
+          padding:9px 14px; text-align:center;
+          background:#f0fdf4;
+          box-shadow:0 2px 10px rgba(22,163,74,.15);
+        }
+        .stamp-check { font-size:28px; color:#16a34a; line-height:1; }
         .stamp-en {
-          font:900 12px/1 'Cinzel',serif; letter-spacing:2px;
-          color:#15803d; text-transform:uppercase; text-align:center;
+          font:900 11px/1 'Cinzel',serif; letter-spacing:2px;
+          color:#15803d; text-transform:uppercase; margin-top:4px;
         }
         .stamp-ta {
-          font-family:'Noto Serif Tamil',serif; font-size:9.5px; font-weight:700;
-          color:#166534; text-align:center;
-        }
-        .stamp-border {
-          border:2px solid #16a34a; border-radius:6px;
-          padding:10px 14px; text-align:center;
+          font-family:'Noto Serif Tamil',serif; font-size:9px; font-weight:700;
+          color:#166534; margin-top:3px;
         }
 
         /* ── FOOTER ── */
-        .footer {
-          background:linear-gradient(135deg,#5c1500,#6b1700);
+        .ftr {
+          background:linear-gradient(135deg,#b45309 0%,#d97706 60%,#f59e0b 100%);
           padding:12px 24px; text-align:center;
         }
-        .footer-ornament { font-family:'Noto Serif Tamil',serif; font-size:11px; font-weight:800; color:#fde68a; letter-spacing:1px; margin-bottom:6px; }
-        .footer-org-ta { font-family:'Noto Serif Tamil',serif; font-size:16px; font-weight:800; color:#fff; }
-        .footer-org-en { font-size:10px; font-weight:600; color:#fcd9a0; letter-spacing:.5px; margin-top:3px; }
-        .footer-note { font-size:8px; color:rgba(253,230,138,.35); margin-top:7px; letter-spacing:.3px; }
+        .ftr-issued { font:700 8px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.2px; color:rgba(255,255,255,.70); margin-bottom:5px; }
+        .ftr-org-ta { font-family:'Noto Serif Tamil',serif; font-size:16px; font-weight:800; color:#fff; }
+        .ftr-org-en { font-size:10px; font-weight:600; color:rgba(255,255,255,.80); margin-top:3px; letter-spacing:.4px; }
+        .ftr-rcpt   { font-size:8px; color:rgba(255,255,255,.45); margin-top:7px; letter-spacing:.3px; }
 
         /* ════════════════════════════
-           PRINT — CRITICAL
+           PRINT
         ════════════════════════════ */
         @media print {
-          @page { size:A4 portrait; margin:12mm 14mm; }
+          @page { size:A4 portrait; margin:10mm 12mm; }
 
-          /* Hide screen chrome */
-          .page    { min-height:unset; padding:0; background:#fff !important; }
-          .actions { display:none !important; }
+          body { background:#fff !important; }
 
-          /* Document fills page width */
-          .receipt { max-width:100%; border-width:2px; }
-          .receipt-inner { margin:3px; }
+          .pg   { min-height:unset; padding:0; background:#fff; align-items:stretch; }
+          .acts { display:none !important; }
 
-          /* Force all colours */
+          .doc  { max-width:100%; box-shadow:none; }
+
+          /* Tighten all sections for clean single page */
+          .hdr       { padding:13px 20px 12px; }
+          .hdr-logo  { width:60px; height:60px; margin-bottom:8px; }
+          .hdr-en    { font-size:15px; }
+          .hdr-ta    { font-size:12px; }
+          .hdr-addr  { font-size:9.5px; }
+          .hdr-pill  { margin-top:9px; padding:4px 16px; font-size:10.5px; }
+
+          .strip     { padding:5px 20px; }
+          .strip-en  { font-size:11px; }
+
+          .bless     { padding:8px 20px; }
+          .bless-sub { font-size:10.5px; }
+          .bless-main{ font-size:13.5px; }
+
+          .mc        { padding:7px 16px; }
+          .mc-no     { font-size:14px; }
+          .mc-date   { font-size:12px; }
+
+          .tbl .lbl  { padding:5px 14px; font-size:8.5px; }
+          .tbl .val  { padding:5px 14px 5px 0; font-size:10.5px; }
+          .tbl .val.ta { font-size:12px; }
+          .tbl .val.mono { font-size:9.5px; }
+          .tbl-head td { padding:5px 14px; }
+
+          .amt-left  { padding:12px 18px; }
+          .amt-val   { font-size:40px; }
+          .amt-right { padding:12px 16px; }
+          .stamp     { padding:7px 11px; }
+          .stamp-check { font-size:24px; }
+          .stamp-en  { font-size:10px; }
+          .stamp-ta  { font-size:8.5px; }
+
+          .ftr       { padding:10px 20px; }
+          .ftr-org-ta { font-size:14px; }
+          .ftr-org-en { font-size:9.5px; }
+
           * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-
-          /* Prevent any section breaking across pages */
-          .receipt, .receipt-inner, .hd, .title-band, .bless,
-          .meta, .donor-section, .amount-block, .footer {
-            page-break-inside:avoid;
-            break-inside:avoid;
-          }
+          .doc, .hdr, .strip, .bless, .meta, .tbl, .amt, .ftr { page-break-inside:avoid; break-inside:avoid; }
         }
       `}</style>
 
-      <div className="page">
+      <div className="pg">
 
-        {/* ── Action bar (screen only) ── */}
-        <div className="actions">
-          <button className="btn-print" onClick={() => window.print()}>
-            🖨️ &nbsp;Print / Save PDF
-          </button>
-          <a href={import.meta.env.BASE_URL} className="btn-home">🏠 முகப்பு</a>
+        {/* Buttons — screen only */}
+        <div className="acts">
+          <button className="btn-p" onClick={() => window.print()}>🖨️ &nbsp;Print / Save PDF</button>
+          <a href={import.meta.env.BASE_URL} className="btn-h">🏠 முகப்பு</a>
         </div>
 
-        {/* ════ RECEIPT DOCUMENT ════ */}
-        <div className="receipt">
-          <div className="receipt-inner">
+        {/* ══ DOCUMENT ══ */}
+        <div className="doc">
 
-            {/* ── HEADER ── */}
-            <div className="hd">
-              <img src={logo} alt="Ayyappan" className="hd-logo"
-                onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }} />
-              <div className="hd-text">
-                <div className="hd-en">Sri Arulmigu Iyyappan Thirukovil</div>
-                <div className="hd-ta">அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்</div>
-                <div className="hd-addr">R.S Road, Vadamadurai, Tamil Nadu</div>
-                <div><span className="hd-saranam">✦ ஸ்வாமியே சரணம் ஐயப்பா ✦</span></div>
-              </div>
+          {/* HEADER */}
+          <div className="hdr">
+            <img src={logo} alt="" className="hdr-logo"
+              onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+            <div className="hdr-en">Sri Arulmigu Iyyappan Thirukovil</div>
+            <div className="hdr-ta">அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்</div>
+            <div className="hdr-addr">R.S Road, Vadamadurai, Tamil Nadu</div>
+            <div><span className="hdr-pill">✦ &nbsp;ஸ்வாமியே சரணம் ஐயப்பா&nbsp; ✦</span></div>
+          </div>
+
+          {/* RECEIPT TITLE STRIP */}
+          <div className="strip">
+            <div className="strip-line" />
+            <span className="strip-en">Donation Receipt &nbsp;·&nbsp; நன்கொடை ரசீது</span>
+            <div className="strip-line r" />
+          </div>
+
+          {/* BLESSING */}
+          <div className="bless">
+            <div className="bless-sub">உங்களுக்கும் உங்கள் குடும்பத்திற்கும்</div>
+            <div className="bless-main">ஐயப்பன் அருள் கிடைக்கும், நல்லதே நடக்கும் 🙏</div>
+          </div>
+
+          {/* RECEIPT NO + DATE */}
+          <div className="meta">
+            <div className="mc">
+              <div className="mc-lbl">Receipt No.</div>
+              <div className="mc-no">{receiptNo}</div>
             </div>
-
-            {/* ── TITLE BAND ── */}
-            <div className="title-band">
-              <div className="title-en">Donation Receipt</div>
-              <div className="title-ta">நன்கொடை ரசீது</div>
+            <div className="mc-sep" />
+            <div className="mc r">
+              <div className="mc-lbl">Date</div>
+              <div className="mc-date">{fmtEn(dateISO)}</div>
+              <div className="mc-date-ta">{fmtTa(dateISO)}</div>
             </div>
+          </div>
 
-            {/* ── BLESSING ── */}
-            <div className="bless">
-              <div className="bless-sub">உங்களுக்கும் உங்கள் குடும்பத்திற்கும்</div>
-              <div className="bless-main">ஐயப்பன் அருள் கிடைக்கும், நல்லதே நடக்கும் 🙏</div>
-            </div>
-
-            {/* ── RECEIPT NO + DATE ── */}
-            <div className="meta">
-              <div className="meta-cell">
-                <div className="meta-lbl">Receipt No.</div>
-                <div className="meta-val">{receiptNo}</div>
-              </div>
-              <div className="meta-sep" />
-              <div className="meta-cell right">
-                <div className="meta-lbl">Date</div>
-                <div className="meta-date">{fmtEn(dateISO)}</div>
-                <div className="meta-date-ta">{fmtTa(dateISO)}</div>
-              </div>
-            </div>
-
-            {/* ── DONOR TABLE ── */}
-            <div className="donor-section">
-              {/* Section heading */}
-              <div className="donor-head">
-                <span className="donor-head-label">Donor Details &nbsp;·&nbsp; நன்கொடையாளர் விவரம்</span>
-                <div className="donor-head-line" />
-              </div>
-
-              {/* Name hero */}
-              <div className="name-row">
-                <div className="name-avatar">
-                  {(donation.anonymous ? "A" : name.charAt(0)).toUpperCase()}
-                </div>
-                <div>
-                  <div className="name-label">Donor Name / பெயர்</div>
-                  <div className="name-val">{name}</div>
-                </div>
-              </div>
-
-              {/* Detail rows */}
+          {/* DETAILS TABLE */}
+          <table className="tbl" cellPadding={0} cellSpacing={0}>
+            <tbody>
+              <tr className="tbl-head">
+                <td colSpan={2}>நன்கொடையாளர் விவரம் &nbsp;·&nbsp; Donor Details</td>
+              </tr>
               {rows.map((r, i) => (
-                <div className="detail-row" key={i}>
-                  <div className="detail-lbl">{r.label}</div>
-                  <div className={`detail-val${r.mono ? " mono" : ""}`}>{r.value}</div>
-                </div>
+                <tr className="row" key={i}>
+                  <td className="lbl">{r.lbl}</td>
+                  <td className={`val${i === 0 ? " ta" : r.mono ? " mono" : ""}`}>{r.val}</td>
+                </tr>
               ))}
-            </div>
+            </tbody>
+          </table>
 
-            {/* ── AMOUNT + STAMP ── */}
-            <div className="amount-block">
-              <div className="amount-left">
-                <div className="amount-lbl">Donation Amount</div>
-                <div className="amount-lbl-ta">நன்கொடை தொகை</div>
-                <div className="amount-val">₹{amountNum}</div>
-              </div>
-              <div className="amount-right">
-                <div className="stamp-border">
-                  <div className="stamp-check">✔</div>
-                  <div className="stamp-en">Approved</div>
-                  <div className="stamp-ta">அங்கீகரிக்கப்பட்டது</div>
-                </div>
-              </div>
+          {/* AMOUNT + STAMP */}
+          <div className="amt">
+            <div className="amt-left">
+              <div className="amt-lbl">Donation Amount</div>
+              <div className="amt-ta">நன்கொடை தொகை</div>
+              <div className="amt-val">{amountFmt}</div>
             </div>
-
-            {/* ── FOOTER ── */}
-            <div className="footer">
-              <div className="footer-ornament">✦ &nbsp;ஸ்வாமியே சரணம் ஐயப்பா&nbsp; ✦</div>
-              <div className="footer-org-ta">வடமதுரை ஐயப்பன் திருப்பணி குழு</div>
-              <div className="footer-org-en">Vadamadurai Ayyappan Thirupani Kulu</div>
-              <div className="footer-note">
-                Official receipt issued by the temple trust &nbsp;·&nbsp; {receiptNo}
+            <div className="amt-right">
+              <div className="stamp">
+                <div className="stamp-check">✔</div>
+                <div className="stamp-en">Approved</div>
+                <div className="stamp-ta">அங்கீகரிக்கப்பட்டது</div>
               </div>
             </div>
+          </div>
 
-          </div>{/* receipt-inner */}
-        </div>{/* receipt */}
+          {/* FOOTER */}
+          <div className="ftr">
+            <div className="ftr-issued">Receipt Issued By &nbsp;·&nbsp; வழங்கியவர்கள்</div>
+            <div className="ftr-org-ta">வடமதுரை ஐயப்பன் திருப்பணி குழு</div>
+            <div className="ftr-org-en">Vadamadurai Ayyappan Thirupani Kulu</div>
+            <div className="ftr-rcpt">Official receipt &nbsp;·&nbsp; {receiptNo} &nbsp;·&nbsp; {fmtEn(dateISO)}</div>
+          </div>
 
-        {/* Bottom print button */}
-        <div className="actions" style={{ marginTop:22, marginBottom:0 }}>
-          <button className="btn-print" onClick={() => window.print()}>
-            🖨️ &nbsp;Print / Save PDF
-          </button>
-          <a href={import.meta.env.BASE_URL} className="btn-home">🏠 முகப்பு</a>
+        </div>{/* /doc */}
+
+        {/* Bottom button */}
+        <div className="acts" style={{ marginTop:20, marginBottom:0 }}>
+          <button className="btn-p" onClick={() => window.print()}>🖨️ &nbsp;Print / Save PDF</button>
+          <a href={import.meta.env.BASE_URL} className="btn-h">🏠 முகப்பு</a>
         </div>
 
       </div>
