@@ -333,7 +333,7 @@ export default function Receipt() {
           .tbl .val    { padding:10px 22px 10px 0; font-size:12.5pt; }
           .tbl .val.mono { font-size:11pt; }
           .tbl tr.name-row .lbl          { padding:11px 22px 11px 17px; font-size:10.5pt; }
-          .tbl tr.name-row .val.name-val { font-size:19pt !important; padding:11px 22px 11px 0 !important; }
+          .tbl tr.name-row .val.name-val { font-size:19pt !important; padding:11px 22px 11px 0 !important; white-space:normal !important; word-break:break-word; }
 
           /* AMOUNT — flex:1 means it fills all leftover vertical space */
           .amt        { display:grid; grid-template-columns:1fr auto; }

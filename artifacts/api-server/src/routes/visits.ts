@@ -24,10 +24,11 @@ router.post("/track", async (req, res) => {
       await db.insert(visitsTable).values({ dayKey: day });
       // Mark session so we don't double-count on refresh
       sess.lastVisitDay = day;
-      // Fire-and-forget session save — don't block the response on it.
-      // express-session will also try to auto-save at response end, but
-      // with saveUninitialized:false we need at least one explicit save.
-      sess.save(() => { /* ignore errors — visit is already recorded in DB */ });
+      // Await the session save so that the next request (e.g. a page refresh
+      // arriving immediately after this 204) finds lastVisitDay already in the
+      // PG session store. Fire-and-forget was a race: the response could be sent
+      // before connect-pg-simple finished writing.
+      await new Promise<void>((resolve) => sess.save(() => resolve()));
     }
     res.status(204).end();
   } catch (err) {
