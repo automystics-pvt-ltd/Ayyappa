@@ -239,10 +239,11 @@ export default function Receipt() {
         }
 
         /* AMOUNT */
-        .amt { display:grid; grid-template-columns:1fr auto; border-top:2px solid #7c2d12; border-bottom:2px solid #7c2d12; }
+        .amt { display:grid; grid-template-columns:1fr auto; border-top:2px solid #7c2d12; border-bottom:2px solid #7c2d12; min-height:156px; }
         .amt-left {
           background:linear-gradient(140deg,#4a1000 0%,#7c2500 45%,#c24800 100%);
           padding:14px 20px;
+          display:flex; flex-direction:column; justify-content:center;
         }
         .amt-lbl { font:700 8.5px/1 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.2px; color:#fde68a; }
         .amt-ta  { font-family:'Noto Serif Tamil',serif; font-size:9.5px; font-weight:600; color:#fcd9a0; margin-top:2px; margin-bottom:8px; }
