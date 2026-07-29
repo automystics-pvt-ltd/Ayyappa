@@ -6,6 +6,7 @@ import {
   ObjectStorageService,
 } from '../lib/objectStorage';
 import { requireAuth } from '../middlewares/auth';
+import { readLocalUpload } from '../lib/localUpload';
 import { db } from '@workspace/db';
 import { galleryPhotosTable } from '@workspace/db/schema';
 import { eq } from 'drizzle-orm';
@@ -135,6 +136,29 @@ router.get('/storage/objects/*path', requireAuth, async (req: Request, res: Resp
     req.log.error({ err: error }, 'Error serving object');
     res.status(500).json({ error: 'Failed to serve object' });
   }
+});
+
+/**
+ * GET /storage/local-uploads/:id
+ *
+ * Serve locally stored upload files (donation screenshots saved on disk when
+ * the Replit GCS sidecar is not available). Requires admin session.
+ */
+router.get('/storage/local-uploads/:id', requireAuth, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  if (!id || !/^[0-9a-f-]{36}$/.test(id)) {
+    res.status(400).json({ error: 'Invalid file ID' });
+    return;
+  }
+  const file = await readLocalUpload(id);
+  if (!file) {
+    res.status(404).json({ error: 'File not found' });
+    return;
+  }
+  res.setHeader('Content-Type', file.contentType);
+  res.setHeader('Cache-Control', 'private, max-age=3600');
+  res.setHeader('Content-Length', String(file.data.length));
+  res.end(file.data);
 });
 
 export default router;

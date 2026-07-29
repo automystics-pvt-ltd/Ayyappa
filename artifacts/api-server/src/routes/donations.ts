@@ -6,6 +6,11 @@ import { eq, desc, sum, count } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { notifyDonationApproved } from "../lib/smsService";
+import {
+  isSidecarAvailable,
+  createLocalUploadSlot,
+  saveLocalUpload,
+} from "../lib/localUpload";
 
 const router = Router();
 const objectStorageService = new ObjectStorageService();
@@ -23,11 +28,12 @@ const MAX_SCREENSHOT_SIZE = 5 * 1024 * 1024;
 
 /**
  * POST /api/donations/upload-screenshot-url
- * Public endpoint — generates a presigned GCS upload URL for a donation screenshot.
- * Only image types are accepted; size is capped at 10 MB.
+ * Public endpoint — generates a presigned upload URL for a donation screenshot.
+ * On Replit: uses GCS presigned URL via sidecar.
+ * On production servers without sidecar: falls back to a direct-upload endpoint.
  */
 router.post("/upload-screenshot-url", async (req, res) => {
-  const { name, size, contentType } = req.body ?? {};
+  const { size, contentType } = req.body ?? {};
 
   if (!contentType || !ALLOWED_IMAGE_TYPES.has(contentType)) {
     res.status(400).json({ error: "Only image files are allowed (JPEG, PNG, WebP, GIF)" });
@@ -38,15 +44,70 @@ router.post("/upload-screenshot-url", async (req, res) => {
     return;
   }
 
-  try {
-    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-    const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
-    res.json({ uploadURL, objectPath });
-  } catch (err) {
-    req.log.error({ err }, "Error generating screenshot upload URL");
-    res.status(500).json({ error: "Failed to generate upload URL" });
+  // Try GCS/Replit sidecar first; fall back to local filesystem storage.
+  if (await isSidecarAvailable()) {
+    try {
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+      res.json({ uploadURL, objectPath });
+      return;
+    } catch (err) {
+      req.log.warn({ err }, "Sidecar reported available but upload URL failed; falling back to local storage");
+    }
   }
+
+  // Local storage fallback — build the absolute base URL from the request
+  const proto = req.headers["x-forwarded-proto"] ?? (req.secure ? "https" : "http");
+  const host = req.headers.host;
+  const apiBase = `${proto}://${host}/api`;
+  const slot = createLocalUploadSlot(apiBase);
+  res.json(slot);
 });
+
+/**
+ * PUT /api/donations/local-upload/:id
+ * Receives raw file body from the browser and saves it to the local upload directory.
+ * This endpoint is only used when the Replit GCS sidecar is not available.
+ */
+router.put(
+  "/local-upload/:id",
+  // Parse raw body — limit matches MAX_SCREENSHOT_SIZE
+  (req, res, next) => {
+    const chunks: Buffer[] = [];
+    req.on("data", (chunk: Buffer) => chunks.push(chunk));
+    req.on("end", () => {
+      (req as any).rawBody = Buffer.concat(chunks);
+      next();
+    });
+    req.on("error", next);
+  },
+  async (req, res) => {
+    const { id } = req.params;
+    const rawBody: Buffer = (req as any).rawBody ?? Buffer.alloc(0);
+    const contentType = (req.headers["content-type"] as string) || "application/octet-stream";
+
+    if (!id || !/^[0-9a-f-]{36}$/.test(id)) {
+      res.status(400).json({ error: "Invalid upload ID" });
+      return;
+    }
+    if (rawBody.length === 0) {
+      res.status(400).json({ error: "Empty file body" });
+      return;
+    }
+    if (rawBody.length > MAX_SCREENSHOT_SIZE) {
+      res.status(413).json({ error: "File too large" });
+      return;
+    }
+
+    try {
+      await saveLocalUpload(id, rawBody, contentType);
+      res.status(200).json({ ok: true });
+    } catch (err) {
+      req.log.error({ err }, "Error saving local upload");
+      res.status(500).json({ error: "Failed to save file" });
+    }
+  }
+);
 
 // POST /api/donations — public, submit a donation
 router.post("/", async (req, res) => {
