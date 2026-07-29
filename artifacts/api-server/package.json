@@ -10,7 +10,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:visits": "node ./tests/visits-dedup.test.mjs",
     "test:admin-self-protect": "node ./tests/admin-self-protect.test.mjs",
-    "test:admin-deleted-session": "node ./tests/admin-deleted-session.test.mjs"
+    "test:admin-deleted-session": "node ./tests/admin-deleted-session.test.mjs",
+    "test:receipt-long-name": "node ./tests/receipt-long-name.test.mjs"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.21.0",
