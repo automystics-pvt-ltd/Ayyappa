@@ -228,13 +228,14 @@ export default function Receipt() {
 
         /* NAME ROW — highlighted */
         .tbl tr.name-row td              { background:#fff7ed !important; border-bottom:1.5px solid #fcd9a0 !important; }
-        .tbl tr.name-row .lbl           { border-left:4px solid #ea580c; padding-left:12px; color:#c2410c !important; font-weight:800; font-size:9.5px; }
+        .tbl tr.name-row .lbl           { border-left:4px solid #ea580c; padding-left:12px; color:#c2410c !important; font-weight:800; font-size:9.5px; vertical-align:middle; }
         .tbl tr.name-row .val.name-val  {
           font-family:'Noto Serif Tamil',serif;
-          font-size:20px; font-weight:900;
+          font-size:17px; font-weight:900;
           color:#7c2d12;
-          padding:10px 16px 10px 0;
-          letter-spacing:.3px;
+          padding:9px 16px 9px 0;
+          letter-spacing:.2px;
+          white-space:nowrap;
         }
 
         /* AMOUNT */
