@@ -351,14 +351,14 @@ export default function Receipt() {
         .amt { display:grid; grid-template-columns:1fr auto; border-top:2px solid #7c2d12; border-bottom:2px solid #7c2d12; min-height:216px; }
         .amt-left {
           background:linear-gradient(140deg,#4a1000 0%,#7c2500 45%,#c24800 100%);
-          padding:16px 24px;
+          padding:20px 24px;
           display:flex; flex-direction:column; justify-content:center; align-items:center;
-          text-align:center; gap:6px;
+          text-align:center; gap:10px;
         }
         .amt-rcvd { font:700 8px/1.2 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.4px; color:#86efac; }
         .amt-lbl  { font:700 8.5px/1.2 'Inter',sans-serif; text-transform:uppercase; letter-spacing:1.2px; color:#fde68a; }
-        .amt-ta   { font-family:'Noto Serif Tamil',serif; font-size:9.5px; font-weight:600; color:#fcd9a0; line-height:1.4; }
-        .amt-val  { font-family:'Oswald',sans-serif; font-size:50px; font-weight:700; color:#fff; line-height:1.15; letter-spacing:1px; }
+        .amt-ta   { font-family:'Noto Serif Tamil',serif; font-size:10px; font-weight:600; color:#fcd9a0; line-height:1.5; }
+        .amt-val  { font-family:'Oswald',sans-serif; font-size:48px; font-weight:700; color:#fff; line-height:1.3; letter-spacing:1px; }
         .amt-right {
           background:#f0fdf4; border-left:2px solid #7c2d12;
           display:flex; align-items:center; justify-content:center;
