@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { api } from "@/lib/api";
 import { useAdmin } from "@/hooks/useAdmin";
-import { MapPin, Image, CheckCircle2, XCircle, AlertCircle, Phone, Hash, MessageSquare, CalendarDays, MoreHorizontal, FileText } from "lucide-react";
+import { MapPin, Image, CheckCircle2, XCircle, AlertCircle, Phone, Hash, MessageSquare, CalendarDays, MoreHorizontal, FileText, Printer } from "lucide-react";
 
 type Donation = {
   id: number; receiptToken?: string; donorName: string; mobile: string; place?: string; amount: string;
@@ -43,6 +43,7 @@ export default function Donations() {
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [justApproved, setJustApproved] = useState<{ id: number; name: string; amount: string; token: string } | null>(null);
 
   const openScreenshot = async (objectPath: string) => {
     setPreviewLoading(true);
@@ -76,9 +77,18 @@ export default function Donations() {
 
   const canApprove = admin?.role === "super_admin" || admin?.role === "editor";
 
-  const approve = async (id: number) => {
+  const approve = async (id: number, donorName: string, amount: string) => {
     setActionLoading(id);
-    try { await api.approveDonation(id); await fetchDonations(); }
+    try {
+      await api.approveDonation(id);
+      await fetchDonations();
+      // Find receipt token from refreshed list so we can open print immediately
+      const updated = await api.getAllDonations(undefined) as Donation[];
+      const approved = updated.find(d => d.id === id);
+      if (approved?.receiptToken) {
+        setJustApproved({ id, name: donorName, amount, token: approved.receiptToken });
+      }
+    }
     catch (e: any) { alert(e.message); }
     finally { setActionLoading(null); }
   };
@@ -147,7 +157,7 @@ export default function Donations() {
                   <div className="flex flex-wrap gap-2">
                     {canApprove && d.status === "pending" && (
                       <>
-                        <button onClick={() => approve(d.id)} disabled={actionLoading === d.id}
+                        <button onClick={() => approve(d.id, d.donorName, d.amount)} disabled={actionLoading === d.id}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold text-white transition-all disabled:opacity-50"
                           style={{ background: "linear-gradient(135deg,#10b981,#059669)" }}>
                           {actionLoading === d.id ? "..." : "✓ அங்கீகரி"}
@@ -159,11 +169,18 @@ export default function Donations() {
                       </>
                     )}
                     {d.status === "approved" && d.receiptToken && (
-                      <a href={`${import.meta.env.BASE_URL}receipt/${d.receiptToken}`}
-                        target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors">
-                        <FileText className="w-3.5 h-3.5" />ரசீது பார்க்க
-                      </a>
+                      <div className="flex gap-2 flex-wrap">
+                        <a href={`${import.meta.env.BASE_URL}receipt/${d.receiptToken}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 transition-colors">
+                          <FileText className="w-3.5 h-3.5" />ரசீது பார்க்க
+                        </a>
+                        <button
+                          onClick={() => window.open(`${import.meta.env.BASE_URL}receipt/${d.receiptToken}`, "_blank")}
+                          className="inline-flex items-center gap-1.5 text-xs text-orange-700 hover:text-orange-900 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200 transition-colors">
+                          <Printer className="w-3.5 h-3.5" />Print
+                        </button>
+                      </div>
                     )}
                   </div>
                 );
@@ -261,6 +278,52 @@ export default function Donations() {
           </div>
         )}
       </div>
+
+      {/* ── Just-approved print prompt ── */}
+      {justApproved && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden border border-orange-100">
+            {/* Header */}
+            <div className="bg-gradient-to-br from-orange-600 to-amber-500 px-6 py-6 text-white text-center relative overflow-hidden">
+              <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/10" />
+              <div className="relative z-10">
+                <div className="text-4xl mb-2">✅</div>
+                <h3 className="text-lg font-bold">நன்கொடை அங்கீகரிக்கப்பட்டது!</h3>
+                <p className="text-orange-100 text-xs mt-1">Donation Approved Successfully</p>
+              </div>
+            </div>
+            {/* Body */}
+            <div className="px-6 py-5 text-center space-y-3">
+              <p className="text-sm text-orange-900 font-semibold">{justApproved.name}</p>
+              <p className="text-3xl font-extrabold text-orange-600">₹{Number(justApproved.amount).toLocaleString("en-IN")}</p>
+              <p className="text-xs text-gray-500">ரசீது தயார் — இப்போது print செய்யலாம்</p>
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3">
+                <p className="text-amber-800 text-xs font-medium">ஸ்வாமியே சரணம் ஐயப்பா 🙏</p>
+                <p className="text-amber-600 text-[10px] mt-0.5">உங்களுக்கும் உங்கள் குடும்பத்திற்கும் ஐயப்பன் அருள் கிடைக்கும்</p>
+              </div>
+            </div>
+            {/* Actions */}
+            <div className="px-6 pb-6 flex gap-3">
+              <button
+                onClick={() => {
+                  window.open(`${import.meta.env.BASE_URL}receipt/${justApproved.token}`, "_blank");
+                }}
+                className="flex-1 flex items-center justify-center gap-2 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-orange-200 transition-all active:scale-95"
+                style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
+              >
+                <Printer className="w-4 h-4" />
+                Print Receipt
+              </button>
+              <button
+                onClick={() => setJustApproved(null)}
+                className="flex-1 border border-orange-200 py-3 rounded-xl font-medium text-orange-700 hover:bg-orange-50 text-sm transition-colors"
+              >
+                பிறகு பார்க்கலாம்
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Screenshot modal */}
       {previewUrl && (
