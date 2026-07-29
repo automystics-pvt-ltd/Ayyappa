@@ -97,7 +97,7 @@ export default function Receipt() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Tamil:wght@400;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Noto+Serif+Tamil:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&family=Oswald:wght@700&display=swap');
 
         *{box-sizing:border-box;margin:0;padding:0;}
 
@@ -108,7 +108,7 @@ export default function Receipt() {
           flex-direction:column;
           align-items:center;
           padding:28px 16px;
-          font-family:'Poppins',sans-serif;
+          font-family:'Inter',sans-serif;
         }
 
         /* action buttons */
@@ -120,7 +120,7 @@ export default function Receipt() {
           padding:10px 24px;border:none;border-radius:12px;cursor:pointer;
           background:linear-gradient(135deg,#ea580c,#d97706);
           color:#fff;font-size:13px;font-weight:700;
-          font-family:'Poppins',sans-serif;
+          font-family:'Inter',sans-serif;
           box-shadow:0 4px 16px rgba(234,88,12,.30);
           transition:transform .12s,box-shadow .12s;
         }
@@ -129,7 +129,7 @@ export default function Receipt() {
           display:flex;align-items:center;gap:6px;
           padding:10px 20px;border:2px solid #fed7aa;border-radius:12px;cursor:pointer;
           background:#fff;color:#c2410c;font-size:13px;font-weight:600;
-          font-family:'Poppins',sans-serif;text-decoration:none;
+          font-family:'Inter',sans-serif;text-decoration:none;
           transition:background .12s;
         }
         .rp-btn-home:hover{background:#fff7ed;}
@@ -170,12 +170,12 @@ export default function Receipt() {
           box-shadow:0 4px 16px rgba(0,0,0,.30);
         }
         .rp-h-name{
-          font-family:'Playfair Display',serif;
+          font-family:'Cinzel',serif;
           font-size:16.5px;font-weight:800;color:#fff;
           letter-spacing:.4px;line-height:1.3;
         }
         .rp-h-name-ta{
-          font-family:'Noto Sans Tamil',sans-serif;
+          font-family:'Noto Serif Tamil',serif;
           font-size:12.5px;font-weight:700;
           color:#fde68a;margin-top:3px;
         }
@@ -189,7 +189,7 @@ export default function Receipt() {
           border:1px solid rgba(253,230,138,.40);
           border-radius:20px;
           padding:5px 18px;
-          font-family:'Noto Sans Tamil',sans-serif;
+          font-family:'Noto Serif Tamil',serif;
           font-size:12px;font-weight:700;
           color:#fef3c7;letter-spacing:1.2px;
         }
@@ -202,12 +202,12 @@ export default function Receipt() {
           border-top:2px solid #fed7aa;
         }
         .rp-bless-sub{
-          font-family:'Noto Sans Tamil',sans-serif;
+          font-family:'Noto Serif Tamil',serif;
           font-size:11.5px;font-weight:600;color:#92400e;
           letter-spacing:.2px;
         }
         .rp-bless-main{
-          font-family:'Noto Sans Tamil',sans-serif;
+          font-family:'Noto Serif Tamil',serif;
           font-size:14px;font-weight:800;
           color:#b83008;
           margin-top:2px;line-height:1.45;
@@ -230,11 +230,11 @@ export default function Receipt() {
         .rp-meta-val{
           font-size:13.5px;font-weight:800;
           color:#7c2d12;letter-spacing:1.2px;
-          font-family:'Poppins',monospace;
+          font-family:'Inter',monospace;
         }
         .rp-meta-date{font-size:12px;font-weight:700;color:#78350f;text-align:right;}
         .rp-meta-date-ta{
-          font-family:'Noto Sans Tamil',sans-serif;
+          font-family:'Noto Serif Tamil',serif;
           font-size:9.5px;color:#b45309;text-align:right;
         }
         .rp-meta-divider{width:1px;height:30px;background:#fde8c8;}
@@ -267,10 +267,10 @@ export default function Receipt() {
           display:flex;align-items:center;justify-content:center;
           font-size:16px;font-weight:800;color:#fff;
           flex-shrink:0;
-          font-family:'Poppins',sans-serif;
+          font-family:'Inter',sans-serif;
         }
         .rp-name-text{
-          font-family:'Poppins',sans-serif;
+          font-family:'Inter',sans-serif;
           font-size:17px;font-weight:800;
           color:#1c1917;
           letter-spacing:.2px;
@@ -298,7 +298,7 @@ export default function Receipt() {
           text-align:right;word-break:break-all;
         }
         .rp-d-val.mono{
-          font-family:'Poppins',monospace;
+          font-family:'Inter',monospace;
           font-size:10.5px;font-weight:500;color:#57534e;
         }
 
@@ -326,14 +326,14 @@ export default function Receipt() {
           color:#fde68a;margin-bottom:2px;
         }
         .rp-amount-label-ta{
-          font-family:'Noto Sans Tamil',sans-serif;
+          font-family:'Noto Serif Tamil',serif;
           font-size:10px;font-weight:600;color:#fcd9a0;
           margin-bottom:6px;
         }
         .rp-amount-val{
-          font-family:'Poppins',sans-serif;
-          font-size:34px;font-weight:900;color:#fff;
-          letter-spacing:-1px;line-height:1;
+          font-family:'Oswald',sans-serif;
+          font-size:36px;font-weight:700;color:#fff;
+          letter-spacing:0.5px;line-height:1;
         }
 
         /* Approved stamp */
@@ -354,10 +354,10 @@ export default function Receipt() {
           font-size:12px;font-weight:900;
           color:#15803d;letter-spacing:1.5px;
           text-transform:uppercase;
-          font-family:'Poppins',sans-serif;
+          font-family:'Inter',sans-serif;
         }
         .rp-stamp-ta{
-          font-family:'Noto Sans Tamil',sans-serif;
+          font-family:'Noto Serif Tamil',serif;
           font-size:9px;font-weight:700;color:#166534;
         }
 
@@ -371,7 +371,7 @@ export default function Receipt() {
           background:linear-gradient(90deg,transparent,#fcd9a0,transparent);
         }
         .rp-divider-text{
-          font-family:'Noto Sans Tamil',sans-serif;
+          font-family:'Noto Serif Tamil',serif;
           font-size:11px;font-weight:800;
           color:#ea580c;letter-spacing:1.2px;white-space:nowrap;
         }
@@ -387,7 +387,7 @@ export default function Receipt() {
           color:#fde68a;margin-bottom:4px;
         }
         .rp-footer-org{
-          font-family:'Noto Sans Tamil','Poppins',sans-serif;
+          font-family:'Noto Serif Tamil','Inter',sans-serif;
           font-size:14px;font-weight:800;color:#fff;
           letter-spacing:.3px;
         }
