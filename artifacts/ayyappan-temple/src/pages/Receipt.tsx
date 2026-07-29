@@ -30,608 +30,527 @@ function fmtDateTa(iso: string) {
 export default function Receipt() {
   const { token } = useParams<{ token: string }>();
   const [donation, setDonation] = useState<ReceiptDonation | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState<string | null>(null);
 
   useEffect(() => {
     api.getDonationReceipt(token)
-      .then((d) => setDonation(d as ReceiptDonation))
-      .catch((e) => setError(e.message || "Receipt not found"))
+      .then(d  => setDonation(d as ReceiptDonation))
+      .catch(e  => setError(e.message || "Receipt not found"))
       .finally(() => setLoading(false));
   }, [token]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-amber-50">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-4 border-orange-200 border-t-orange-500 animate-spin" />
-          <p className="text-orange-600 text-sm">ஏற்றுகிறது...</p>
-        </div>
+  /* ── loading ── */
+  if (loading) return (
+    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#fef9f0" }}>
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:10 }}>
+        <div style={{ width:32, height:32, borderRadius:"50%", border:"4px solid #fed7aa", borderTopColor:"#ea580c", animation:"spin 0.8s linear infinite" }} />
+        <p style={{ color:"#c2410c", fontSize:13, fontFamily:"sans-serif" }}>ஏற்றுகிறது…</p>
       </div>
-    );
-  }
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
 
-  if (error || !donation) {
-    return (
-      <div className="min-h-screen flex items-center justify-center flex-col gap-3 p-8 text-center bg-amber-50">
-        <div className="text-4xl">🙏</div>
-        <h2 className="text-lg font-bold text-gray-700">ரசீது கிடைக்கவில்லை</h2>
-        <p className="text-gray-500 text-sm max-w-xs">{error || "இந்த ரசீது இணைப்பு செல்லுபடியாகவில்லை."}</p>
-        <a href={import.meta.env.BASE_URL} className="text-orange-600 underline text-sm">முகப்பு பக்கம்</a>
-      </div>
-    );
-  }
+  /* ── error ── */
+  if (error || !donation) return (
+    <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:12, padding:24, textAlign:"center", background:"#fef9f0", fontFamily:"sans-serif" }}>
+      <div style={{ fontSize:40 }}>🙏</div>
+      <h2 style={{ fontSize:18, fontWeight:800, color:"#292524", margin:0 }}>ரசீது கிடைக்கவில்லை</h2>
+      <p style={{ fontSize:13, color:"#78716c", maxWidth:280, margin:0 }}>{error || "இந்த ரசீது இணைப்பு செல்லுபடியாகவில்லை."}</p>
+      <a href={import.meta.env.BASE_URL} style={{ color:"#ea580c", fontSize:13 }}>முகப்பு பக்கம்</a>
+    </div>
+  );
 
   const isPending  = donation.status === "pending";
   const isRejected = donation.status === "rejected";
 
-  if (isPending || isRejected) {
-    return (
-      <div className="min-h-screen bg-amber-50 flex items-center justify-center p-4">
-        <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden">
-          <div className={`px-6 py-6 text-white text-center ${isPending ? "bg-gradient-to-br from-yellow-500 to-amber-400" : "bg-gradient-to-br from-red-500 to-rose-600"}`}>
-            <div className="text-3xl mb-1">{isPending ? "⏳" : "❌"}</div>
-            <h1 className="text-base font-bold">அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்</h1>
-          </div>
-          <div className="px-6 py-6 text-center space-y-3">
-            <p className="font-mono text-gray-400 text-xs">RCP-{String(donation.id).padStart(6, "0")}</p>
-            <p className="text-2xl font-extrabold text-gray-800">₹{Number(donation.amount).toLocaleString("en-IN")}</p>
-            {isPending ? (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-xs text-yellow-800">
-                உங்கள் நன்கொடை சரிபார்க்கப்படுகிறது. அங்கீகரிக்கப்பட்ட பிறகு இங்கே முழு ரசீது கிடைக்கும்.
-              </div>
-            ) : (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
-                இந்த நன்கொடை நிராகரிக்கப்பட்டது. கோவில் நிர்வாகத்தை தொடர்பு கொள்ளவும்.
-              </div>
-            )}
-          </div>
-          <div className="bg-gray-50 px-6 py-3 text-center border-t">
-            <a href={import.meta.env.BASE_URL} className="text-orange-600 underline text-xs">முகப்பு பக்கம்</a>
-          </div>
+  /* ── pending / rejected ── */
+  if (isPending || isRejected) return (
+    <div style={{ minHeight:"100vh", background:"#fef9f0", display:"flex", alignItems:"center", justifyContent:"center", padding:16, fontFamily:"sans-serif" }}>
+      <div style={{ background:"#fff", width:"100%", maxWidth:380, borderRadius:16, overflow:"hidden", boxShadow:"0 4px 24px rgba(0,0,0,.10)" }}>
+        <div style={{ padding:"20px 24px", background: isPending ? "linear-gradient(135deg,#f59e0b,#d97706)" : "linear-gradient(135deg,#ef4444,#dc2626)", color:"#fff", textAlign:"center" }}>
+          <div style={{ fontSize:28 }}>{isPending ? "⏳" : "❌"}</div>
+          <div style={{ fontWeight:800, fontSize:15, marginTop:4 }}>அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்</div>
+        </div>
+        <div style={{ padding:"20px 24px", textAlign:"center" }}>
+          <p style={{ fontFamily:"monospace", color:"#a8a29e", fontSize:12, marginBottom:8 }}>RCP-{String(donation.id).padStart(6,"0")}</p>
+          <p style={{ fontSize:24, fontWeight:900, color:"#1c1917", marginBottom:12 }}>₹{Number(donation.amount).toLocaleString("en-IN")}</p>
+          {isPending
+            ? <p style={{ fontSize:12, color:"#92400e", background:"#fef3c7", border:"1px solid #fde68a", borderRadius:10, padding:"10px 14px", lineHeight:1.6 }}>உங்கள் நன்கொடை சரிபார்க்கப்படுகிறது. அங்கீகரிக்கப்பட்ட பிறகு இங்கே முழு ரசீது கிடைக்கும்.</p>
+            : <p style={{ fontSize:12, color:"#991b1b", background:"#fef2f2", border:"1px solid #fecaca", borderRadius:10, padding:"10px 14px" }}>இந்த நன்கொடை நிராகரிக்கப்பட்டது.</p>
+          }
+        </div>
+        <div style={{ background:"#f5f5f4", padding:"10px 24px", textAlign:"center", borderTop:"1px solid #e7e5e4" }}>
+          <a href={import.meta.env.BASE_URL} style={{ color:"#ea580c", fontSize:12 }}>முகப்பு பக்கம்</a>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 
-  /* ── Approved receipt ── */
+  /* ── approved ── */
   const displayName = donation.anonymous ? "அடையாளம் தெரியாதவர்" : donation.donorName;
   const receiptNo   = `RCP-${String(donation.id).padStart(6, "0")}`;
   const approvedISO = donation.reviewedAt ?? donation.createdAt;
+  const amountNum   = Number(donation.amount).toLocaleString("en-IN");
   const logoSrc     = `${import.meta.env.BASE_URL}iyyappan-logo.png`;
-  const amountFmt   = `₹${Number(donation.amount).toLocaleString("en-IN")}`;
 
   return (
     <>
       <style>{`
-        /* ── Screen wrapper ── */
-        .receipt-screen {
-          min-height: 100vh;
-          background: #fef9f0;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 24px 16px;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Tamil:wght@400;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
+
+        *{box-sizing:border-box;margin:0;padding:0;}
+
+        .rp-screen{
+          min-height:100vh;
+          background:linear-gradient(160deg,#fef9f0 0%,#fff7ed 50%,#fef3c7 100%);
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          padding:28px 16px;
+          font-family:'Poppins',sans-serif;
         }
 
-        /* ── Receipt card ── */
-        .receipt-card {
-          background: #fff;
-          width: 100%;
-          max-width: 460px;
-          border: 1px solid #fcd9a0;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 24px rgba(234,88,12,0.10);
-          font-family: 'Segoe UI', system-ui, sans-serif;
+        /* action buttons */
+        .rp-actions{
+          display:flex;gap:10px;margin-bottom:20px;
+        }
+        .rp-btn-print{
+          display:flex;align-items:center;gap:7px;
+          padding:10px 24px;border:none;border-radius:12px;cursor:pointer;
+          background:linear-gradient(135deg,#ea580c,#d97706);
+          color:#fff;font-size:13px;font-weight:700;
+          font-family:'Poppins',sans-serif;
+          box-shadow:0 4px 16px rgba(234,88,12,.30);
+          transition:transform .12s,box-shadow .12s;
+        }
+        .rp-btn-print:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(234,88,12,.35);}
+        .rp-btn-home{
+          display:flex;align-items:center;gap:6px;
+          padding:10px 20px;border:2px solid #fed7aa;border-radius:12px;cursor:pointer;
+          background:#fff;color:#c2410c;font-size:13px;font-weight:600;
+          font-family:'Poppins',sans-serif;text-decoration:none;
+          transition:background .12s;
+        }
+        .rp-btn-home:hover{background:#fff7ed;}
+
+        /* card shell */
+        .rp-card{
+          width:100%;max-width:460px;
+          background:#fff;
+          border-radius:16px;
+          overflow:hidden;
+          box-shadow:0 8px 40px rgba(120,40,0,.13);
+          border:1.5px solid #fcd9a0;
         }
 
-        /* ── Decorative outer border ── */
-        .receipt-outer {
-          padding: 5px;
-          background: repeating-linear-gradient(
-            90deg, #ea580c 0, #ea580c 6px, transparent 6px, transparent 16px
-          ),
-          repeating-linear-gradient(
-            90deg, #ea580c 0, #ea580c 6px, transparent 6px, transparent 16px
-          ),
-          repeating-linear-gradient(
-            0deg, #ea580c 0, #ea580c 6px, transparent 6px, transparent 16px
-          ),
-          repeating-linear-gradient(
-            0deg, #ea580c 0, #ea580c 6px, transparent 6px, transparent 16px
-          );
-          background-size: 16px 3px, 16px 3px, 3px 16px, 3px 16px;
-          background-position: 0 0, 0 100%, 0 0, 100% 0;
-          background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+        /* ─── HEADER ─── */
+        .rp-header{
+          background:linear-gradient(155deg,#6b1a05 0%,#b83008 45%,#c2570a 100%);
+          padding:20px 22px 18px;
+          text-align:center;
+          position:relative;
+          overflow:hidden;
+        }
+        .rp-header::before{
+          content:'';position:absolute;top:-30px;right:-30px;
+          width:100px;height:100px;border-radius:50%;
+          background:rgba(255,255,255,.05);
+        }
+        .rp-header::after{
+          content:'';position:absolute;bottom:-20px;left:-20px;
+          width:80px;height:80px;border-radius:50%;
+          background:rgba(255,215,0,.06);
+        }
+        .rp-logo{
+          width:58px;height:58px;border-radius:50%;
+          border:2.5px solid rgba(253,230,138,.55);
+          object-fit:cover;margin:0 auto 10px;
+          display:block;
+          box-shadow:0 4px 16px rgba(0,0,0,.30);
+        }
+        .rp-h-name{
+          font-family:'Playfair Display',serif;
+          font-size:16.5px;font-weight:800;color:#fff;
+          letter-spacing:.4px;line-height:1.3;
+        }
+        .rp-h-name-ta{
+          font-family:'Noto Sans Tamil',sans-serif;
+          font-size:12.5px;font-weight:700;
+          color:#fde68a;margin-top:3px;
+        }
+        .rp-h-addr{
+          font-size:10.5px;color:#fcd9a0;margin-top:3px;letter-spacing:.2px;
+        }
+        .rp-h-saranam{
+          display:inline-block;
+          margin-top:12px;
+          background:rgba(255,255,255,.12);
+          border:1px solid rgba(253,230,138,.40);
+          border-radius:20px;
+          padding:5px 18px;
+          font-family:'Noto Sans Tamil',sans-serif;
+          font-size:12px;font-weight:700;
+          color:#fef3c7;letter-spacing:1.2px;
         }
 
-        /* ── Header ── */
-        .receipt-header {
-          background: linear-gradient(160deg,#7c2d12 0%,#c2410c 50%,#b45309 100%);
-          padding: 16px 20px 14px;
-          text-align: center;
-          color: #fff;
-          position: relative;
+        /* ─── BLESSING BAND ─── */
+        .rp-bless{
+          padding:10px 20px;text-align:center;
+          background:linear-gradient(90deg,#fff7ed,#fffbeb,#fff7ed);
+          border-bottom:2px solid #fcd9a0;
+          border-top:2px solid #fed7aa;
         }
-        .receipt-logo {
-          width: 60px;
-          height: 60px;
-          border-radius: 50%;
-          border: 2px solid rgba(255,215,0,0.5);
-          object-fit: cover;
-          margin: 0 auto 8px;
-          display: block;
-          background: rgba(255,255,255,0.1);
+        .rp-bless-sub{
+          font-family:'Noto Sans Tamil',sans-serif;
+          font-size:11.5px;font-weight:600;color:#92400e;
+          letter-spacing:.2px;
         }
-        .receipt-temple-name {
-          font-size: 15px;
-          font-weight: 800;
-          line-height: 1.3;
-          letter-spacing: 0.3px;
+        .rp-bless-main{
+          font-family:'Noto Sans Tamil',sans-serif;
+          font-size:14px;font-weight:800;
+          color:#b83008;
+          margin-top:2px;line-height:1.45;
         }
-        .receipt-temple-name-ta {
-          font-size: 13px;
-          font-weight: 700;
-          color: #fde68a;
-          margin-top: 2px;
-        }
-        .receipt-address {
-          font-size: 10.5px;
-          color: #fcd9a0;
-          margin-top: 3px;
-          letter-spacing: 0.2px;
-        }
-        .receipt-saranam {
-          margin-top: 10px;
-          display: inline-block;
-          background: rgba(255,255,255,0.12);
-          border: 1px solid rgba(255,215,0,0.35);
-          border-radius: 20px;
-          padding: 4px 16px;
-          font-size: 12px;
-          font-weight: 700;
-          color: #fef3c7;
-          letter-spacing: 1px;
+        .rp-bless-en{
+          font-size:10px;color:#b45309;font-style:italic;margin-top:3px;
         }
 
-        /* ── Blessing band ── */
-        .receipt-blessing {
-          background: linear-gradient(90deg,#fff7ed,#fffbeb,#fff7ed);
-          border-top: 2px solid #fed7aa;
-          border-bottom: 2px solid #fed7aa;
-          padding: 8px 20px;
-          text-align: center;
+        /* ─── META BAR (receipt no + date) ─── */
+        .rp-meta{
+          display:flex;justify-content:space-between;align-items:center;
+          padding:8px 20px;
+          background:#fff8f0;
+          border-bottom:1px solid #fde8c8;
         }
-        .blessing-line1 {
-          font-size: 12px;
-          color: #92400e;
-          font-weight: 600;
+        .rp-meta-label{
+          font-size:9px;font-weight:700;text-transform:uppercase;
+          letter-spacing:.8px;color:#d97706;
         }
-        .blessing-line2 {
-          font-size: 13.5px;
-          font-weight: 800;
-          color: #c2410c;
-          margin-top: 1px;
-          line-height: 1.4;
+        .rp-meta-val{
+          font-size:13.5px;font-weight:800;
+          color:#7c2d12;letter-spacing:1.2px;
+          font-family:'Poppins',monospace;
         }
-        .blessing-line3 {
-          font-size: 10px;
-          color: #b45309;
-          margin-top: 2px;
-          font-style: italic;
+        .rp-meta-date{font-size:12px;font-weight:700;color:#78350f;text-align:right;}
+        .rp-meta-date-ta{
+          font-family:'Noto Sans Tamil',sans-serif;
+          font-size:9.5px;color:#b45309;text-align:right;
+        }
+        .rp-meta-divider{width:1px;height:30px;background:#fde8c8;}
+
+        /* ─── DONOR CARD ─── */
+        .rp-donor{
+          margin:14px 18px 0;
+          border:1.5px solid #fed7aa;
+          border-radius:12px;
+          overflow:hidden;
+        }
+        .rp-donor-header{
+          background:linear-gradient(90deg,#fff7ed,#fffbeb);
+          padding:7px 14px;
+          border-bottom:1px solid #fde8c8;
+          font-size:9px;font-weight:800;
+          text-transform:uppercase;letter-spacing:.9px;
+          color:#ea580c;
+        }
+        /* Name hero row */
+        .rp-name-row{
+          padding:12px 14px;
+          background:#fff;
+          border-bottom:1px solid #fef3c7;
+          display:flex;align-items:center;gap:12px;
+        }
+        .rp-name-avatar{
+          width:38px;height:38px;border-radius:10px;
+          background:linear-gradient(135deg,#ea580c,#d97706);
+          display:flex;align-items:center;justify-content:center;
+          font-size:16px;font-weight:800;color:#fff;
+          flex-shrink:0;
+          font-family:'Poppins',sans-serif;
+        }
+        .rp-name-text{
+          font-family:'Poppins',sans-serif;
+          font-size:17px;font-weight:800;
+          color:#1c1917;
+          letter-spacing:.2px;
+        }
+        .rp-name-label{
+          font-size:9px;font-weight:600;color:#a8a29e;
+          text-transform:uppercase;letter-spacing:.7px;
+          margin-bottom:2px;
+        }
+        /* Detail rows */
+        .rp-detail-row{
+          display:flex;justify-content:space-between;align-items:baseline;
+          gap:12px;padding:7px 14px;
+          border-bottom:1px dashed #fef3c7;
+          background:#fff;
+        }
+        .rp-detail-row:last-child{border-bottom:none;}
+        .rp-d-label{
+          font-size:9.5px;font-weight:600;color:#a8a29e;
+          white-space:nowrap;flex-shrink:0;
+          text-transform:uppercase;letter-spacing:.5px;
+        }
+        .rp-d-val{
+          font-size:11.5px;font-weight:700;color:#292524;
+          text-align:right;word-break:break-all;
+        }
+        .rp-d-val.mono{
+          font-family:'Poppins',monospace;
+          font-size:10.5px;font-weight:500;color:#57534e;
         }
 
-        /* ── Receipt number + date bar ── */
-        .receipt-meta {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 8px 18px;
-          background: #fff7ed;
-          border-bottom: 1px solid #fed7aa;
+        /* ─── AMOUNT BLOCK ─── */
+        .rp-amount{
+          margin:14px 18px;
+          background:linear-gradient(135deg,#6b1a05 0%,#b83008 55%,#c2570a 100%);
+          border-radius:14px;
+          padding:16px 18px;
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          position:relative;
+          overflow:hidden;
         }
-        .meta-label {
-          font-size: 9px;
-          text-transform: uppercase;
-          letter-spacing: 0.8px;
-          color: #d97706;
-          font-weight: 600;
+        .rp-amount::before{
+          content:'';position:absolute;top:-20px;right:-20px;
+          width:90px;height:90px;border-radius:50%;
+          background:rgba(255,255,255,.06);
         }
-        .meta-value {
-          font-size: 13px;
-          font-weight: 800;
-          color: #92400e;
-          font-family: monospace;
-          letter-spacing: 1px;
+        .rp-amount-left{}
+        .rp-amount-label{
+          font-size:9px;font-weight:700;
+          text-transform:uppercase;letter-spacing:.9px;
+          color:#fde68a;margin-bottom:2px;
         }
-        .meta-value-date {
-          font-size: 11.5px;
-          font-weight: 700;
-          color: #78350f;
-          text-align: right;
+        .rp-amount-label-ta{
+          font-family:'Noto Sans Tamil',sans-serif;
+          font-size:10px;font-weight:600;color:#fcd9a0;
+          margin-bottom:6px;
         }
-        .meta-divider {
-          width: 1px;
-          height: 28px;
-          background: #fcd9a0;
-        }
-
-        /* ── Donor table ── */
-        .receipt-table {
-          padding: 10px 18px 8px;
-        }
-        .table-section-title {
-          font-size: 9px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          color: #ea580c;
-          border-bottom: 1px solid #fed7aa;
-          padding-bottom: 4px;
-          margin-bottom: 8px;
-        }
-        .table-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: baseline;
-          gap: 12px;
-          padding: 3px 0;
-          border-bottom: 1px dashed #fef3c7;
-        }
-        .table-row:last-child { border-bottom: none; }
-        .row-label {
-          font-size: 10px;
-          color: #b45309;
-          font-weight: 600;
-          white-space: nowrap;
-          flex-shrink: 0;
-          min-width: 90px;
-        }
-        .row-value {
-          font-size: 11px;
-          color: #1c1917;
-          font-weight: 600;
-          text-align: right;
-          word-break: break-all;
-        }
-        .row-value.mono {
-          font-family: monospace;
-          font-size: 10px;
-          color: #44403c;
-        }
-        .row-value.name {
-          font-size: 13px;
-          font-weight: 800;
-          color: #7c2d12;
+        .rp-amount-val{
+          font-family:'Poppins',sans-serif;
+          font-size:34px;font-weight:900;color:#fff;
+          letter-spacing:-1px;line-height:1;
         }
 
-        /* ── Amount block ── */
-        .receipt-amount-block {
-          margin: 10px 18px;
-          background: linear-gradient(135deg,#7c2d12,#c2410c,#b45309);
-          border-radius: 10px;
-          padding: 12px 18px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          position: relative;
+        /* Approved stamp */
+        .rp-stamp{
+          flex-shrink:0;
+          display:flex;flex-direction:column;align-items:center;gap:3px;
+          background:rgba(240,253,244,.95);
+          border:2.5px solid #16a34a;
+          border-radius:10px;
+          padding:8px 14px;
+          transform:rotate(-4deg);
+          box-shadow:0 2px 10px rgba(22,163,74,.20);
         }
-        .amount-label {
-          font-size: 9.5px;
-          color: #fde68a;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.8px;
+        .rp-stamp-check{
+          font-size:22px;color:#16a34a;line-height:1;
         }
-        .amount-value {
-          font-size: 28px;
-          font-weight: 900;
-          color: #fff;
-          letter-spacing: -0.5px;
-          line-height: 1;
+        .rp-stamp-en{
+          font-size:12px;font-weight:900;
+          color:#15803d;letter-spacing:1.5px;
+          text-transform:uppercase;
+          font-family:'Poppins',sans-serif;
         }
-
-        /* ── Approved stamp ── */
-        .approved-stamp {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          background: #f0fdf4;
-          border: 2px solid #16a34a;
-          border-radius: 6px;
-          padding: 4px 10px;
-          transform: rotate(-3deg);
-        }
-        .stamp-check {
-          font-size: 13px;
-          color: #16a34a;
-        }
-        .stamp-text-en {
-          font-size: 11px;
-          font-weight: 900;
-          color: #15803d;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        }
-        .stamp-text-ta {
-          font-size: 9px;
-          font-weight: 700;
-          color: #166534;
-          display: block;
-          text-align: center;
-          margin-top: 1px;
+        .rp-stamp-ta{
+          font-family:'Noto Sans Tamil',sans-serif;
+          font-size:9px;font-weight:700;color:#166534;
         }
 
-        /* ── Saranam divider ── */
-        .receipt-saranam-band {
-          margin: 6px 18px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
+        /* ─── SARANAM DIVIDER ─── */
+        .rp-divider{
+          margin:10px 18px 8px;
+          display:flex;align-items:center;gap:10px;
         }
-        .saranam-line {
-          flex: 1;
-          height: 1px;
-          background: linear-gradient(90deg,transparent,#fcd9a0,transparent);
+        .rp-divider-line{
+          flex:1;height:1px;
+          background:linear-gradient(90deg,transparent,#fcd9a0,transparent);
         }
-        .saranam-text {
-          font-size: 11px;
-          color: #ea580c;
-          font-weight: 800;
-          letter-spacing: 1.5px;
-          white-space: nowrap;
+        .rp-divider-text{
+          font-family:'Noto Sans Tamil',sans-serif;
+          font-size:11px;font-weight:800;
+          color:#ea580c;letter-spacing:1.2px;white-space:nowrap;
         }
 
-        /* ── Footer ── */
-        .receipt-footer {
-          background: linear-gradient(135deg,#7c2d12,#92400e);
-          padding: 10px 18px;
-          text-align: center;
+        /* ─── FOOTER ─── */
+        .rp-footer{
+          background:linear-gradient(135deg,#6b1a05,#7c2d12);
+          padding:12px 20px;text-align:center;
         }
-        .footer-issued {
-          font-size: 9px;
-          color: #fde68a;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          font-weight: 600;
-          margin-bottom: 3px;
+        .rp-footer-issued{
+          font-size:8.5px;font-weight:700;
+          text-transform:uppercase;letter-spacing:1px;
+          color:#fde68a;margin-bottom:4px;
         }
-        .footer-org {
-          font-size: 13px;
-          font-weight: 800;
-          color: #fff;
-          letter-spacing: 0.3px;
+        .rp-footer-org{
+          font-family:'Noto Sans Tamil','Poppins',sans-serif;
+          font-size:14px;font-weight:800;color:#fff;
+          letter-spacing:.3px;
         }
-        .footer-org-en {
-          font-size: 9.5px;
-          color: #fcd9a0;
-          margin-top: 1px;
-          letter-spacing: 0.3px;
+        .rp-footer-org-en{
+          font-size:10px;color:#fcd9a0;margin-top:2px;letter-spacing:.3px;
         }
-        .footer-note {
-          font-size: 8.5px;
-          color: rgba(253,230,138,0.55);
-          margin-top: 6px;
+        .rp-footer-note{
+          font-size:8px;color:rgba(253,230,138,.45);margin-top:8px;
         }
 
-        /* ── Print buttons (screen only) ── */
-        .print-actions {
-          display: flex;
-          gap: 10px;
-          margin-bottom: 16px;
-          justify-content: center;
-          flex-wrap: wrap;
-        }
-        .btn-print {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: linear-gradient(135deg,#ea580c,#d97706);
-          color: #fff;
-          border: none;
-          border-radius: 10px;
-          padding: 9px 22px;
-          font-size: 13px;
-          font-weight: 700;
-          cursor: pointer;
-          box-shadow: 0 2px 12px rgba(234,88,12,0.25);
-          transition: opacity .15s;
-        }
-        .btn-print:active { opacity: .85; }
-        .btn-home {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: #fff;
-          color: #c2410c;
-          border: 1.5px solid #fed7aa;
-          border-radius: 10px;
-          padding: 9px 20px;
-          font-size: 13px;
-          font-weight: 600;
-          cursor: pointer;
-          text-decoration: none;
-          transition: background .15s;
-        }
-        .btn-home:hover { background: #fff7ed; }
-
-        /* ── PRINT OVERRIDES ── */
-        @media print {
-          @page {
-            margin: 8mm 10mm;
-            size: A5 portrait;
+        /* ─── PRINT ─── */
+        @media print{
+          @page{ margin:6mm 8mm; size:A5 portrait; }
+          body{ background:#fff !important; }
+          .rp-screen{
+            min-height:unset;padding:0;background:#fff;
           }
-          body {
-            background: white !important;
-            margin: 0;
-            padding: 0;
+          .rp-actions{ display:none !important; }
+          .rp-card{
+            max-width:100%;box-shadow:none;
+            border-radius:0;border:none;
           }
-          .receipt-screen {
-            min-height: unset;
-            padding: 0;
-            background: white;
-          }
-          .print-actions { display: none !important; }
-          .receipt-card {
-            max-width: 100%;
-            box-shadow: none;
-            border: none;
-            border-radius: 0;
-          }
-          .receipt-outer {
-            padding: 0;
-            background: none;
-          }
-          /* Ensure colours print */
-          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
         }
       `}</style>
 
-      <div className="receipt-screen">
-        {/* Print / Home actions — hidden on print */}
-        <div className="print-actions">
-          <button className="btn-print" onClick={() => window.print()}>
+      <div className="rp-screen">
+
+        {/* Print / Home buttons — hidden on print */}
+        <div className="rp-actions">
+          <button className="rp-btn-print" onClick={() => window.print()}>
             🖨️ Print / Save PDF
           </button>
-          <a href={import.meta.env.BASE_URL} className="btn-home">
+          <a href={import.meta.env.BASE_URL} className="rp-btn-home">
             🏠 முகப்பு
           </a>
         </div>
 
-        {/* ═══ RECEIPT CARD ═══ */}
-        <div className="receipt-outer" style={{ borderRadius: 14 }}>
-          <div className="receipt-card">
+        <div className="rp-card">
 
-            {/* ── HEADER ── */}
-            <div className="receipt-header">
-              <img
-                src={logoSrc}
-                alt="Ayyappan"
-                className="receipt-logo"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                }}
-              />
-              <div className="receipt-temple-name">
-                Sri Arulmigu Iyyappan Thirukovil
-              </div>
-              <div className="receipt-temple-name-ta">
-                அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்
-              </div>
-              <div className="receipt-address">
-                R.S Road, Vadamadurai, Tamil Nadu
-              </div>
-              <div>
-                <span className="receipt-saranam">✦ ஸ்வாமியே சரணம் ஐயப்பா ✦</span>
-              </div>
+          {/* ─── HEADER ─── */}
+          <div className="rp-header">
+            <img
+              src={logoSrc}
+              alt="Ayyappan"
+              className="rp-logo"
+              onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+            />
+            <div className="rp-h-name">Sri Arulmigu Iyyappan Thirukovil</div>
+            <div className="rp-h-name-ta">அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்</div>
+            <div className="rp-h-addr">R.S Road, Vadamadurai, Tamil Nadu</div>
+            <div>
+              <span className="rp-h-saranam">✦ &nbsp;ஸ்வாமியே சரணம் ஐயப்பா&nbsp; ✦</span>
             </div>
-
-            {/* ── BLESSING BAND ── */}
-            <div className="receipt-blessing">
-              <div className="blessing-line1">
-                உங்களுக்கும் உங்கள் குடும்பத்திற்கும்
-              </div>
-              <div className="blessing-line2">
-                ஐயப்பன் அருள் கிடைக்கும், நல்லதே நடக்கும்
-              </div>
-              <div className="blessing-line3">
-                May Lord Ayyappan bless you and your family with grace and goodness 🙏
-              </div>
-            </div>
-
-            {/* ── RECEIPT NO + DATE ── */}
-            <div className="receipt-meta">
-              <div>
-                <div className="meta-label">ரசீது எண் / Receipt No.</div>
-                <div className="meta-value">{receiptNo}</div>
-              </div>
-              <div className="meta-divider" />
-              <div style={{ textAlign: "right" }}>
-                <div className="meta-label" style={{ textAlign: "right" }}>தேதி / Date</div>
-                <div className="meta-value-date">{fmtDate(approvedISO)}</div>
-                <div style={{ fontSize: 9.5, color: "#b45309" }}>{fmtDateTa(approvedISO)}</div>
-              </div>
-            </div>
-
-            {/* ── DONOR DETAILS ── */}
-            <div className="receipt-table">
-              <div className="table-section-title">நன்கொடையாளர் விவரம் · Donor Details</div>
-              <div className="table-row">
-                <span className="row-label">பெயர் / Name</span>
-                <span className="row-value name">{displayName}</span>
-              </div>
-              {donation.mobile && (
-                <div className="table-row">
-                  <span className="row-label">கைபேசி / Mobile</span>
-                  <span className="row-value mono">{donation.mobile}</span>
-                </div>
-              )}
-              {donation.place && (
-                <div className="table-row">
-                  <span className="row-label">ஊர் / Place</span>
-                  <span className="row-value">{donation.place}</span>
-                </div>
-              )}
-              <div className="table-row">
-                <span className="row-label">பரிவர்த்தனை / Txn ID</span>
-                <span className="row-value mono">{donation.transactionId}</span>
-              </div>
-              {donation.message && (
-                <div className="table-row">
-                  <span className="row-label">செய்தி / Message</span>
-                  <span className="row-value">{donation.message}</span>
-                </div>
-              )}
-            </div>
-
-            {/* ── AMOUNT + APPROVED STAMP ── */}
-            <div className="receipt-amount-block">
-              <div>
-                <div className="amount-label">நன்கொடை தொகை</div>
-                <div style={{ fontSize: 9, color: "#fde68a", marginBottom: 4 }}>Donation Amount</div>
-                <div className="amount-value">{amountFmt}</div>
-              </div>
-              <div style={{ textAlign: "center" }}>
-                <div className="approved-stamp">
-                  <span className="stamp-check">✔</span>
-                  <div>
-                    <div className="stamp-text-en">APPROVED</div>
-                    <div className="stamp-text-ta">அங்கீகரிக்கப்பட்டது</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ── SARANAM DIVIDER ── */}
-            <div className="receipt-saranam-band">
-              <div className="saranam-line" />
-              <span className="saranam-text">✦ ஸ்வாமியே சரணம் ஐயப்பா ✦</span>
-              <div className="saranam-line" />
-            </div>
-
-            {/* ── FOOTER ── */}
-            <div className="receipt-footer">
-              <div className="footer-issued">வழங்கியவர்கள் · Issued By</div>
-              <div className="footer-org">வடமதுரை ஐயப்பன் திருப்பணி குழு</div>
-              <div className="footer-org-en">Vadamadurai Ayyappan Thirupani Kulu</div>
-              <div className="footer-note">
-                This is an official receipt · Receipt No: {receiptNo}
-              </div>
-            </div>
-
           </div>
+
+          {/* ─── BLESSING BAND ─── */}
+          <div className="rp-bless">
+            <div className="rp-bless-sub">உங்களுக்கும் உங்கள் குடும்பத்திற்கும்</div>
+            <div className="rp-bless-main">ஐயப்பன் அருள் கிடைக்கும், நல்லதே நடக்கும்</div>
+            <div className="rp-bless-en">
+              May Lord Ayyappan's blessings be upon you and your family 🙏
+            </div>
+          </div>
+
+          {/* ─── RECEIPT NO + DATE ─── */}
+          <div className="rp-meta">
+            <div>
+              <div className="rp-meta-label">Receipt No.</div>
+              <div className="rp-meta-val">{receiptNo}</div>
+            </div>
+            <div className="rp-meta-divider" />
+            <div>
+              <div className="rp-meta-label" style={{ textAlign:"right" }}>Date</div>
+              <div className="rp-meta-date">{fmtDate(approvedISO)}</div>
+              <div className="rp-meta-date-ta">{fmtDateTa(approvedISO)}</div>
+            </div>
+          </div>
+
+          {/* ─── DONOR CARD ─── */}
+          <div className="rp-donor">
+            <div className="rp-donor-header">
+              நன்கொடையாளர் விவரம் &nbsp;·&nbsp; Donor Details
+            </div>
+
+            {/* Name hero */}
+            <div className="rp-name-row">
+              <div className="rp-name-avatar">
+                {(donation.anonymous ? "A" : donation.donorName.charAt(0).toUpperCase())}
+              </div>
+              <div>
+                <div className="rp-name-label">Donor Name / பெயர்</div>
+                <div className="rp-name-text">{displayName}</div>
+              </div>
+            </div>
+
+            {donation.mobile && (
+              <div className="rp-detail-row">
+                <span className="rp-d-label">Mobile</span>
+                <span className="rp-d-val mono">{donation.mobile}</span>
+              </div>
+            )}
+            {donation.place && (
+              <div className="rp-detail-row">
+                <span className="rp-d-label">Place / ஊர்</span>
+                <span className="rp-d-val">{donation.place}</span>
+              </div>
+            )}
+            <div className="rp-detail-row">
+              <span className="rp-d-label">Transaction ID</span>
+              <span className="rp-d-val mono">{donation.transactionId}</span>
+            </div>
+            {donation.message && (
+              <div className="rp-detail-row">
+                <span className="rp-d-label">Message</span>
+                <span className="rp-d-val" style={{ fontStyle:"italic", color:"#57534e" }}>{donation.message}</span>
+              </div>
+            )}
+          </div>
+
+          {/* ─── AMOUNT + APPROVED STAMP ─── */}
+          <div className="rp-amount">
+            <div className="rp-amount-left">
+              <div className="rp-amount-label">Donation Amount</div>
+              <div className="rp-amount-label-ta">நன்கொடை தொகை</div>
+              <div className="rp-amount-val">₹{amountNum}</div>
+            </div>
+            <div className="rp-stamp">
+              <div className="rp-stamp-check">✔</div>
+              <div className="rp-stamp-en">APPROVED</div>
+              <div className="rp-stamp-ta">அங்கீகரிக்கப்பட்டது</div>
+            </div>
+          </div>
+
+          {/* ─── SARANAM DIVIDER ─── */}
+          <div className="rp-divider">
+            <div className="rp-divider-line" />
+            <span className="rp-divider-text">✦ &nbsp;ஸ்வாமியே சரணம் ஐயப்பா&nbsp; ✦</span>
+            <div className="rp-divider-line" />
+          </div>
+
+          {/* ─── FOOTER ─── */}
+          <div className="rp-footer">
+            <div className="rp-footer-issued">Issued By · வழங்கியவர்கள்</div>
+            <div className="rp-footer-org">வடமதுரை ஐயப்பன் திருப்பணி குழு</div>
+            <div className="rp-footer-org-en">Vadamadurai Ayyappan Thirupani Kulu</div>
+            <div className="rp-footer-note">
+              Official receipt issued by the temple trust &nbsp;·&nbsp; {receiptNo}
+            </div>
+          </div>
+
         </div>
 
-        {/* Bottom print button */}
-        <div className="print-actions" style={{ marginTop: 16, marginBottom: 0 }}>
-          <button className="btn-print" onClick={() => window.print()}>
+        {/* Bottom buttons */}
+        <div className="rp-actions" style={{ marginTop:20, marginBottom:0 }}>
+          <button className="rp-btn-print" onClick={() => window.print()}>
             🖨️ Print / Save PDF
           </button>
-          <a href={import.meta.env.BASE_URL} className="btn-home">
+          <a href={import.meta.env.BASE_URL} className="rp-btn-home">
             🏠 முகப்பு
           </a>
         </div>
+
       </div>
     </>
   );
