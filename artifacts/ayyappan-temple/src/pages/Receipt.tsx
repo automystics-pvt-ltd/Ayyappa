@@ -439,51 +439,46 @@ export default function Receipt() {
               </div>
               <div className="amt-right">
                 {/* Round temple seal */}
-                <svg className="seal-svg" width="112" height="112" viewBox="0 0 112 112"
+                <svg className="seal-svg" width="148" height="148" viewBox="0 0 148 148"
                      xmlns="http://www.w3.org/2000/svg">
-                  {/* background fill */}
-                  <circle cx="56" cy="56" r="53" fill="#f0fdf4"/>
-                  {/* outer ring */}
-                  <circle cx="56" cy="56" r="53" fill="none" stroke="#16a34a" strokeWidth="2.5"/>
-                  {/* inner ring */}
-                  <circle cx="56" cy="56" r="45" fill="none" stroke="#16a34a" strokeWidth="1.5"/>
-                  {/* tiny decorative ring */}
-                  <circle cx="56" cy="56" r="42" fill="none" stroke="#16a34a" strokeWidth=".5" strokeDasharray="2 3"/>
-
                   <defs>
-                    {/* top arc path — radius 48, so text sits between the two rings */}
-                    <path id="seal-top" d="M 8,56 A 48,48 0 0,1 104,56"/>
-                    {/* bottom arc — goes left→right via bottom for readable text */}
-                    <path id="seal-bot" d="M 104,56 A 48,48 0 0,1 8,56"/>
+                    {/* arc radius 66 — sits neatly between outer ring (r=71) and inner ring (r=62) */}
+                    <path id="sarc" d="M 8,74 A 66,66 0 0,1 140,74"/>
                   </defs>
 
-                  {/* curved top text */}
-                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="9.5"
+                  {/* mint background */}
+                  <circle cx="74" cy="74" r="71" fill="#f0fdf4"/>
+                  {/* outer bold ring */}
+                  <circle cx="74" cy="74" r="71" fill="none" stroke="#15803d" strokeWidth="3"/>
+                  {/* second ring */}
+                  <circle cx="74" cy="74" r="63" fill="none" stroke="#15803d" strokeWidth="1.5"/>
+                  {/* inner dashed ring */}
+                  <circle cx="74" cy="74" r="59" fill="none" stroke="#16a34a"
+                          strokeWidth="0.8" strokeDasharray="3.5 3"/>
+
+                  {/* ── CURVED TOP TEXT ── */}
+                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="12"
                         fill="#15803d" fontWeight="700">
-                    <textPath href="#seal-top" startOffset="50%" textAnchor="middle">
-                      ஸ்வாமியே சரணம் ஐயப்பா
+                    <textPath href="#sarc" startOffset="50%" textAnchor="middle">
+                      ✦ ஸ்வாமியே சரணம் ஐயப்பா ✦
                     </textPath>
                   </text>
 
-                  {/* curved bottom text */}
-                  <text fontFamily="'Noto Serif Tamil',serif" fontSize="8.5"
-                        fill="#15803d" fontWeight="600">
-                    <textPath href="#seal-bot" startOffset="50%" textAnchor="middle">
-                      ✦ &nbsp;ஐயப்பன் திருக்கோவில்&nbsp; ✦
-                    </textPath>
-                  </text>
+                  {/* horizontal rule under arc text */}
+                  <line x1="24" y1="88" x2="124" y2="88"
+                        stroke="#bbf7d0" strokeWidth="1"/>
 
-                  {/* centre main text */}
-                  <text x="56" y="50" textAnchor="middle"
-                        fontFamily="'Noto Serif Tamil',serif" fontSize="13.5"
-                        fill="#15803d" fontWeight="900">
+                  {/* ── CENTRE: main location ── */}
+                  <text x="74" y="108" textAnchor="middle"
+                        fontFamily="'Noto Serif Tamil',serif"
+                        fontSize="19" fontWeight="900" fill="#15803d">
                     வடமதுரை
                   </text>
 
-                  {/* centre sub text */}
-                  <text x="56" y="66" textAnchor="middle"
-                        fontFamily="'Noto Serif Tamil',serif" fontSize="9"
-                        fill="#166534" fontWeight="700">
+                  {/* ── CENTRE: sub ── */}
+                  <text x="74" y="126" textAnchor="middle"
+                        fontFamily="'Noto Serif Tamil',serif"
+                        fontSize="11" fontWeight="700" fill="#166534">
                     திருப்பணி குழு
                   </text>
                 </svg>
