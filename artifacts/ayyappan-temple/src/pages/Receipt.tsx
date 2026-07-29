@@ -84,8 +84,18 @@ export default function Receipt() {
   const amountFmt = `₹${Number(donation.amount).toLocaleString("en-IN")}`;
   const logo      = `${import.meta.env.BASE_URL}iyyappan-logo.png`;
 
-  const captureCanvas = () =>
-    html2canvas(docRef.current!, { scale: 2, useCORS: true, backgroundColor: "#d97706" });
+  /** Wait for all web fonts (Noto Serif Tamil, Cinzel, etc.) before capturing */
+  const captureCanvas = async () => {
+    await document.fonts.ready;
+    return html2canvas(docRef.current!, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: "#d97706",
+      imageTimeout: 0,   // don't time-out the logo on slow connections
+      logging: false,
+    });
+  };
 
   const saveAsImage = async () => {
     if (!docRef.current || imgBusy) return;
@@ -95,7 +105,12 @@ export default function Receipt() {
       const link = document.createElement("a");
       link.download = `receipt-${receiptNo}.png`;
       link.href = canvas.toDataURL("image/png");
+      // Must be in the DOM for Android Chrome to trigger the download
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+    } catch {
+      alert("படம் சேமிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.");
     } finally { setImgBusy(false); }
   };
 
@@ -116,14 +131,26 @@ export default function Receipt() {
       const file = new File([blob], `receipt-${receiptNo}.png`, { type: "image/png" });
       const nav = navigator as Navigator & { canShare?: (data?: ShareData) => boolean };
       if (nav.canShare?.({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: `நன்கொடை ரசீது ${receiptNo}`,
-          text: `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${name} — ${amountFmt}`,
-        });
-      } else { waFallback(); }
-    } catch (_) { waFallback(); }
-    finally { setImgBusy(false); }
+        try {
+          await navigator.share({
+            files: [file],
+            title: `நன்கொடை ரசீது ${receiptNo}`,
+            text: `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${name} — ${amountFmt}`,
+          });
+          // Share succeeded — nothing more to do
+        } catch (shareErr) {
+          // AbortError = user dismissed the sheet; don't open wa.me fallback
+          if ((shareErr as { name?: string }).name !== "AbortError") {
+            waFallback();
+          }
+        }
+      } else {
+        waFallback();
+      }
+    } catch {
+      // Canvas/blob failure — fall back to text link
+      waFallback();
+    } finally { setImgBusy(false); }
   };
 
   const rows: { lbl: string; val: string; mono?: boolean; isName?: boolean; isPlace?: boolean }[] = [
