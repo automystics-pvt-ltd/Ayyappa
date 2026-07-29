@@ -476,15 +476,21 @@ export default function Receipt() {
                     </textPath>
                   </text>
 
-                  <text x="90" y="97" textAnchor="middle"
+                  <text x="90" y="91" textAnchor="middle"
                         fontFamily="'Noto Serif Tamil',serif"
-                        fontSize="23" fontWeight="900" fill="#15803d">
+                        fontSize="21" fontWeight="900" fill="#15803d">
                     வடமதுரை
                   </text>
 
-                  <text x="90" y="120" textAnchor="middle"
+                  <text x="90" y="109" textAnchor="middle"
                         fontFamily="'Noto Serif Tamil',serif"
-                        fontSize="12" fontWeight="700" fill="#166534">
+                        fontSize="13" fontWeight="700" fill="#166534">
+                    ஐயப்பன் கோவில்
+                  </text>
+
+                  <text x="90" y="125" textAnchor="middle"
+                        fontFamily="'Noto Serif Tamil',serif"
+                        fontSize="11" fontWeight="700" fill="#166534">
                     திருப்பணி குழு
                   </text>
 
