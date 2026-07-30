@@ -689,6 +689,10 @@ export default function Receipt() {
                   <span className="bank-cell-lbl">Account Type</span>
                   <span className="bank-cell-val">Savings Bank (SB)</span>
                 </div>
+                <div className="bank-cell" style={{gridColumn:"1 / -1", marginTop:"4px"}}>
+                  <span className="bank-cell-lbl">📞 &nbsp;உதவி எண் · Help</span>
+                  <span className="bank-cell-val mono">93451 27734</span>
+                </div>
               </div>
             </div>
 
