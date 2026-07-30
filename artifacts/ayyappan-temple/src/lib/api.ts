@@ -82,6 +82,9 @@ export const api = {
   logout: () => apiFetch("/auth/logout", { method: "POST" }),
   me: () => apiFetch("/auth/me"),
 
+  // Public - Site settings (env-based)
+  getSiteConfig: () => apiFetch<{ siteBaseUrl: string }>("/settings/site"),
+
   // Public
   getDonationStats: () => apiFetch("/donations/stats"),
   getApprovedDonors: () => apiFetch("/donations/approved"),

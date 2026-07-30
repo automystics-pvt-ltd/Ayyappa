@@ -23,6 +23,7 @@ interface Settings {
   bank_name?: string; bank_branch?: string; bank_account_name?: string;
   bank_account_number?: string; bank_ifsc?: string; bank_account_type?: string;
   bank_help_phone?: string; bank_upi_id?: string; qr_code_url?: string; gpay_number?: string;
+  support_phone?: string; temple_phone?: string;
 }
 
 /** Build a UPI payment deep-link QR value from a UPI ID */

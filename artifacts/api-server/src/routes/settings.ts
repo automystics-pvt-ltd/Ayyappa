@@ -32,6 +32,16 @@ router.post("/upload-qr-url", requireRole("super_admin", "editor"), async (req, 
   }
 });
 
+// GET /api/settings/site — public, exposes env-based site configuration
+router.get("/site", (_req, res) => {
+  const siteBaseUrl =
+    process.env.SITE_BASE_URL ||
+    (process.env.REPLIT_DEV_DOMAIN
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : "");
+  res.json({ siteBaseUrl });
+});
+
 // GET /api/settings — public
 router.get("/", async (_req, res) => {
   try {

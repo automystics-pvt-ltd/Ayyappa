@@ -44,6 +44,13 @@ export default function Donations() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [justApproved, setJustApproved] = useState<{ id: number; name: string; amount: string; token: string; mobile: string; anonymous: boolean } | null>(null);
+  const [siteBaseUrl, setSiteBaseUrl] = useState("");
+
+  useEffect(() => {
+    api.getSiteConfig().then(cfg => {
+      if (cfg.siteBaseUrl) setSiteBaseUrl(cfg.siteBaseUrl);
+    }).catch(() => { /* non-critical; fall back to window.location.origin */ });
+  }, []);
 
   const openScreenshot = async (objectPath: string) => {
     setPreviewLoading(true);
@@ -116,7 +123,11 @@ export default function Donations() {
   const shareWhatsApp = (donorName: string, amount: string, token: string, anonymous: boolean, mobile: string) => {
     const name = anonymous ? "அடையாளம் தெரியாதவர்" : donorName;
     const amountFmt = fmt(amount);
-    const receiptUrl = `${window.location.origin}${import.meta.env.BASE_URL}receipt/${token}`;
+    // Prefer the canonical production URL (from SITE_BASE_URL env var via API) so the
+    // receipt link in WhatsApp messages always points to production, even when an admin
+    // opens the admin panel from a dev/staging domain.
+    const origin = siteBaseUrl || window.location.origin;
+    const receiptUrl = `${origin}${import.meta.env.BASE_URL}receipt/${token}`;
     const text = encodeURIComponent(
       `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n\nநன்கொடையாளர்: ${name}\nதொகை: ${amountFmt}\n\nரசீது இணைப்பு:\n${receiptUrl}`
     );
