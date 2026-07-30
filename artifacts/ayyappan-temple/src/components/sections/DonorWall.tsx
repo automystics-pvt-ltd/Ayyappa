@@ -248,7 +248,7 @@ export function DonorWall({
         <div>
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-serif font-bold text-foreground text-lg flex items-center gap-2">
-              🏆 சிறந்த நன்கொடையாளர்கள்
+              🏆 நன்கொடையாளர்கள்
             </h4>
             <button
               onClick={() => setShowAmounts(v => !v)}
