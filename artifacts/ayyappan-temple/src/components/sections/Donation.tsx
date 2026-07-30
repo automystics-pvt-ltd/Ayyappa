@@ -19,7 +19,11 @@ const RECEIPT_TIMEOUT = 30; // seconds
 
 /* ─── Types ─── */
 interface Stats   { totalRaised: number; donorCount: number; goal: number; progressPercent: number }
-interface Settings { bank_name?: string; bank_account_name?: string; bank_account_number?: string; bank_ifsc?: string; bank_upi_id?: string; qr_code_url?: string; gpay_number?: string }
+interface Settings {
+  bank_name?: string; bank_branch?: string; bank_account_name?: string;
+  bank_account_number?: string; bank_ifsc?: string; bank_account_type?: string;
+  bank_help_phone?: string; bank_upi_id?: string; qr_code_url?: string; gpay_number?: string;
+}
 
 /** Build a UPI payment deep-link QR value from a UPI ID */
 function buildUpiQrValue(upiId: string, name = 'Sri Ayyappan Temple') {
@@ -806,40 +810,38 @@ export function Donation() {
               <h4 className="text-xl font-bold text-foreground mb-1 flex items-center gap-2">
                 <Building className="w-5 h-5 text-primary" />வங்கி விவரங்கள்
               </h4>
-              <p className="text-xs text-muted-foreground mb-4">Indian Overseas Bank — நேரடி பரிமாற்றம்</p>
+              <p className="text-xs text-muted-foreground mb-4">நேரடி வங்கி பரிமாற்றம் · Bank Transfer</p>
               <div className="space-y-3">
                 {/* Non-copyable rows */}
-                {[
-                  { label: 'வங்கி பெயர்',       val: 'Indian Overseas Bank (IOB)' },
-                  { label: 'கிளை',               val: 'Vadamadurai Branch (2461)' },
-                  { label: 'கணக்கு வகை',         val: 'Savings Bank (SB)' },
-                  { label: 'கணக்கு பெயர்',       val: 'Mr. N. Anand' },
-                ].map((item) => (
+                {([
+                  { label: 'வங்கி பெயர்',  val: settings.bank_name         || 'Indian Overseas Bank (IOB)' },
+                  { label: 'கிளை',          val: settings.bank_branch        || 'Vadamadurai Branch (2461)' },
+                  { label: 'கணக்கு வகை',    val: settings.bank_account_type  || 'Savings Bank (SB)' },
+                  { label: 'கணக்கு பெயர்',  val: settings.bank_account_name  || 'Mr. N. Anand' },
+                ] as {label:string;val:string}[]).map((item) => (
                   <div key={item.label} className="flex flex-col gap-0.5 border-b border-border/50 pb-3">
                     <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">{item.label}</span>
                     <span className="text-foreground font-bold text-sm">{item.val}</span>
                   </div>
                 ))}
                 {/* Copyable rows */}
-                {[
-                  { label: 'கணக்கு எண்',  val: '246101000019314' },
-                  { label: 'IFSC Code',   val: 'IOBA0002461' },
-                ].map((item) => (
-                  <CopyRow key={item.label} label={item.label} val={item.val} />
-                ))}
-                {/* UPI ID from settings if set */}
+                <CopyRow label="கணக்கு எண்" val={settings.bank_account_number || '246101000019314'} />
+                <CopyRow label="IFSC Code"   val={settings.bank_ifsc           || 'IOBA0002461'} />
                 {settings.bank_upi_id && (
                   <CopyRow label="UPI ID" val={settings.bank_upi_id} />
                 )}
               </div>
               {/* Help number */}
-              <div className="mt-4 flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-xl px-4 py-2.5">
-                <Phone className="w-4 h-4 text-primary shrink-0" />
-                <span className="text-xs text-muted-foreground font-medium">உதவி எண்</span>
-                <a href="tel:9345127734" className="font-mono font-bold text-foreground text-sm hover:text-primary transition-colors ml-auto">
-                  93451 27734
-                </a>
-              </div>
+              {(settings.bank_help_phone || settings.support_phone) && (
+                <div className="mt-4 flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-xl px-4 py-2.5">
+                  <Phone className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-xs text-muted-foreground font-medium">உதவி எண்</span>
+                  <a href={`tel:${settings.bank_help_phone || settings.support_phone}`}
+                    className="font-mono font-bold text-foreground text-sm hover:text-primary transition-colors ml-auto">
+                    {settings.bank_help_phone || settings.support_phone}
+                  </a>
+                </div>
+              )}
             </motion.div>
 
             <motion.div variants={fadeUpVariant}

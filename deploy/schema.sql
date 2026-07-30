@@ -99,12 +99,29 @@ INSERT INTO site_settings (key, value) VALUES
   ('temple_location',   'வடமதுரை, திண்டுக்கல்'),
   ('temple_phone',      ''),
   ('support_phone',     ''),
+  ('bank_name',         ''),
   ('bank_account_name', ''),
-  ('bank_account_no',   ''),
+  ('bank_account_number', ''),
   ('bank_ifsc',         ''),
+  ('bank_branch',       ''),
+  ('bank_account_type', ''),
+  ('bank_help_phone',   ''),
   ('bank_upi_id',       ''),
   ('gpay_number',       '')
 ON CONFLICT (key) DO NOTHING;
+
+-- IOB bank details — fills in empty values; does NOT overwrite what admin has set
+INSERT INTO site_settings (key, value) VALUES
+  ('bank_name',           'Indian Overseas Bank (IOB)'),
+  ('bank_account_name',   'Mr. N. Anand'),
+  ('bank_account_number', '246101000019314'),
+  ('bank_ifsc',           'IOBA0002461'),
+  ('bank_branch',         'Vadamadurai Branch (2461)'),
+  ('bank_account_type',   'Savings Bank (SB)'),
+  ('bank_help_phone',     '9345127734')
+ON CONFLICT (key) DO UPDATE
+  SET value = EXCLUDED.value
+  WHERE site_settings.value IS NULL OR site_settings.value = '';
 
 -- Session store table (used by connect-pg-simple)
 -- Create as the app user so it owns the table and no GRANT is needed.
