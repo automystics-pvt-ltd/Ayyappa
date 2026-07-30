@@ -367,6 +367,36 @@ export default function Receipt() {
         .seal-svg { display:block; transform:rotate(-6deg); filter:drop-shadow(0 2px 8px rgba(22,163,74,.22)); }
 
         /* FOOTER */
+        /* ══ BANK DETAILS ══ */
+        .bank {
+          background:#f0fdf4;
+          border-top:1.5px solid #86efac;
+          border-bottom:1.5px solid #86efac;
+          padding:10px 24px;
+          display:flex; flex-direction:column; align-items:center;
+        }
+        .bank-hdr {
+          font:700 7.5px/1 'Inter',sans-serif;
+          text-transform:uppercase; letter-spacing:1.5px;
+          color:#15803d; margin-bottom:8px;
+        }
+        .bank-grid {
+          display:grid; grid-template-columns:repeat(3,auto);
+          column-gap:28px; row-gap:5px;
+          justify-content:center;
+        }
+        .bank-cell { display:flex; flex-direction:column; align-items:center; }
+        .bank-cell-lbl {
+          font:600 6.5px/1 'Inter',sans-serif;
+          text-transform:uppercase; letter-spacing:1px;
+          color:#6b7280; margin-bottom:2px;
+        }
+        .bank-cell-val {
+          font:700 11.5px/1.2 'Inter',sans-serif;
+          color:#1f2937; letter-spacing:.2px;
+        }
+        .bank-cell-val.mono { font-family:'Courier New',monospace; font-size:10.5px; letter-spacing:.8px; }
+
         .ftr {
           background:linear-gradient(135deg,#b45309 0%,#d97706 60%,#f59e0b 100%);
           padding:12px 24px; text-align:center;
@@ -411,7 +441,7 @@ export default function Receipt() {
           }
 
           /* all fixed sections must not shrink — only .amt grows */
-          .hdr,.strip,.bless,.meta,.donor-hero,.tbl,.ftr { flex-shrink:0; }
+          .hdr,.strip,.bless,.meta,.donor-hero,.tbl,.bank,.ftr { flex-shrink:0; }
           .amt { flex:1; min-height:0; }
 
           /* HEADER — tighter padding & smaller logo to save vertical space */
@@ -469,6 +499,14 @@ export default function Receipt() {
             display:flex; align-items:center; justify-content:center;
             overflow:visible;
           }
+
+          /* BANK DETAILS */
+          .bank       { padding:8px 32px; }
+          .bank-hdr   { font-size:7pt; margin-bottom:6px; }
+          .bank-grid  { column-gap:24px; row-gap:4px; }
+          .bank-cell-lbl { font-size:6pt; }
+          .bank-cell-val { font-size:10pt; }
+          .bank-cell-val.mono { font-size:9.5pt; }
 
           /* FOOTER */
           .ftr        { padding:12px 32px; }
@@ -620,6 +658,37 @@ export default function Receipt() {
                     ◆◆◆
                   </text>
                 </svg>
+              </div>
+            </div>
+
+            {/* BANK DETAILS */}
+            <div className="bank">
+              <div className="bank-hdr">🏦 &nbsp;Pay by Bank Transfer &nbsp;·&nbsp; வங்கி கணக்கு விவரம்</div>
+              <div className="bank-grid">
+                <div className="bank-cell">
+                  <span className="bank-cell-lbl">Bank</span>
+                  <span className="bank-cell-val">Indian Overseas Bank (IOB)</span>
+                </div>
+                <div className="bank-cell">
+                  <span className="bank-cell-lbl">Branch</span>
+                  <span className="bank-cell-val">Vadamadurai &nbsp;<span style={{color:'#6b7280',fontSize:'0.88em'}}>(2461)</span></span>
+                </div>
+                <div className="bank-cell">
+                  <span className="bank-cell-lbl">Account Holder</span>
+                  <span className="bank-cell-val">Mr. N. Anand</span>
+                </div>
+                <div className="bank-cell">
+                  <span className="bank-cell-lbl">Account Number</span>
+                  <span className="bank-cell-val mono">246101000019314</span>
+                </div>
+                <div className="bank-cell">
+                  <span className="bank-cell-lbl">IFSC Code</span>
+                  <span className="bank-cell-val mono">IOBA0002461</span>
+                </div>
+                <div className="bank-cell">
+                  <span className="bank-cell-lbl">Account Type</span>
+                  <span className="bank-cell-val">Savings Bank (SB)</span>
+                </div>
               </div>
             </div>
 
