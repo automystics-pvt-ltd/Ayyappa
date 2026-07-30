@@ -107,6 +107,37 @@ const inputCls = (err?: string) =>
     err ? 'border-red-400 focus:ring-2 focus:ring-red-300' : 'border-border focus:ring-2 focus:ring-primary/50'
   }`;
 
+/* ─── Copyable bank detail row ─── */
+function CopyRow({ label, val }: { label: string; val?: string }) {
+  const [copied, setCopied] = useState(false);
+  if (!val) return null;
+  const handleCopy = async () => {
+    try { await navigator.clipboard.writeText(val); }
+    catch {
+      const ta = document.createElement('textarea');
+      ta.value = val; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <div className="flex flex-col gap-0.5 border-b border-border/50 pb-3 last:border-0 last:pb-0">
+      <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">{label}</span>
+      <div className="flex items-center justify-between gap-2">
+        <span className="font-mono font-bold text-foreground text-sm tracking-wide">{val}</span>
+        <button type="button" onClick={handleCopy}
+          className={`shrink-0 flex items-center gap-1 text-xs px-2 py-1 rounded-lg border transition-colors ${
+            copied ? 'border-green-400 bg-green-50 text-green-700' : 'border-border bg-background text-muted-foreground hover:bg-muted'
+          }`}>
+          {copied ? <><Check className="w-3 h-3" />நகலெடுத்தது!</> : <><Copy className="w-3 h-3" />நகல்</>}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Screenshot uploader ─── */
 function ScreenshotUploader({ file, onFileChange, error }: { file: File | null; onFileChange: (f: File | null) => void; error?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -772,24 +803,42 @@ export function Donation() {
               <div className="absolute top-0 right-0 p-4 opacity-5">
                 <Building className="w-24 h-24" />
               </div>
-              <h4 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <h4 className="text-xl font-bold text-foreground mb-1 flex items-center gap-2">
                 <Building className="w-5 h-5 text-primary" />வங்கி விவரங்கள்
               </h4>
-              <div className="space-y-4">
+              <p className="text-xs text-muted-foreground mb-4">Indian Overseas Bank — நேரடி பரிமாற்றம்</p>
+              <div className="space-y-3">
+                {/* Non-copyable rows */}
                 {[
-                  { label: 'வங்கி பெயர்',   val: settings.bank_name },
-                  { label: 'கணக்கு பெயர்',  val: settings.bank_account_name },
-                  { label: 'கணக்கு எண்',    val: settings.bank_account_number },
-                  { label: 'IFSC',           val: settings.bank_ifsc },
-                  { label: 'UPI ID',         val: settings.bank_upi_id },
-                ].map((item, i) => (
-                  <div key={i} className="flex flex-col gap-0.5 border-b border-border/50 pb-3 last:border-0 last:pb-0">
+                  { label: 'வங்கி பெயர்',       val: 'Indian Overseas Bank (IOB)' },
+                  { label: 'கிளை',               val: 'Vadamadurai Branch (2461)' },
+                  { label: 'கணக்கு வகை',         val: 'Savings Bank (SB)' },
+                  { label: 'கணக்கு பெயர்',       val: 'Mr. N. Anand' },
+                ].map((item) => (
+                  <div key={item.label} className="flex flex-col gap-0.5 border-b border-border/50 pb-3">
                     <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">{item.label}</span>
-                    <span className="text-foreground font-bold text-sm">
-                      {item.val || <span className="italic text-muted-foreground">விவரங்கள் பின்னர் சேர்க்கப்படும்</span>}
-                    </span>
+                    <span className="text-foreground font-bold text-sm">{item.val}</span>
                   </div>
                 ))}
+                {/* Copyable rows */}
+                {[
+                  { label: 'கணக்கு எண்',  val: '246101000019314' },
+                  { label: 'IFSC Code',   val: 'IOBA0002461' },
+                ].map((item) => (
+                  <CopyRow key={item.label} label={item.label} val={item.val} />
+                ))}
+                {/* UPI ID from settings if set */}
+                {settings.bank_upi_id && (
+                  <CopyRow label="UPI ID" val={settings.bank_upi_id} />
+                )}
+              </div>
+              {/* Help number */}
+              <div className="mt-4 flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-xl px-4 py-2.5">
+                <Phone className="w-4 h-4 text-primary shrink-0" />
+                <span className="text-xs text-muted-foreground font-medium">உதவி எண்</span>
+                <a href="tel:9345127734" className="font-mono font-bold text-foreground text-sm hover:text-primary transition-colors ml-auto">
+                  93451 27734
+                </a>
               </div>
             </motion.div>
 
