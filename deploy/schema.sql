@@ -123,6 +123,17 @@ ON CONFLICT (key) DO UPDATE
   SET value = EXCLUDED.value
   WHERE site_settings.value IS NULL OR site_settings.value = '';
 
+CREATE TABLE IF NOT EXISTS in_kind_contributions (
+  id              SERIAL PRIMARY KEY,
+  donor_name      VARCHAR(200) NOT NULL,
+  place           VARCHAR(200),
+  description     TEXT NOT NULL,
+  contributed_at  TIMESTAMPTZ DEFAULT NOW(),
+  created_by      INTEGER,
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  is_active       BOOLEAN DEFAULT TRUE
+);
+
 -- Session store table (used by connect-pg-simple)
 -- Create as the app user so it owns the table and no GRANT is needed.
 -- If the table already exists and is owned by a different role, the ALTER/GRANT

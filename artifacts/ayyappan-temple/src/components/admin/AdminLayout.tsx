@@ -4,18 +4,19 @@ import { useLocation } from "wouter";
 import {
   LayoutDashboard, IndianRupee, FileEdit, Newspaper,
   CalendarDays, Images, Settings, ShieldCheck,
-  LogOut, ChevronRight, Zap, Menu, X
+  LogOut, ChevronRight, Zap, Menu, X, Gift
 } from "lucide-react";
 
 const NAV_ITEMS = [
-  { path: "/admin/dashboard", labelTa: "Dashboard",       labelEn: "கண்ணோட்டம்",   icon: LayoutDashboard, roles: ["super_admin","editor","volunteer"] },
-  { path: "/admin/donations", labelTa: "நன்கொடைகள்",     labelEn: "Donations",     icon: IndianRupee,     roles: ["super_admin","editor","volunteer"] },
-  { path: "/admin/content",   labelTa: "உள்ளடக்கம்",     labelEn: "Content",       icon: FileEdit,        roles: ["super_admin","editor"] },
-  { path: "/admin/news",      labelTa: "செய்திகள்",       labelEn: "News",          icon: Newspaper,       roles: ["super_admin","editor"] },
-  { path: "/admin/events",    labelTa: "நிகழ்வுகள்",      labelEn: "Events",        icon: CalendarDays,    roles: ["super_admin","editor"] },
-  { path: "/admin/gallery",   labelTa: "படத் தொகுப்பு",   labelEn: "Gallery",       icon: Images,          roles: ["super_admin","editor"] },
-  { path: "/admin/settings",  labelTa: "அமைப்புகள்",      labelEn: "Settings",      icon: Settings,        roles: ["super_admin","editor"] },
-  { path: "/admin/admins",    labelTa: "நிர்வாகிகள்",     labelEn: "Admins",        icon: ShieldCheck,     roles: ["super_admin"] },
+  { path: "/admin/dashboard",     labelTa: "Dashboard",           labelEn: "கண்ணோட்டம்",      icon: LayoutDashboard, roles: ["super_admin","editor","volunteer"] },
+  { path: "/admin/donations",     labelTa: "நன்கொடைகள்",         labelEn: "Donations",        icon: IndianRupee,     roles: ["super_admin","editor","volunteer"] },
+  { path: "/admin/contributions", labelTa: "பொருள் நன்கொடைகள்",  labelEn: "In-kind",          icon: Gift,            roles: ["super_admin","editor"] },
+  { path: "/admin/content",       labelTa: "உள்ளடக்கம்",         labelEn: "Content",          icon: FileEdit,        roles: ["super_admin","editor"] },
+  { path: "/admin/news",          labelTa: "செய்திகள்",           labelEn: "News",             icon: Newspaper,       roles: ["super_admin","editor"] },
+  { path: "/admin/events",        labelTa: "நிகழ்வுகள்",          labelEn: "Events",           icon: CalendarDays,    roles: ["super_admin","editor"] },
+  { path: "/admin/gallery",       labelTa: "படத் தொகுப்பு",       labelEn: "Gallery",          icon: Images,          roles: ["super_admin","editor"] },
+  { path: "/admin/settings",      labelTa: "அமைப்புகள்",          labelEn: "Settings",         icon: Settings,        roles: ["super_admin","editor"] },
+  { path: "/admin/admins",        labelTa: "நிர்வாகிகள்",         labelEn: "Admins",           icon: ShieldCheck,     roles: ["super_admin"] },
 ];
 
 const ROLE_DISPLAY: Record<string, string> = {

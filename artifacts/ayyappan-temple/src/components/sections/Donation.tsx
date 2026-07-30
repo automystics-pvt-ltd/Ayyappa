@@ -10,7 +10,7 @@ import {
   Copy, Check,
 } from 'lucide-react';
 import { api, uploadScreenshot } from '@/lib/api';
-import { DonorWall, type Donor } from '@/components/sections/DonorWall';
+import { DonorWall, type Donor, type InKindContribution } from '@/components/sections/DonorWall';
 
 const AMOUNTS = [501, 1001, 5001, 10001];
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -475,6 +475,7 @@ export function Donation() {
   const [customAmount, setCustomAmount]     = useState('');
   const [stats, setStats]                   = useState<Stats | null>(null);
   const [donors, setDonors]                 = useState<Donor[]>([]);
+  const [contributions, setContributions]   = useState<InKindContribution[]>([]);
   const [settings, setSettings]             = useState<Settings>({});
   const [showForm, setShowForm]             = useState(false);
   const [receipt, setReceipt]               = useState<ReceiptData | null>(null);
@@ -490,6 +491,7 @@ export function Donation() {
     api.getDonationStats().then((d) => setStats(d as Stats)).catch(() => {});
     api.getApprovedDonors().then((d) => setDonors(d as Donor[])).catch(() => {});
     api.getSettings().then((d) => setSettings(d as Settings)).catch(() => {});
+    api.getContributions().then((d) => setContributions(d as InKindContribution[])).catch(() => {});
   }, []);
 
   const fmt = (n: number) =>
@@ -976,7 +978,7 @@ export function Donation() {
             </p>
           </div>
 
-          <DonorWall donors={donors} stats={stats} />
+          <DonorWall donors={donors} stats={stats} inKindContributions={contributions} />
         </motion.div>
       </div>
 

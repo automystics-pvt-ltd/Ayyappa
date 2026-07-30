@@ -111,6 +111,18 @@ export const api = {
   // Admin - Dashboard
   getDashboardStats: () => apiFetch("/dashboard/stats"),
 
+  // Public - In-kind contributions
+  getContributions: () => apiFetch("/contributions"),
+
+  // Admin - In-kind contributions
+  getAllContributions: () => apiFetch("/contributions/all"),
+  createContribution: (data: Record<string, unknown>) =>
+    apiFetch("/contributions", { method: "POST", body: JSON.stringify(data) }),
+  updateContribution: (id: number, data: Record<string, unknown>) =>
+    apiFetch(`/contributions/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteContribution: (id: number) =>
+    apiFetch(`/contributions/${id}`, { method: "DELETE" }),
+
   // Admin - News
   getAllNews: () => apiFetch("/news/all"),
   createNews: (data: Record<string, unknown>) =>

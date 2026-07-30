@@ -15,6 +15,14 @@ export interface Donor {
   createdAt: string;
 }
 
+export interface InKindContribution {
+  id: number;
+  donorName: string;
+  place?: string | null;
+  description: string;
+  contributedAt: string;
+}
+
 /* ── Constants ───────────────────────────────────────────────────────────── */
 const PAGE_SIZE   = 12;
 const NEW_DAYS    = 7;    // badge: approved within last N days
@@ -179,9 +187,11 @@ type SortKey = 'recent' | 'amount_desc' | 'amount_asc';
 export function DonorWall({
   donors,
   stats,
+  inKindContributions = [],
 }: {
   donors: Donor[];
   stats: { totalRaised: number; donorCount: number } | null;
+  inKindContributions?: InKindContribution[];
 }) {
   const [search,      setSearch]      = useState('');
   const [sort,        setSort]        = useState<SortKey>('recent');
@@ -356,6 +366,44 @@ export function DonorWall({
           <p className="text-muted-foreground font-medium">
             முதல் நன்கொடையாளர் ஆக வாய்ப்பு உங்களுக்கே!
           </p>
+        </div>
+      )}
+
+      {/* ── In-kind contributions ── */}
+      {inKindContributions.length > 0 && (
+        <div>
+          <h4 className="font-serif font-bold text-foreground text-lg flex items-center gap-2 mb-4">
+            🎁 பொருள் நன்கொடையாளர்கள்
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {inKindContributions.map(c => (
+              <motion.div
+                key={c.id}
+                variants={fadeUpVariant}
+                initial="hidden" animate="visible"
+                className="bg-card border border-card-border rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center shrink-0 text-base">
+                    🎁
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-bold text-foreground text-sm truncate">{c.donorName}</div>
+                    {c.place && (
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                        <MapPin className="w-3 h-3 shrink-0" />
+                        <span className="truncate">{c.place}</span>
+                      </div>
+                    )}
+                    <p className="text-xs text-orange-700 font-medium mt-1.5 leading-relaxed">
+                      {c.description}
+                    </p>
+                    <div className="text-[10px] text-muted-foreground mt-1.5">{dateStr(c.contributedAt)}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       )}
     </div>

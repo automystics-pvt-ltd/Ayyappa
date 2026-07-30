@@ -12,6 +12,7 @@ import SettingsAdmin from '@/pages/admin/Settings';
 import AdminManagement from '@/pages/admin/AdminManagement';
 import ContentManager from '@/pages/admin/ContentManager';
 import GalleryAdmin from '@/pages/admin/Gallery';
+import ContributionsAdmin from '@/pages/admin/Contributions';
 import Receipt from '@/pages/Receipt';
 import { Route, Switch, Router as WouterRouter, Redirect } from 'wouter';
 import { AdminContext, useAdminState, useAdmin } from '@/hooks/useAdmin';
@@ -63,6 +64,9 @@ function AppContent() {
         </Route>
         <Route path="/admin/gallery">
           <AdminGuard><GalleryAdmin /></AdminGuard>
+        </Route>
+        <Route path="/admin/contributions">
+          <AdminGuard><ContributionsAdmin /></AdminGuard>
         </Route>
         <Route path="/receipt/:token" component={Receipt} />
         <Route component={NotFound} />
