@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { api } from "@/lib/api";
-import { Gift, Plus, Pencil, Trash2, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Gift, Plus, Pencil, Trash2, CheckCircle2, XCircle, AlertCircle, Receipt } from "lucide-react";
 
 interface Contribution {
   id: number;
+  receiptToken?: string | null;
   donorName: string;
   place: string | null;
   description: string;
@@ -214,6 +215,15 @@ export default function ContributionsAdmin() {
                   <p className="text-xs text-muted-foreground/60 mt-1">{fmt(c.contributedAt)}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
+                  {c.receiptToken && (
+                    <a
+                      href={`${import.meta.env.BASE_URL}contribution-receipt/${c.receiptToken}`}
+                      target="_blank" rel="noopener noreferrer"
+                      title="ரசீது பார்க்க"
+                      className="w-8 h-8 rounded-lg border border-orange-200 flex items-center justify-center hover:bg-orange-50 transition-colors">
+                      <Receipt className="w-4 h-4 text-orange-500" />
+                    </a>
+                  )}
                   <button onClick={() => handleToggle(c)} title={c.isActive ? "மறை" : "காட்டு"}
                     className="w-8 h-8 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors">
                     {c.isActive

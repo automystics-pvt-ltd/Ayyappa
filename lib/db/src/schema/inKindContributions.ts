@@ -5,6 +5,7 @@ import {
 
 export const inKindContributionsTable = pgTable("in_kind_contributions", {
   id:            serial("id").primaryKey(),
+  receiptToken:  text("receipt_token").unique(),
   donorName:     varchar("donor_name",  { length: 200 }).notNull(),
   place:         varchar("place",       { length: 200 }),
   description:   text("description").notNull(),

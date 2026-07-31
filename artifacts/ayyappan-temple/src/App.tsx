@@ -14,6 +14,7 @@ import ContentManager from '@/pages/admin/ContentManager';
 import GalleryAdmin from '@/pages/admin/Gallery';
 import ContributionsAdmin from '@/pages/admin/Contributions';
 import Receipt from '@/pages/Receipt';
+import ContributionReceipt from '@/pages/ContributionReceipt';
 import { Route, Switch, Router as WouterRouter, Redirect } from 'wouter';
 import { AdminContext, useAdminState, useAdmin } from '@/hooks/useAdmin';
 import { SiteSettingsProvider } from '@/hooks/useSiteSettings';
@@ -69,6 +70,7 @@ function AppContent() {
           <AdminGuard><ContributionsAdmin /></AdminGuard>
         </Route>
         <Route path="/receipt/:token" component={Receipt} />
+        <Route path="/contribution-receipt/:token" component={ContributionReceipt} />
         <Route component={NotFound} />
       </Switch>
       </SiteSettingsProvider>

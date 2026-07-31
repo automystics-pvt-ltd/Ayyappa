@@ -116,6 +116,7 @@ export const api = {
 
   // Public - In-kind contributions
   getContributions: () => apiFetch("/contributions"),
+  getContributionReceipt: (token: string) => apiFetch(`/contributions/receipt/${token}`),
 
   // Admin - In-kind contributions
   getAllContributions: () => apiFetch("/contributions/all"),
