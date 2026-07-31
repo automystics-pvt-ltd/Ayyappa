@@ -16,7 +16,9 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       await login(username, password);
-      navigate("/admin/dashboard");
+      // Hard redirect so the page reinitialises cleanly with the new session cookie,
+      // avoiding any stale React state or cached /auth/me responses.
+      window.location.href = "/admin/dashboard";
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {

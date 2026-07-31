@@ -59,7 +59,9 @@ router.post("/logout", (req, res) => {
 });
 
 // GET /api/auth/me — public; returns { admin: null } when not logged in
+// Must never be cached — the response depends on session state which changes on login/logout.
 router.get("/me", async (req, res) => {
+  res.setHeader("Cache-Control", "no-store");
   const session = (req as any).session;
   if (!session?.adminId) {
     res.json({ admin: null });
