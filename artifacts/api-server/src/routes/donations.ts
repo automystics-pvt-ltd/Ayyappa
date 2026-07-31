@@ -320,6 +320,22 @@ router.patch("/:id/reject", requireRole("super_admin", "editor"), async (req, re
 });
 
 // DELETE /api/donations/:id
+// PATCH /api/donations/:id/donor-name — super_admin only
+router.patch("/:id/donor-name", requireRole("super_admin"), async (req, res) => {
+  const id = Number(req.params.id);
+  const { donorName } = req.body as { donorName?: string };
+  if (!donorName?.trim()) {
+    res.status(400).json({ error: "Donor name is required" }); return;
+  }
+  try {
+    await db.update(donationsTable).set({ donorName: donorName.trim() }).where(eq(donationsTable.id, id));
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err }, "Error updating donor name");
+    res.status(500).json({ error: "Failed to update donor name" });
+  }
+});
+
 router.delete("/:id", requireRole("super_admin"), async (req, res) => {
   const id = Number(req.params.id);
   try {

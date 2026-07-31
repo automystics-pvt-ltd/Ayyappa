@@ -3,7 +3,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { api } from "@/lib/api";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useLanguage } from "@/hooks/useLanguage";
-import { MapPin, Image, CheckCircle2, XCircle, AlertCircle, Phone, Hash, MessageSquare, CalendarDays, MoreHorizontal, FileText, Printer, BarChart2, Download, X } from "lucide-react";
+import { MapPin, Image, CheckCircle2, XCircle, AlertCircle, Phone, Hash, MessageSquare, CalendarDays, MoreHorizontal, FileText, Printer, BarChart2, Download, X, Pencil, Check } from "lucide-react";
 import html2canvas from "html2canvas";
 
 type Donation = {
@@ -264,6 +264,25 @@ export default function Donations() {
   const [justApproved, setJustApproved] = useState<{ id: number; name: string; amount: string; token: string; mobile: string; anonymous: boolean } | null>(null);
   const [siteBaseUrl, setSiteBaseUrl] = useState("");
   const [showReport, setShowReport] = useState(false);
+  const [editNameId, setEditNameId]     = useState<number | null>(null);
+  const [editNameValue, setEditNameValue] = useState("");
+  const [editNameBusy, setEditNameBusy]   = useState(false);
+
+  const isSuperAdmin = admin?.role === "super_admin";
+
+  const saveEditName = async () => {
+    if (!editNameId || !editNameValue.trim()) return;
+    setEditNameBusy(true);
+    try {
+      await api.updateDonorName(editNameId, editNameValue.trim());
+      setDonations(prev => prev.map(d => d.id === editNameId ? { ...d, donorName: editNameValue.trim() } : d));
+      setEditNameId(null);
+    } catch (e: any) {
+      alert(e.message || t("பெயர் திருத்த முடியவில்லை", "Failed to update name"));
+    } finally {
+      setEditNameBusy(false);
+    }
+  };
 
   useEffect(() => {
     api.getSiteConfig().then(cfg => {
@@ -469,10 +488,42 @@ export default function Donations() {
                         style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}>
                         {(d.anonymous ? "?" : d.donorName)[0]}
                       </div>
-                      <div>
-                        <p className="text-sm font-bold text-orange-900">
-                          {d.anonymous ? t("அடையாளம் தெரியாதவர்", "Anonymous") : d.donorName}
-                        </p>
+                      <div className="min-w-0">
+                        {/* Inline name editor — super_admin + non-anonymous only */}
+                        {isSuperAdmin && !d.anonymous && editNameId === d.id ? (
+                          <div className="flex items-center gap-1.5">
+                            <input
+                              autoFocus
+                              value={editNameValue}
+                              onChange={e => setEditNameValue(e.target.value)}
+                              onKeyDown={e => { if (e.key === "Enter") saveEditName(); if (e.key === "Escape") setEditNameId(null); }}
+                              className="text-sm font-bold text-orange-900 border border-orange-300 rounded-lg px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-orange-300 w-36 bg-orange-50/60"
+                            />
+                            <button onClick={saveEditName} disabled={editNameBusy}
+                              className="p-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-700 disabled:opacity-50 transition-colors">
+                              <Check className="w-3.5 h-3.5" />
+                            </button>
+                            <button onClick={() => setEditNameId(null)}
+                              className="p-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors">
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-sm font-bold text-orange-900">
+                              {d.anonymous ? t("அடையாளம் தெரியாதவர்", "Anonymous") : d.donorName}
+                            </p>
+                            {isSuperAdmin && !d.anonymous && (
+                              <button
+                                onClick={() => { setEditNameId(d.id); setEditNameValue(d.donorName); }}
+                                title={t("பெயர் திருத்து", "Edit name")}
+                                className="p-1 rounded-lg text-orange-300 hover:text-orange-600 hover:bg-orange-100 transition-colors shrink-0"
+                              >
+                                <Pencil className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
+                        )}
                         {d.anonymous && (
                           <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">Anonymous</span>
                         )}

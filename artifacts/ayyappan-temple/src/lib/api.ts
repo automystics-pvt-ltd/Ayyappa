@@ -106,6 +106,8 @@ export const api = {
     apiFetch(`/donations${status ? `?status=${status}` : ""}`),
   approveDonation: (id: number) =>
     apiFetch(`/donations/${id}/approve`, { method: "PATCH" }),
+  updateDonorName: (id: number, donorName: string) =>
+    apiFetch(`/donations/${id}/donor-name`, { method: "PATCH", body: JSON.stringify({ donorName }) }),
   rejectDonation: (id: number, reason?: string) =>
     apiFetch(`/donations/${id}/reject`, { method: "PATCH", body: JSON.stringify({ reason }) }),
   deleteDonation: (id: number) =>
