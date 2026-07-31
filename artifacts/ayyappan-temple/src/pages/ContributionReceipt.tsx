@@ -228,7 +228,8 @@ export default function ContributionReceipt() {
         .ikc-strip-line.r { background:linear-gradient(90deg,#e8c99a,transparent); }
         .ikc-strip-en {
           font-family:'Cinzel',serif; font-weight:700; font-size:11px;
-          color:#7c2d12; letter-spacing:2.5px; white-space:nowrap; text-transform:uppercase;
+          color:#7c2d12; letter-spacing:2.5px; white-space:normal; text-transform:uppercase;
+          text-align:center;
         }
 
         /* BLESSING */
@@ -268,6 +269,7 @@ export default function ContributionReceipt() {
         .ikc-donor-name {
           font-family:'Noto Serif Tamil',serif;
           font-size:26px; font-weight:900; color:#7c2d12; line-height:1.25;
+          word-break:break-word; overflow-wrap:break-word;
         }
         .ikc-donor-place {
           font-family:'Noto Serif Tamil',serif;
