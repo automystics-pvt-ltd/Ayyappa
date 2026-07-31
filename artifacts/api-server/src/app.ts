@@ -85,12 +85,15 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      // SameSite=None + Secure is required so the session cookie is sent
-      // when the app runs inside Replit's preview iframe (top-level origin is
-      // replit.com while the app is on *.replit.dev — a cross-site context).
-      // The Replit proxy always terminates TLS, so secure:true is safe in
-      // both development and production (trust proxy is set above).
-      secure: true,
+      // SameSite=None is required so the session cookie is sent when the app
+      // runs inside Replit's preview iframe (top-level origin is replit.com
+      // while the app is on *.replit.dev — a cross-site context).
+      // Browsers require Secure when SameSite=None; the Replit proxy always
+      // terminates TLS so req.secure is true in dev and production.
+      // "auto" means: set Secure flag only when req.secure is true. This lets
+      // server-to-server tests hit http://localhost:8080 directly and still
+      // receive + send the cookie (no browser to enforce the Secure rule).
+      secure: "auto",
       httpOnly: true,
       sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
