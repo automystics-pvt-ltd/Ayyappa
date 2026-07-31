@@ -259,7 +259,7 @@ function PodiumCard({ donor, rank, showAmount }: { donor: Donor; rank: number; s
 }
 
 /* ── Main DonorWall ──────────────────────────────────────────────────────── */
-type SortKey = 'recent' | 'amount_desc' | 'amount_asc';
+type SortKey = 'date_asc' | 'date_desc' | 'amount_desc' | 'amount_asc';
 
 export function DonorWall({
   donors,
@@ -271,7 +271,7 @@ export function DonorWall({
   inKindContributions?: InKindContribution[];
 }) {
   const [search,      setSearch]      = useState('');
-  const [sort,        setSort]        = useState<SortKey>('recent');
+  const [sort,        setSort]        = useState<SortKey>('date_asc');
   const [showAmounts, setShowAmounts] = useState(true);
   const [page,        setPage]        = useState(1);
   const [viewMode,    setViewMode]    = useState<ViewMode>('card');
@@ -280,6 +280,16 @@ export function DonorWall({
     [...donors].sort((a, b) => Number(b.amount) - Number(a.amount)).slice(0, Math.min(3, donors.length)),
   [donors]);
   const top3Ids = useMemo(() => new Set(top3.map(d => d.id)), [top3]);
+
+  // Stable chronological serial numbers — #1 = earliest donor, regardless of current sort
+  const serialMap = useMemo(() => {
+    const sorted = [...donors].sort(
+      (a, b) => new Date(a.reviewedAt).getTime() - new Date(b.reviewedAt).getTime()
+    );
+    const m = new Map<number, number>();
+    sorted.forEach((d, i) => m.set(d.id, i + 1));
+    return m;
+  }, [donors]);
 
   const filtered = useMemo(() => {
     let list = donors.filter(d => !top3Ids.has(d.id));
@@ -292,6 +302,8 @@ export function DonorWall({
     }
     if (sort === 'amount_desc') list = [...list].sort((a, b) => Number(b.amount) - Number(a.amount));
     else if (sort === 'amount_asc') list = [...list].sort((a, b) => Number(a.amount) - Number(b.amount));
+    else if (sort === 'date_desc') list = [...list].sort((a, b) => new Date(b.reviewedAt).getTime() - new Date(a.reviewedAt).getTime());
+    else /* date_asc */ list = [...list].sort((a, b) => new Date(a.reviewedAt).getTime() - new Date(b.reviewedAt).getTime());
     return list;
   }, [donors, top3Ids, search, sort]);
 
@@ -371,7 +383,8 @@ export function DonorWall({
                 onChange={e => { setSort(e.target.value as SortKey); setPage(1); }}
                 className="appearance-none w-full sm:w-52 pl-9 pr-8 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-background cursor-pointer"
               >
-                <option value="recent">சமீபத்தியது முதல்</option>
+                <option value="date_asc">தேதி வரிசை (பழையது முதல்)</option>
+                <option value="date_desc">சமீபத்தியது முதல்</option>
                 <option value="amount_desc">அதிக தொகை முதல்</option>
                 <option value="amount_asc">குறைந்த தொகை முதல்</option>
               </select>
@@ -403,7 +416,7 @@ export function DonorWall({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <AnimatePresence mode="popLayout">
                 {visible.map((d, idx) => (
-                  <DonorCard key={d.id} donor={d} rank={top3.length + idx + 1} showAmount={showAmounts} />
+                  <DonorCard key={d.id} donor={d} rank={serialMap.get(d.id) ?? (top3.length + idx + 1)} showAmount={showAmounts} />
                 ))}
               </AnimatePresence>
             </div>
@@ -421,7 +434,7 @@ export function DonorWall({
                   <DonorListRow
                     key={d.id}
                     donor={d}
-                    rank={top3.length + idx + 1}
+                    rank={serialMap.get(d.id) ?? (top3.length + idx + 1)}
                     showAmount={showAmounts}
                     stripe={idx % 2 === 1}
                   />
@@ -593,11 +606,11 @@ function InKindListRow({ c, rank, stripe }: { c: InKindContribution; rank: numbe
 }
 
 /* ── InKindWall ──────────────────────────────────────────────────────────── */
-type IKSort = 'recent' | 'name_asc';
+type IKSort = 'date_asc' | 'date_desc' | 'name_asc';
 
 function InKindWall({ contributions }: { contributions: InKindContribution[] }) {
   const [search,   setSearch]   = useState('');
-  const [sort,     setSort]     = useState<IKSort>('recent');
+  const [sort,     setSort]     = useState<IKSort>('date_asc');
   const [page,     setPage]     = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('card');
 
@@ -607,6 +620,16 @@ function InKindWall({ contributions }: { contributions: InKindContribution[] }) 
       .slice(0, Math.min(3, contributions.length)),
   [contributions]);
   const top3Ids = useMemo(() => new Set(top3.map(c => c.id)), [top3]);
+
+  // Stable chronological serial numbers — #1 = earliest contribution
+  const ikSerialMap = useMemo(() => {
+    const sorted = [...contributions].sort(
+      (a, b) => new Date(a.contributedAt).getTime() - new Date(b.contributedAt).getTime()
+    );
+    const m = new Map<number, number>();
+    sorted.forEach((c, i) => m.set(c.id, i + 1));
+    return m;
+  }, [contributions]);
 
   const filtered = useMemo(() => {
     let list = contributions.filter(c => !top3Ids.has(c.id));
@@ -619,6 +642,8 @@ function InKindWall({ contributions }: { contributions: InKindContribution[] }) 
       );
     }
     if (sort === 'name_asc') list = [...list].sort((a, b) => a.donorName.localeCompare(b.donorName, 'ta'));
+    else if (sort === 'date_desc') list = [...list].sort((a, b) => new Date(b.contributedAt).getTime() - new Date(a.contributedAt).getTime());
+    else /* date_asc */ list = [...list].sort((a, b) => new Date(a.contributedAt).getTime() - new Date(b.contributedAt).getTime());
     return list;
   }, [contributions, top3Ids, search, sort]);
 
@@ -692,7 +717,8 @@ function InKindWall({ contributions }: { contributions: InKindContribution[] }) 
                 onChange={e => { setSort(e.target.value as IKSort); setPage(1); }}
                 className="appearance-none w-full sm:w-52 pl-9 pr-8 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-background cursor-pointer"
               >
-                <option value="recent">சமீபத்தியது முதல்</option>
+                <option value="date_asc">தேதி வரிசை (பழையது முதல்)</option>
+                <option value="date_desc">சமீபத்தியது முதல்</option>
                 <option value="name_asc">பெயர் வரிசையில்</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
@@ -723,7 +749,7 @@ function InKindWall({ contributions }: { contributions: InKindContribution[] }) 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <AnimatePresence mode="popLayout">
                 {visible.map((c, idx) => (
-                  <InKindCard key={c.id} c={c} rank={top3.length + idx + 1} />
+                  <InKindCard key={c.id} c={c} rank={ikSerialMap.get(c.id) ?? (top3.length + idx + 1)} />
                 ))}
               </AnimatePresence>
             </div>
@@ -742,7 +768,7 @@ function InKindWall({ contributions }: { contributions: InKindContribution[] }) 
                   <InKindListRow
                     key={c.id}
                     c={c}
-                    rank={top3.length + idx + 1}
+                    rank={ikSerialMap.get(c.id) ?? (top3.length + idx + 1)}
                     stripe={idx % 2 === 1}
                   />
                 ))}

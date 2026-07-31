@@ -46,6 +46,7 @@ export default function ContributionReceipt() {
   const [error, setError]     = useState<string | null>(null);
   const docRef                = useRef<HTMLDivElement>(null);
   const [imgBusy, setImgBusy] = useState(false);
+  const [shareMsg, setShareMsg] = useState('');
 
   useEffect(() => {
     api.getContributionReceipt(token)
@@ -100,12 +101,7 @@ export default function ContributionReceipt() {
   const shareWhatsApp = async () => {
     if (!docRef.current || imgBusy) return;
     setImgBusy(true);
-    const waFallback = () => {
-      const txt = encodeURIComponent(
-        `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${data.donorName} — பொருள் நன்கொடை\nரசீது: ${window.location.href}`
-      );
-      window.open(`https://wa.me/?text=${txt}`, "_blank");
-    };
+    setShareMsg('');
     try {
       const canvas = await captureCanvas();
       const blob: Blob = await new Promise((res, rej) =>
@@ -113,6 +109,8 @@ export default function ContributionReceipt() {
       );
       const file = new File([blob], `contribution-${receiptNo}.png`, { type: "image/png" });
       const nav = navigator as Navigator & { canShare?: (data?: ShareData) => boolean };
+
+      // Try native share (Android Chrome, iOS Safari 15+)
       if (nav.canShare?.({ files: [file] })) {
         try {
           await navigator.share({
@@ -120,15 +118,34 @@ export default function ContributionReceipt() {
             title: `பொருள் நன்கொடை ரசீது ${receiptNo}`,
             text: `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${data.donorName} — பொருள் நன்கொடை`,
           });
+          return;
         } catch (shareErr) {
-          if ((shareErr as { name?: string }).name !== "AbortError") waFallback();
+          if ((shareErr as { name?: string }).name === "AbortError") return;
         }
-      } else {
-        waFallback();
       }
+
+      // Fallback: download image → open WhatsApp
+      const dlLink = document.createElement("a");
+      dlLink.download = `contribution-${receiptNo}.png`;
+      dlLink.href = canvas.toDataURL("image/png");
+      document.body.appendChild(dlLink);
+      dlLink.click();
+      document.body.removeChild(dlLink);
+
+      await new Promise(r => setTimeout(r, 500));
+      const txt = encodeURIComponent(
+        `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${data.donorName} — பொருள் நன்கொடை\nரசீது: ${window.location.href}`
+      );
+      window.open(`https://wa.me/?text=${txt}`, "_blank");
+      setShareMsg('📥 படம் பதிவிறக்கம் ஆகியது — WhatsApp-ல் அனுப்பும்போது இணைக்கவும்');
     } catch {
-      waFallback();
-    } finally { setImgBusy(false); }
+      const txt = encodeURIComponent(
+        `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${data.donorName} — பொருள் நன்கொடை\nரசீது: ${window.location.href}`
+      );
+      window.open(`https://wa.me/?text=${txt}`, "_blank");
+    } finally {
+      setImgBusy(false);
+    }
   };
 
   return (
@@ -412,6 +429,11 @@ export default function ContributionReceipt() {
           </button>
           <a href={import.meta.env.BASE_URL} className="ikc-btn-h">🏠 முகப்பு</a>
         </div>
+        {shareMsg && (
+          <div style={{ marginBottom:14, padding:"8px 16px", background:"#f0fdf4", border:"1px solid #86efac", borderRadius:10, fontSize:12, color:"#15803d", textAlign:"center" }}>
+            {shareMsg}
+          </div>
+        )}
 
         {/* ══ DOCUMENT ══ */}
         <div className="ikc-doc" ref={docRef}>

@@ -65,6 +65,7 @@ export default function Receipt() {
   const [error, setError]       = useState<string | null>(null);
   const docRef                  = useRef<HTMLDivElement>(null);
   const [imgBusy, setImgBusy]   = useState(false);
+  const [shareMsg, setShareMsg] = useState('');
 
   useEffect(() => {
     api.getDonationReceipt(token)
@@ -129,12 +130,7 @@ export default function Receipt() {
   const shareWhatsApp = async () => {
     if (!docRef.current || imgBusy) return;
     setImgBusy(true);
-    const waFallback = () => {
-      const txt = encodeURIComponent(
-        `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${name} — ${amountFmt}\nரசீது: ${window.location.href}`
-      );
-      window.open(`https://wa.me/?text=${txt}`, "_blank");
-    };
+    setShareMsg('');
     try {
       const canvas = await captureCanvas();
       const blob: Blob = await new Promise((res, rej) =>
@@ -142,6 +138,8 @@ export default function Receipt() {
       );
       const file = new File([blob], `receipt-${receiptNo}.png`, { type: "image/png" });
       const nav = navigator as Navigator & { canShare?: (data?: ShareData) => boolean };
+
+      // Try native share (Android Chrome, iOS Safari 15+) — opens system share sheet
       if (nav.canShare?.({ files: [file] })) {
         try {
           await navigator.share({
@@ -149,20 +147,38 @@ export default function Receipt() {
             title: `நன்கொடை ரசீது ${receiptNo}`,
             text: `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${name} — ${amountFmt}`,
           });
-          // Share succeeded — nothing more to do
+          return; // user picked WhatsApp (or another app) — done
         } catch (shareErr) {
-          // AbortError = user dismissed the sheet; don't open wa.me fallback
-          if ((shareErr as { name?: string }).name !== "AbortError") {
-            waFallback();
-          }
+          if ((shareErr as { name?: string }).name === "AbortError") return; // user cancelled
+          // share() failed — fall through to download + WA link
         }
-      } else {
-        waFallback();
       }
+
+      // Fallback: save image to device, then open WhatsApp
+      // Step 1 — trigger download so user has the image in their gallery
+      const dlLink = document.createElement("a");
+      dlLink.download = `receipt-${receiptNo}.png`;
+      dlLink.href = canvas.toDataURL("image/png");
+      document.body.appendChild(dlLink);
+      dlLink.click();
+      document.body.removeChild(dlLink);
+
+      // Step 2 — open WhatsApp with receipt link; user can attach the downloaded image
+      await new Promise(r => setTimeout(r, 500));
+      const txt = encodeURIComponent(
+        `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${name} — ${amountFmt}\nரசீது: ${window.location.href}`
+      );
+      window.open(`https://wa.me/?text=${txt}`, "_blank");
+      setShareMsg('📥 படம் பதிவிறக்கம் ஆகியது — WhatsApp-ல் அனுப்பும்போது இணைக்கவும்');
     } catch {
-      // Canvas/blob failure — fall back to text link
-      waFallback();
-    } finally { setImgBusy(false); }
+      // Canvas failure — text-only link
+      const txt = encodeURIComponent(
+        `ஸ்வாமியே சரணம் ஐயப்பா 🙏\n${name} — ${amountFmt}\nரசீது: ${window.location.href}`
+      );
+      window.open(`https://wa.me/?text=${txt}`, "_blank");
+    } finally {
+      setImgBusy(false);
+    }
   };
 
   const rows: { lbl: string; val: string; mono?: boolean; isName?: boolean; isPlace?: boolean }[] = [
@@ -527,6 +543,11 @@ export default function Receipt() {
           <button className="btn-wa"  onClick={shareWhatsApp} disabled={imgBusy}>💬 &nbsp;WhatsApp</button>
           <a href={import.meta.env.BASE_URL} className="btn-h">🏠 முகப்பு</a>
         </div>
+        {shareMsg && (
+          <div style={{ marginBottom:14, padding:"8px 16px", background:"#f0fdf4", border:"1px solid #86efac", borderRadius:10, fontSize:12, color:"#15803d", textAlign:"center" }}>
+            {shareMsg}
+          </div>
+        )}
 
         {/* ══ DOCUMENT ══ */}
         <div className="doc" ref={docRef}>
