@@ -379,7 +379,7 @@ export default function ContributionReceipt() {
           }
           .ikc-donor-place { font-size:11pt; }
 
-          .ikc-desc-wrap  { padding:0 32px; display:flex; align-items:center; }
+          .ikc-desc-wrap  { padding:0 32px; display:flex; align-items:center; overflow:hidden; }
           .ikc-desc-icon  { width:58px; height:58px; font-size:28px; }
           .ikc-desc-lbl   { font-size:8pt; }
           .ikc-desc-text  { font-size:16pt; }
