@@ -25,6 +25,18 @@ Three layered issues:
 
 **Why:** The client-side `cache: "no-store"` fetch option prevents the browser from ever sending a conditional `If-None-Match` request for `/auth/me`. Without it, even with server-side `Cache-Control: no-store`, the browser may still use old cache entries for ETag validation.
 
+## Race condition: navigate() before setAdmin() flushes
+
+There is a second bug independent of cookies. Calling `navigate("/admin/dashboard")` immediately after `setAdmin()` in an async handler causes wouter's `pushState` to trigger synchronously, making `AdminGuard` render the new route **before** React has committed the state update. `AdminGuard` sees `admin = null` and redirects back to `/admin`.
+
+**Fix:** In `AdminLogin.tsx`, remove the `navigate` call from the submit handler. Add a `useEffect` that watches `admin` and navigates only after React has committed the updated state:
+```js
+useEffect(() => {
+  if (admin) navigate("/admin/dashboard");
+}, [admin]);
+```
+This guarantees the navigation only fires after the `setAdmin` update is visible in the component tree.
+
 ## Where to apply
 
 - `artifacts/api-server/src/app.ts` — session cookie config
