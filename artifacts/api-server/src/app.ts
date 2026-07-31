@@ -85,11 +85,14 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      // With trust proxy set, Express correctly honours X-Forwarded-Proto
-      // and will only send the cookie over HTTPS in production.
-      secure: isProduction,
+      // SameSite=None + Secure is required so the session cookie is sent
+      // when the app runs inside Replit's preview iframe (top-level origin is
+      // replit.com while the app is on *.replit.dev — a cross-site context).
+      // The Replit proxy always terminates TLS, so secure:true is safe in
+      // both development and production (trust proxy is set above).
+      secure: true,
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     },
   })
