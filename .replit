@@ -131,3 +131,19 @@ channel = "stable-25_05"
 
 [objectStorage]
 defaultBucketID = "replit-objstore-c44d9783-8c22-4c2f-8316-67fd48064864"
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
+
+[[ports]]
+localPort = 8082
+externalPort = 3000
+
+[[ports]]
+localPort = 25427
+externalPort = 80
