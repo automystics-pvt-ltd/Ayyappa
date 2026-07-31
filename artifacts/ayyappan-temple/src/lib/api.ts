@@ -80,7 +80,7 @@ export const api = {
   login: (username: string, password: string) =>
     apiFetch("/auth/login", { method: "POST", body: JSON.stringify({ username, password }) }),
   logout: () => apiFetch("/auth/logout", { method: "POST" }),
-  me: () => apiFetch("/auth/me"),
+  me: () => apiFetch("/auth/me", { cache: "no-store" }),
 
   // Public - Site settings (env-based)
   getSiteConfig: () => apiFetch<{ siteBaseUrl: string }>("/settings/site"),
