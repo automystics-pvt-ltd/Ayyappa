@@ -18,6 +18,7 @@ import ContributionReceipt from '@/pages/ContributionReceipt';
 import { Route, Switch, Router as WouterRouter, Redirect } from 'wouter';
 import { AdminContext, useAdminState, useAdmin } from '@/hooks/useAdmin';
 import { SiteSettingsProvider } from '@/hooks/useSiteSettings';
+import { LanguageProvider } from '@/hooks/useLanguage';
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ function AppContent() {
 
   return (
     <AdminContext.Provider value={adminState}>
+      <LanguageProvider>
       <SiteSettingsProvider>
       <Switch>
         <Route path="/" component={Home} />
@@ -74,6 +76,7 @@ function AppContent() {
         <Route component={NotFound} />
       </Switch>
       </SiteSettingsProvider>
+      </LanguageProvider>
     </AdminContext.Provider>
   );
 }

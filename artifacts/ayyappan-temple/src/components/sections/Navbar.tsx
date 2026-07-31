@@ -6,6 +6,7 @@ import {
   FlameKindling, HelpCircle, MessageSquare, Flame, Bell, HeartHandshake
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
+import { useLanguage } from '@/hooks/useLanguage';
 
 /* ── Types ── */
 interface NewsItem  { id: number; title: string; publishedAt?: string; createdAt: string }
@@ -13,26 +14,41 @@ interface EventItem { id: number; title: string; eventDate?: string; eventType?:
 
 /* ── Nav structure ── */
 const TEMPLE_LINKS = [
-  { label: 'வரலாறு',        href: '#about',           icon: BookOpen },
-  { label: 'குருநாதர்கள்',   href: '#gurus',           icon: Users2 },
-  { label: 'திருப்பணி',      href: '#renovation',      icon: HardHat },
-  { label: 'கும்பாபிஷேகம்',  href: '#kumbhabhishekam', icon: Flame },
-  { label: 'சிறப்பு பூஜைகள்', href: '#pujas',           icon: FlameKindling },
-  { label: 'படங்கள்',        href: '#gallery',         icon: Images },
-  { label: 'கேள்வி-பதில்',    href: '#faq',             icon: HelpCircle },
+  { ta: 'வரலாறு',          en: 'History',          href: '#about',           icon: BookOpen },
+  { ta: 'குருநாதர்கள்',     en: 'Gurus',            href: '#gurus',           icon: Users2 },
+  { ta: 'திருப்பணி',        en: 'Renovation',       href: '#renovation',      icon: HardHat },
+  { ta: 'கும்பாபிஷேகம்',    en: 'Kumbhabhishekam',  href: '#kumbhabhishekam', icon: Flame },
+  { ta: 'சிறப்பு பூஜைகள்',  en: 'Special Pujas',    href: '#pujas',           icon: FlameKindling },
+  { ta: 'படங்கள்',          en: 'Gallery',          href: '#gallery',         icon: Images },
+  { ta: 'கேள்வி-பதில்',      en: 'Q & A',            href: '#faq',             icon: HelpCircle },
 ];
+
+/* ── Language toggle pill ── */
+function LangToggle({ scrolled }: { scrolled: boolean }) {
+  const { lang, toggleLang } = useLanguage();
+  return (
+    <button
+      onClick={toggleLang}
+      title={lang === 'ta' ? 'Switch to English' : 'தமிழில் மாற்று'}
+      className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full border transition-all hover:scale-105 active:scale-95 ${
+        scrolled
+          ? 'border-primary/30 text-primary bg-primary/8 hover:bg-primary/15'
+          : 'border-white/40 text-white/90 bg-white/15 hover:bg-white/25'
+      }`}
+    >
+      {lang === 'ta' ? 'EN' : 'தமிழ்'}
+    </button>
+  );
+}
 
 /* ── Smooth scroll helper — accounts for fixed navbar + breathing room ── */
 function scrollTo(href: string, close?: () => void) {
   close?.();
-  // Wait for drawer slide-out before scrolling on mobile
   setTimeout(() => {
     const el = document.querySelector(href);
     if (!el) return;
     const header = document.querySelector('header');
-    // Measure actual header height at click-time (varies: scrolled vs top, ticker visible or not)
     const headerH = header ? header.getBoundingClientRect().height : 80;
-    // Extra 16 px breathing room so the section title is fully clear of the navbar on all devices
     const EXTRA = 16;
     const top = el.getBoundingClientRect().top + window.scrollY - headerH - EXTRA;
     window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
@@ -41,17 +57,18 @@ function scrollTo(href: string, close?: () => void) {
 
 /* ── Ticker: auto-scroll latest news ── */
 function Ticker({ items }: { items: NewsItem[] }) {
+  const { t } = useLanguage();
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     if (items.length < 2) return;
-    const t = setInterval(() => setIdx(i => (i + 1) % items.length), 4000);
-    return () => clearInterval(t);
+    const timer = setInterval(() => setIdx(i => (i + 1) % items.length), 4000);
+    return () => clearInterval(timer);
   }, [items.length]);
   if (!items.length) return null;
   return (
     <div className="bg-primary text-primary-foreground text-[11px] py-1 px-4 hidden sm:flex items-center gap-3 overflow-hidden">
       <span className="shrink-0 flex items-center gap-1 font-bold opacity-90">
-        <Bell className="w-3 h-3" /> செய்தி
+        <Bell className="w-3 h-3" /> {t('செய்தி', 'News')}
       </span>
       <div className="h-4 w-px bg-primary-foreground/30 shrink-0" />
       <div className="flex-1 overflow-hidden">
@@ -84,6 +101,7 @@ function CountBadge({ n }: { n: number }) {
 
 /* ── Desktop dropdown ── */
 function TempleDropdown({ scrolled }: { scrolled: boolean }) {
+  const { lang, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -106,7 +124,7 @@ function TempleDropdown({ scrolled }: { scrolled: boolean }) {
         onClick={() => setOpen(v => !v)}
         className={`flex items-center gap-1 text-xs lg:text-sm font-medium transition-colors whitespace-nowrap ${textCls}`}
       >
-        ஆலயம்
+        {t('ஆலயம்', 'Temple')}
         <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
@@ -120,14 +138,14 @@ function TempleDropdown({ scrolled }: { scrolled: boolean }) {
             onMouseLeave={() => setOpen(false)}
             className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-52 bg-background rounded-2xl shadow-xl border border-border/60 overflow-hidden z-50"
           >
-            {TEMPLE_LINKS.map(({ label, href, icon: Icon }) => (
+            {TEMPLE_LINKS.map(({ ta, en, href, icon: Icon }) => (
               <button
                 key={href}
                 onClick={() => { scrollTo(href); setOpen(false); }}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/80 hover:bg-primary/5 hover:text-primary transition-colors text-left group"
               >
                 <Icon className="w-4 h-4 text-primary/60 group-hover:text-primary transition-colors shrink-0" />
-                {label}
+                {lang === 'ta' ? ta : en}
               </button>
             ))}
           </motion.div>
@@ -139,6 +157,7 @@ function TempleDropdown({ scrolled }: { scrolled: boolean }) {
 
 /* ══════════════════ Main Navbar ══════════════════ */
 export function Navbar() {
+  const { lang, t, toggleLang } = useLanguage();
   const [scrolled, setScrolled]       = useState(false);
   const [drawerOpen, setDrawerOpen]   = useState(false);
   const [templeOpen, setTempleOpen]   = useState(false);
@@ -160,7 +179,6 @@ export function Navbar() {
 
   /* Fetch live news + events for badges / ticker */
   useEffect(() => {
-    // Use public endpoints — /news/all and /events/all require admin auth
     apiFetch<NewsItem[]>('/news').then(setNews).catch(() => {});
     apiFetch<EventItem[]>('/events').then(setEvents).catch(() => {});
   }, []);
@@ -226,12 +244,12 @@ export function Navbar() {
                 <div className={`font-serif text-xs sm:text-sm md:text-base font-bold leading-tight transition-colors truncate max-w-[140px] sm:max-w-none ${
                   scrolled ? 'text-primary' : 'text-white drop-shadow-md'
                 }`}>
-                  ஸ்ரீ ஐயப்பன் திருக்கோவில்
+                  {t('ஸ்ரீ ஐயப்பன் திருக்கோவில்', 'Sri Ayyappan Temple')}
                 </div>
                 <div className={`text-[9px] sm:text-[10px] leading-tight transition-colors hidden xs:block sm:block ${
                   scrolled ? 'text-muted-foreground' : 'text-white/70'
                 }`}>
-                  வடமதுரை, திண்டுக்கல்
+                  {t('வடமதுரை, திண்டுக்கல்', 'Vadamadurai, Dindigul')}
                 </div>
               </div>
             </button>
@@ -242,7 +260,7 @@ export function Navbar() {
               {/* Home */}
               <button onClick={() => scrollTo('#home')}
                 className={`text-sm font-medium transition-colors px-2 py-1 rounded-lg hover:bg-white/10 whitespace-nowrap ${textCls}`}>
-                முகப்பு
+                {t('முகப்பு', 'Home')}
               </button>
 
               {/* Temple dropdown */}
@@ -254,7 +272,7 @@ export function Navbar() {
               <button onClick={() => scrollTo('#news')}
                 className={`flex items-center text-sm font-medium transition-colors px-2 py-1 rounded-lg hover:bg-white/10 whitespace-nowrap ${textCls}`}>
                 <Newspaper className="w-3.5 h-3.5 mr-1 opacity-70" />
-                செய்திகள்
+                {t('செய்திகள்', 'News')}
                 <CountBadge n={publishedNews.length} />
               </button>
 
@@ -262,7 +280,7 @@ export function Navbar() {
               <button onClick={() => scrollTo('#events')}
                 className={`flex items-center text-sm font-medium transition-colors px-2 py-1 rounded-lg hover:bg-white/10 whitespace-nowrap ${textCls}`}>
                 <CalendarDays className="w-3.5 h-3.5 mr-1 opacity-70" />
-                நிகழ்வுகள்
+                {t('நிகழ்வுகள்', 'Events')}
                 <CountBadge n={upcomingEvents.length} />
               </button>
 
@@ -270,34 +288,38 @@ export function Navbar() {
               <button onClick={() => scrollTo('#donors')}
                 className={`flex items-center text-sm font-medium transition-colors px-2 py-1 rounded-lg hover:bg-white/10 whitespace-nowrap ${textCls}`}>
                 <HeartHandshake className="w-3.5 h-3.5 mr-1 opacity-70" />
-                நன்கொடையாளர்கள்
+                {t('நன்கொடையாளர்கள்', 'Donors')}
               </button>
 
               {/* Contact */}
               <button onClick={() => scrollTo('#contact')}
                 className={`flex items-center text-sm font-medium transition-colors px-2 py-1 rounded-lg hover:bg-white/10 whitespace-nowrap ${textCls}`}>
                 <MessageSquare className="w-3.5 h-3.5 mr-1 opacity-70" />
-                தொடர்புக்கு
+                {t('தொடர்புக்கு', 'Contact')}
               </button>
+
+              {/* Language toggle */}
+              <LangToggle scrolled={scrolled} />
 
               {/* Donate CTA */}
               <button
                 onClick={() => scrollTo('#donate')}
-                className="ml-2 flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2 rounded-full text-sm font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/30 whitespace-nowrap"
+                className="ml-1 flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2 rounded-full text-sm font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/30 whitespace-nowrap"
               >
                 <HandCoins className="w-4 h-4" />
-                நன்கொடை
+                {t('நன்கொடை', 'Donate')}
               </button>
             </nav>
 
-            {/* ── Mobile: donate + hamburger ── */}
+            {/* ── Mobile: lang + donate + hamburger ── */}
             <div className="lg:hidden flex items-center gap-2 shrink-0">
+              <LangToggle scrolled={scrolled} />
               <button
                 onClick={() => scrollTo('#donate')}
                 className="flex items-center gap-1 bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-xs font-semibold shadow-md whitespace-nowrap"
               >
                 <HandCoins className="w-3.5 h-3.5" />
-                <span className="hidden xs:inline">நன்கொடை</span>
+                <span className="hidden xs:inline">{t('நன்கொடை', 'Donate')}</span>
               </button>
               <button
                 onClick={() => setDrawerOpen(true)}
@@ -342,8 +364,8 @@ export function Navbar() {
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-base">🕉</div>
                   <div>
-                    <p className="text-sm font-bold text-primary leading-tight">ஐயப்பன் கோவில்</p>
-                    <p className="text-[10px] text-muted-foreground">வடமதுரை, திண்டுக்கல்</p>
+                    <p className="text-sm font-bold text-primary leading-tight">{t('ஐயப்பன் கோவில்', 'Ayyappan Temple')}</p>
+                    <p className="text-[10px] text-muted-foreground">{t('வடமதுரை, திண்டுக்கல்', 'Vadamadurai, Dindigul')}</p>
                   </div>
                 </div>
                 <button onClick={close} className="p-2 rounded-lg hover:bg-muted text-muted-foreground">
@@ -356,14 +378,16 @@ export function Navbar() {
 
                 {/* Quick links */}
                 <div className="px-3 mb-1">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-3 mb-2">கண்ணோட்டம்</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-3 mb-2">
+                    {t('கண்ணோட்டம்', 'Navigation')}
+                  </p>
                   {[
-                    { label: 'முகப்பு',     href: '#home',    icon: Home },
-                    { label: 'செய்திகள்',   href: '#news',    icon: Newspaper,   count: publishedNews.length },
-                    { label: 'நிகழ்வுகள்',       href: '#events',  icon: CalendarDays,    count: upcomingEvents.length },
-                    { label: 'நன்கொடையாளர்கள்', href: '#donors',  icon: HeartHandshake },
-                    { label: 'தொடர்புக்கு',      href: '#contact', icon: MessageSquare },
-                  ].map(({ label, href, icon: Icon, count }) => (
+                    { ta: 'முகப்பு',          en: 'Home',     href: '#home',    icon: Home },
+                    { ta: 'செய்திகள்',        en: 'News',     href: '#news',    icon: Newspaper,   count: publishedNews.length },
+                    { ta: 'நிகழ்வுகள்',       en: 'Events',   href: '#events',  icon: CalendarDays, count: upcomingEvents.length },
+                    { ta: 'நன்கொடையாளர்கள்', en: 'Donors',   href: '#donors',  icon: HeartHandshake },
+                    { ta: 'தொடர்புக்கு',      en: 'Contact',  href: '#contact', icon: MessageSquare },
+                  ].map(({ ta, en, href, icon: Icon, count }) => (
                     <button
                       key={href}
                       onClick={() => scrollTo(href, close)}
@@ -373,7 +397,7 @@ export function Navbar() {
                         <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
                           <Icon className="w-4 h-4 text-primary/70 group-hover:text-primary" />
                         </div>
-                        <span className="font-medium text-sm">{label}</span>
+                        <span className="font-medium text-sm">{lang === 'ta' ? ta : en}</span>
                       </div>
                       {!!count && (
                         <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">{count}</span>
@@ -386,7 +410,9 @@ export function Navbar() {
 
                 {/* Temple accordion */}
                 <div className="px-3">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-3 mb-2">ஆலய தகவல்கள்</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-3 mb-2">
+                    {t('ஆலய தகவல்கள்', 'Temple Info')}
+                  </p>
                   <button
                     onClick={() => setTempleOpen(v => !v)}
                     className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-left text-foreground/80 hover:bg-primary/5 hover:text-primary transition-colors"
@@ -395,7 +421,7 @@ export function Navbar() {
                       <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
                         <Flame className="w-4 h-4 text-primary/70" />
                       </div>
-                      <span className="font-medium text-sm">ஆலயம் பற்றி</span>
+                      <span className="font-medium text-sm">{t('ஆலயம் பற்றி', 'About Temple')}</span>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${templeOpen ? 'rotate-180' : ''}`} />
                   </button>
@@ -410,20 +436,41 @@ export function Navbar() {
                         className="overflow-hidden"
                       >
                         <div className="ml-4 pl-3 border-l-2 border-primary/20 mt-1 space-y-0.5">
-                          {TEMPLE_LINKS.map(({ label, href, icon: Icon }) => (
+                          {TEMPLE_LINKS.map(({ ta, en, href, icon: Icon }) => (
                             <button
                               key={href}
                               onClick={() => scrollTo(href, close)}
                               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-sm text-foreground/70 hover:bg-primary/5 hover:text-primary transition-colors"
                             >
                               <Icon className="w-3.5 h-3.5 text-primary/50 shrink-0" />
-                              {label}
+                              {lang === 'ta' ? ta : en}
                             </button>
                           ))}
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
+                </div>
+
+                {/* Language toggle in drawer */}
+                <div className="mx-3 my-3 border-t border-border/40" />
+                <div className="px-3">
+                  <button
+                    onClick={toggleLang}
+                    className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-foreground/70 hover:bg-primary/5 hover:text-primary transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
+                        <span className="text-xs font-bold text-primary/70">A</span>
+                      </div>
+                      <span className="font-medium text-sm">
+                        {lang === 'ta' ? 'Switch to English' : 'தமிழில் மாற்று'}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                      {lang === 'ta' ? 'EN' : 'தமிழ்'}
+                    </span>
+                  </button>
                 </div>
 
               </div>
@@ -435,10 +482,10 @@ export function Navbar() {
                   className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground py-3.5 rounded-2xl font-bold text-base transition-all active:scale-95 shadow-lg shadow-primary/30"
                 >
                   <HandCoins className="w-5 h-5" />
-                  நன்கொடை வழங்க
+                  {t('நன்கொடை வழங்க', 'Donate Now')}
                 </button>
                 <p className="text-center text-[11px] text-muted-foreground mt-2">
-                  ஸ்வாமி அனுகிரகம் உங்களுக்கு கிடைக்கட்டும் 🙏
+                  {t('ஸ்வாமி அனுகிரகம் உங்களுக்கு கிடைக்கட்டும் 🙏', "Swami's blessings be upon you 🙏")}
                 </p>
               </div>
             </motion.div>
