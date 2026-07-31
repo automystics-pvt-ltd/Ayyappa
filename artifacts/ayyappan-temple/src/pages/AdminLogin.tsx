@@ -3,12 +3,19 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { useLocation } from "wouter";
 
 export default function AdminLogin() {
-  const { login } = useAdmin();
+  const { admin, login } = useAdmin();
   const [, navigate] = useLocation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Once admin context is set (either from a fresh login or a pre-existing
+  // session), redirect to the dashboard. This runs after React has flushed
+  // the setAdmin update, avoiding the pushState race condition.
+  useEffect(() => {
+    if (admin) navigate("/admin/dashboard");
+  }, [admin]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,7 +23,7 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       await login(username, password);
-      navigate("/admin/dashboard");
+      // Navigation is handled by the useEffect above once admin state is set.
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {
