@@ -22,7 +22,8 @@
     "test:inkind-receipt-image-download": "node ./tests/inkind-receipt-image-download.test.mjs",
     "test:inkind-receipt-strip-whatsapp": "node ./tests/inkind-receipt-strip-whatsapp.test.mjs",
     "test:inkind-receipt-tamil-glyphs": "node ./tests/inkind-receipt-tamil-glyphs.test.mjs",
-    "test:inkind-receipt-short-desc": "node ./tests/inkind-receipt-short-desc.test.mjs"
+    "test:inkind-receipt-short-desc": "node ./tests/inkind-receipt-short-desc.test.mjs",
+    "test:contributions-row-overflow": "node ./tests/contributions-row-overflow.test.mjs"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.21.0",
