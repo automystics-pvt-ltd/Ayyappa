@@ -20,7 +20,8 @@
     "test:inkind-receipt-mobile": "node ./tests/inkind-receipt-mobile.test.mjs",
     "test:inkind-receipt-strip-layout": "node ./tests/inkind-receipt-strip-layout.test.mjs",
     "test:inkind-receipt-image-download": "node ./tests/inkind-receipt-image-download.test.mjs",
-    "test:inkind-receipt-strip-whatsapp": "node ./tests/inkind-receipt-strip-whatsapp.test.mjs"
+    "test:inkind-receipt-strip-whatsapp": "node ./tests/inkind-receipt-strip-whatsapp.test.mjs",
+    "test:inkind-receipt-tamil-glyphs": "node ./tests/inkind-receipt-tamil-glyphs.test.mjs"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.21.0",

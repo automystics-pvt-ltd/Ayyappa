@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "wouter";
 import html2canvas from "html2canvas";
 import { api } from "@/lib/api";
+import { ikcCaptureOnClone, IKC_CAPTURE_SCALE, IKC_CAPTURE_BACKGROUND } from "@/lib/ikc-capture";
 
 type ContributionData = {
   id: number;
@@ -65,36 +66,13 @@ export default function ContributionReceipt() {
   const captureCanvas = async () => {
     await document.fonts.ready;
     return html2canvas(docRef.current!, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: "#c2410c",
-      imageTimeout: 0,
-      logging: false,
-      onclone: async (_clonedDoc: Document, el: HTMLElement) => {
-        // Inject Google Fonts into the cloned document so Tamil / Cinzel / Inter
-        // glyphs are available before html2canvas rasterises the DOM.
-        const link = document.createElement("link");
-        link.rel  = "stylesheet";
-        link.href = "https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+Tamil:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@600;700&display=swap";
-        el.ownerDocument.head.appendChild(link);
-        // Wait for the stylesheet to load, then wait for all fonts to be parsed.
-        // Without this the cloned document may still be using system fallbacks
-        // (rendering Tamil as tofu squares) when html2canvas starts drawing.
-        await new Promise<void>(resolve => {
-          link.addEventListener("load",  () => resolve(), { once: true });
-          link.addEventListener("error", () => resolve(), { once: true });
-          setTimeout(resolve, 4000); // never block indefinitely
-        });
-        await el.ownerDocument.fonts.ready;
-        // Fix seal clip: transform:rotate(-6deg) causes the SVG to extend beyond
-        // its bounding box.  Setting overflow:visible on both the seal and its
-        // parent container prevents the rotated corners from being cropped.
-        const seal = el.querySelector<SVGElement>(".ikc-seal");
-        if (seal) seal.style.overflow = "visible";
-        const ack = el.querySelector<HTMLElement>(".ikc-ack");
-        if (ack) ack.style.overflow = "visible";
-      },
+      scale:           IKC_CAPTURE_SCALE,
+      useCORS:         true,
+      allowTaint:      false,
+      backgroundColor: IKC_CAPTURE_BACKGROUND,
+      imageTimeout:    0,
+      logging:         false,
+      onclone:         ikcCaptureOnClone,
     });
   };
 
