@@ -1,0 +1,83 @@
+root@srv1609330:~# cd /home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# bash deploy/verify-deploy.sh https://vadamadurai-ayyappan-temple.automystics.tech
+bash: deploy/verify-deploy.sh: No such file or directory
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# # 1. Download the package to your server (or upload via cPanel file manager)
+scp deploy/ayyappan-temple-deploy.tar.gz root@srv1609330:~
+
+# 2. SSH into the server and run the installer
+ssh root@srv1609330
+tar -xzf ayyappan-temple-deploy.tar.gz -C ayyappan-deploy
+cd ayyappan-deploy
+bash install.sh
+scp: stat local "deploy/ayyappan-temple-deploy.tar.gz": No such file or directory
+root@srv1609330's password: 
+Permission denied, please try again.
+root@srv1609330's password: 
+Permission denied, please try again.
+root@srv1609330's password: 
+root@srv1609330: Permission denied (publickey,password).
+tar (child): ayyappan-temple-deploy.tar.gz: Cannot open: No such file or directory
+tar (child): Error is not recoverable: exiting now
+tar: Child returned status 2
+tar: Error is not recoverable: exiting now
+-bash: cd: ayyappan-deploy: No such file or directory
+bash: install.sh: No such file or directory
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# BASE="https://vadamadurai-ayyappan-temple.automystics.tech" 
+
+check() {
+  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$1")
+  [[ "$code" == "$2" ]] && echo "✓  $code  $1" || echo "✗  $code  $1  (expected $2)"
+}
+
+echo ""
+echo "── Frontend ──────────────────────────────────────"
+check "$BASE/"              200
+check "$BASE/donations"     200
+check "$BASE/admin"         200
+
+echo ""
+echo "── API ───────────────────────────────────────────"
+check "$BASE/api/healthz"              200
+check "$BASE/api/events"               200
+check "$BASE/api/news"                 200
+check "$BASE/api/settings"             200
+check "$BASE/api/donations/stats"      200
+check "$BASE/api/donations/approved"   200
+check "$BASE/api/auth/me"              401
+echo ""
+
+── Frontend ──────────────────────────────────────
+✓  200  https://vadamadurai-ayyappan-temple.automystics.tech/
+✓  200  https://vadamadurai-ayyappan-temple.automystics.tech/donations
+✓  200  https://vadamadurai-ayyappan-temple.automystics.tech/admin
+
+── API ───────────────────────────────────────────
+✓  200  https://vadamadurai-ayyappan-temple.automystics.tech/api/healthz
+✓  200  https://vadamadurai-ayyappan-temple.automystics.tech/api/events
+✓  200  https://vadamadurai-ayyappan-temple.automystics.tech/api/news
+✓  200  https://vadamadurai-ayyappan-temple.automystics.tech/api/settings
+✓  200  https://vadamadurai-ayyappan-temple.automystics.tech/api/donations/stats
+✓  200  https://vadamadurai-ayyappan-temple.automystics.tech/api/donations/approved
+✗  200  https://vadamadurai-ayyappan-temple.automystics.tech/api/auth/me  (expected 401)
+
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# scp deploy/ayyappan-temple-deploy.tar.gz root@srv1609330:~
+scp: stat local "deploy/ayyappan-temple-deploy.tar.gz": No such file or directory
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# scp deploy/ayyappan-temple-deploy.tar.gz root@srv1609330:~
+scp: stat local "deploy/ayyappan-temple-deploy.tar.gz": No such file or directory
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# ssh root@srv1609330
+tar -xzf ayyappan-temple-deploy.tar.gz -C ayyappan-update
+bash ayyappan-update/update.sh
+root@srv1609330's password: 
+Permission denied, please try again.
+root@srv1609330's password: 
+Permission denied, please try again.
+root@srv1609330's password: 
+root@srv1609330: Permission denied (publickey,password).
+tar (child): ayyappan-temple-deploy.tar.gz: Cannot open: No such file or directory
+tar (child): Error is not recoverable: exiting now
+tar: Child returned status 2
+tar: Error is not recoverable: exiting now
+bash: ayyappan-update/update.sh: No such file or directory
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# bash ayyappan-update/install.sh   # interactive, sets everything up fresh
+bash: ayyappan-update/install.sh: No such file or directory
+root@srv1609330:/home/automystics-ayyappan/htdocs/vadamadurai-ayyappan-temple.automystics.tech# 
