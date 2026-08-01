@@ -195,42 +195,55 @@ export default function ContributionsAdmin() {
           <div className="space-y-3">
             {items.map(c => (
               <div key={c.id}
-                className={`flex items-start gap-4 bg-card border rounded-2xl px-5 py-4 shadow-sm transition-opacity ${!c.isActive ? 'opacity-50' : ''}`}>
-                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
-                  <Gift className="w-5 h-5 text-orange-500" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-bold text-foreground">{c.donorName}</span>
-                    {c.place && <span className="text-xs text-muted-foreground">📍 {c.place}</span>}
-                    {!c.isActive && (
-                      <span className="text-[10px] font-bold bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                        {t("மறைக்கப்பட்டது","Hidden")}
-                      </span>
-                    )}
+                className={`flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 bg-card border rounded-2xl px-5 py-4 shadow-sm transition-opacity ${!c.isActive ? 'opacity-50' : ''}`}>
+                {/* Top row: icon + text */}
+                <div className="flex items-start gap-4 flex-1 min-w-0">
+                  <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                    <Gift className="w-5 h-5 text-orange-500" />
                   </div>
-                  <p className="text-sm text-muted-foreground mt-0.5">{c.description}</p>
-                  <p className="text-xs text-muted-foreground/60 mt-1">{fmt(c.contributedAt)}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-foreground">{c.donorName}</span>
+                      {c.place && <span className="text-xs text-muted-foreground">📍 {c.place}</span>}
+                      {!c.isActive && (
+                        <span className="text-[10px] font-bold bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                          {t("மறைக்கப்பட்டது","Hidden")}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-0.5">{c.description}</p>
+                    <p className="text-xs text-muted-foreground/60 mt-1">{fmt(c.contributedAt)}</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                {/* Action buttons — stacked below text on small screens, inline on sm+ */}
+                <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:shrink-0 pl-14 sm:pl-0">
                   {c.receiptToken && (
                     <>
-                      <a href={`${import.meta.env.BASE_URL}contribution-receipt/${c.receiptToken}`}
+                      {/* Receipt view — 44 px min touch target on mobile */}
+                      <a
+                        href={`${import.meta.env.BASE_URL}contribution-receipt/${c.receiptToken}`}
                         target="_blank" rel="noopener noreferrer"
                         title={t("ரசீது பார்க்க","View Receipt")}
                         className="min-w-[44px] min-h-[44px] w-8 h-8 rounded-lg border border-orange-200 flex items-center justify-center hover:bg-orange-50 transition-colors">
                         <Receipt className="w-4 h-4 text-orange-500" />
                       </a>
-                      <button onClick={() => handleCopy(c)}
+                      {/* Copy link */}
+                      <button
+                        onClick={() => handleCopy(c)}
                         title={copied === c.id ? t("நகலெடுக்கப்பட்டது!","Copied!") : t("இணைப்பை நகலெடு","Copy link")}
                         className="min-w-[44px] min-h-[44px] rounded-lg border border-orange-200 flex items-center justify-center gap-1 px-2 hover:bg-orange-50 transition-colors">
                         {copied === c.id ? (
-                          <><Check className="w-4 h-4 text-green-500 shrink-0" /><span className="text-[11px] font-medium text-green-600 sm:hidden">{t("நகல்","OK")}</span></>
+                          <>
+                            <Check className="w-4 h-4 text-green-500 shrink-0" />
+                            <span className="text-[11px] font-medium text-green-600">{t("நகல்","OK")}</span>
+                          </>
                         ) : (
                           <Copy className="w-4 h-4 text-orange-500" />
                         )}
                       </button>
-                      <a href={`https://wa.me/?text=${encodeURIComponent(receiptUrl(c.receiptToken))}`}
+                      {/* WhatsApp share — 44 px min touch target */}
+                      <a
+                        href={`https://wa.me/?text=${encodeURIComponent(receiptUrl(c.receiptToken))}`}
                         target="_blank" rel="noopener noreferrer"
                         title={t("WhatsApp-ல் பகிர்","Share on WhatsApp")}
                         className="min-w-[44px] min-h-[44px] w-8 h-8 rounded-lg border border-green-200 flex items-center justify-center hover:bg-green-50 transition-colors">
@@ -241,15 +254,15 @@ export default function ContributionsAdmin() {
                     </>
                   )}
                   <button onClick={() => handleToggle(c)} title={c.isActive ? t("மறை","Hide") : t("காட்டு","Show")}
-                    className="w-8 h-8 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors">
+                    className="min-w-[44px] min-h-[44px] w-8 h-8 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors">
                     {c.isActive ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <XCircle className="w-4 h-4 text-muted-foreground" />}
                   </button>
                   <button onClick={() => openEdit(c)}
-                    className="w-8 h-8 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors">
+                    className="min-w-[44px] min-h-[44px] w-8 h-8 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors">
                     <Pencil className="w-4 h-4 text-muted-foreground" />
                   </button>
                   <button onClick={() => handleDelete(c.id)} disabled={deleting === c.id}
-                    className="w-8 h-8 rounded-lg border border-red-200 flex items-center justify-center hover:bg-red-50 transition-colors">
+                    className="min-w-[44px] min-h-[44px] w-8 h-8 rounded-lg border border-red-200 flex items-center justify-center hover:bg-red-50 transition-colors">
                     <Trash2 className="w-4 h-4 text-red-500" />
                   </button>
                 </div>
