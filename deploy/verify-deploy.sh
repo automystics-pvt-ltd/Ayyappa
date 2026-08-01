@@ -80,7 +80,7 @@ check "News list"                          "${BASE_URL}/api/news"     200
 check "Settings"                           "${BASE_URL}/api/settings" 200
 check "Donation stats"                     "${BASE_URL}/api/donations/stats" 200
 check "Approved donations"                 "${BASE_URL}/api/donations/approved" 200
-check "Auth /me returns 401 (not 500)"     "${BASE_URL}/api/auth/me"  401
+check "Auth /me returns 200 (not 500)"     "${BASE_URL}/api/auth/me"  200 '"admin":null'
 echo ""
 
 # ── Summary ───────────────────────────────────────────────────
