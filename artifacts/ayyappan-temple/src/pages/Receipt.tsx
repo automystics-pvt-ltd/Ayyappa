@@ -96,13 +96,25 @@ export default function Receipt() {
       backgroundColor: "#d97706",
       imageTimeout: 0,
       logging: false,
-      // html2canvas clones the DOM but doesn't re-fetch @import fonts.
-      // Inject a <link> so the cloned document also has the Google Fonts.
-      onclone: (_clonedDoc: Document, el: HTMLElement) => {
-        const link = document.createElement("link");
+      // Inject the self-hosted fonts.css into the cloned document so
+      // Noto Serif Tamil and Cinzel are always available — even when
+      // Google Fonts is blocked by an ad blocker or corporate proxy.
+      onclone: async (_clonedDoc: Document, el: HTMLElement) => {
+        const clonedDoc = el.ownerDocument;
+        const fontsUrl = new URL(
+          `${import.meta.env.BASE_URL}fonts/fonts.css`,
+          window.location.origin
+        ).href;
+        const link = clonedDoc.createElement("link");
         link.rel  = "stylesheet";
-        link.href = "https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+Tamil:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@600;700&display=swap";
-        el.ownerDocument.head.appendChild(link);
+        link.href = fontsUrl;
+        clonedDoc.head.appendChild(link);
+        await new Promise<void>((resolve) => {
+          link.addEventListener("load",  () => resolve(), { once: true });
+          link.addEventListener("error", () => resolve(), { once: true });
+          setTimeout(resolve, 3000);
+        });
+        await clonedDoc.fonts.ready;
         // Give the seal a tiny overflow buffer so the rotation is never clipped
         const seal = el.querySelector<SVGElement>(".seal-svg");
         if (seal) seal.style.overflow = "visible";
@@ -190,8 +202,11 @@ export default function Receipt() {
 
   return (
     <>
+      {/* Self-hosted Noto Serif Tamil, Cinzel, Inter — always reachable even when Google Fonts is blocked */}
+      <link rel="stylesheet" href={`${import.meta.env.BASE_URL}fonts/fonts.css`} />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+Tamil:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@600;700&display=swap');
+        /* Oswald (not self-hosted) — falls back gracefully when unreachable */
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&display=swap');
         *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 
         /* PAGE */

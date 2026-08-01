@@ -144,8 +144,11 @@ export default function ContributionReceipt() {
 
   return (
     <>
+      {/* Self-hosted Noto Serif Tamil, Cinzel, Inter — always reachable even when Google Fonts is blocked */}
+      <link rel="stylesheet" href={`${import.meta.env.BASE_URL}fonts/fonts.css`} />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+Tamil:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@600;700&display=swap');
+        /* Oswald (not self-hosted) — falls back gracefully when unreachable */
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&display=swap');
         *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 
         /* PAGE */
