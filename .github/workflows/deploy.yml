@@ -1,0 +1,37 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [clean-main]
+  workflow_dispatch:   # allow manual trigger from Actions tab
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Check out the repo so we can read deploy/ scripts ──
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. SSH into the server and run deploy.sh there ────────
+      #       deploy.sh does: git pull → build frontend → build API
+      #                       → DB migrations → PM2 restart → health check
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script_stop: true   # abort on first non-zero exit
+          envs: DEPLOY_WEB_ROOT,DEPLOY_API_DIR
+          script: |
+            export SOURCE_DIR=/opt/ayyappan-source
+            export WEB_ROOT=${{ secrets.DEPLOY_WEB_ROOT }}
+            export API_DIR=${{ secrets.DEPLOY_API_DIR }}
+            export PM2_APP=ayyappan-api
+            export API_PORT=3001
+
+            bash /opt/ayyappan-source/deploy/deploy.sh
