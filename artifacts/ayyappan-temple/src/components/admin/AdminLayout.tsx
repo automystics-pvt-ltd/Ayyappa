@@ -11,7 +11,7 @@ import {
 const NAV_ITEMS = [
   { path: "/admin/dashboard",     labelTa: "கண்ணோட்டம்",          labelEn: "Dashboard",    icon: LayoutDashboard, roles: ["super_admin","editor","volunteer"] },
   { path: "/admin/donations",     labelTa: "நன்கொடைகள்",          labelEn: "Donations",    icon: IndianRupee,     roles: ["super_admin","editor","volunteer"] },
-  { path: "/admin/contributions", labelTa: "பொருள் நன்கொடைகள்",   labelEn: "In-kind",      icon: Gift,            roles: ["super_admin","editor"] },
+  { path: "/admin/contributions", labelTa: "பொருள் நன்கொடையாளர்கள்",   labelEn: "In-kind",      icon: Gift,            roles: ["super_admin","editor"] },
   { path: "/admin/content",       labelTa: "உள்ளடக்கம்",          labelEn: "Content",      icon: FileEdit,        roles: ["super_admin","editor"] },
   { path: "/admin/news",          labelTa: "செய்திகள்",            labelEn: "News",         icon: Newspaper,       roles: ["super_admin","editor"] },
   { path: "/admin/events",        labelTa: "நிகழ்வுகள்",           labelEn: "Events",       icon: CalendarDays,    roles: ["super_admin","editor"] },

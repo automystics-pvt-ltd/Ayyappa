@@ -682,7 +682,7 @@ function InKindWall({ contributions }: { contributions: InKindContribution[] }) 
       {top3.length > 0 && (
         <div>
           <h4 className="font-serif font-bold text-foreground text-lg flex items-center gap-2 mb-4">
-            🏆 பொருள் நன்கொடை
+            🏆 பொருள் நன்கொடையாளர்கள்
           </h4>
           <div className={`grid gap-4 ${
             top3.length === 1 ? 'grid-cols-1 max-w-xs mx-auto'
