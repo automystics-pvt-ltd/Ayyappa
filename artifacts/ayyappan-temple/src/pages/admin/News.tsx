@@ -63,15 +63,15 @@ export default function NewsAdmin() {
   return (
     <AdminLayout>
       {/* Header */}
-      <div className="bg-white border-b border-orange-100 px-6 py-4 flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-bold text-orange-900">{t("செய்திகள் & அறிவிப்புகள்","News & Announcements")}</h1>
+      <div className="bg-white border-b border-orange-100 px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-lg font-bold text-orange-900 truncate">{t("செய்திகள் & அறிவிப்புகள்","News & Announcements")}</h1>
           <p className="text-xs text-orange-500">News Management · {posts.length} {t("செய்திகள்","posts")}</p>
         </div>
         <button onClick={openCreate}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white shadow-md shadow-orange-200 transition-all hover:scale-105"
+          className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-sm font-bold text-white shadow-md shadow-orange-200 transition-all hover:scale-105 shrink-0"
           style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}>
-          <Plus className="w-4 h-4" /> {t("புதிய செய்தி","New Post")}
+          <Plus className="w-4 h-4" /><span className="hidden sm:inline">{t("புதிய செய்தி","New Post")}</span><span className="sm:hidden">{t("புதிய","New")}</span>
         </button>
       </div>
 

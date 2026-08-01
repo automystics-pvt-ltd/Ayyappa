@@ -234,23 +234,23 @@ export default function GalleryAdmin() {
     const album = albums.find((a) => a.id === selectedAlbum.id) ?? selectedAlbum;
     return (
       <AdminLayout>
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-4 mb-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+          <div className="flex items-center gap-3 mb-6">
             <button onClick={() => setSelectedAlbum(null)}
-              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
+              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors shrink-0">
               <ChevronLeft className="w-4 h-4" /> {t("திரும்பு","Back")}
             </button>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-800">{album.title}</h1>
-              {album.description && <p className="text-sm text-gray-500 mt-0.5">{album.description}</p>}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-800 truncate">{album.title}</h1>
+              {album.description && <p className="text-sm text-gray-500 mt-0.5 truncate">{album.description}</p>}
             </div>
-            <span className={`text-xs px-2 py-1 rounded-full font-medium ${album.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+            <span className={`shrink-0 text-xs px-2 py-1 rounded-full font-medium ${album.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
               {album.published ? t("வெளியிடப்பட்டது","Published") : "Draft"}
             </span>
           </div>
 
           {/* Upload zone */}
-          <div className="mb-6 border-2 border-dashed border-orange-200 rounded-xl p-8 text-center cursor-pointer hover:border-orange-400 hover:bg-orange-50/30 transition-colors"
+          <div className="mb-6 border-2 border-dashed border-orange-200 rounded-xl p-4 sm:p-8 text-center cursor-pointer hover:border-orange-400 hover:bg-orange-50/30 transition-colors"
             onClick={() => fileInputRef.current?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => { e.preventDefault(); handleFileUpload(e.dataTransfer.files); }}>
@@ -272,9 +272,9 @@ export default function GalleryAdmin() {
 
           {/* Save order bar */}
           {isDirty && (
-            <div className="mb-4 flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
               <p className="text-sm text-orange-700">{t("வரிசை மாற்றப்பட்டது. சேமிக்கவும்.","Order changed. Save to apply.")}</p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 shrink-0">
                 <button onClick={() => { const a = albums.find((a) => a.id === selectedAlbum?.id) ?? selectedAlbum; if (a) setOrderedPhotos([...a.photos].sort((a, b) => a.sortOrder - b.sortOrder)); setIsDirty(false); }}
                   className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">
                   {t("ரத்து","Cancel")}
@@ -368,12 +368,12 @@ export default function GalleryAdmin() {
   // ─── Album list view ──────────────────────────────────────────────────────
   return (
     <AdminLayout>
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">{t("படத் தொகுப்பு மேலாண்மை","Gallery Management")}</h1>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <h1 className="text-lg sm:text-2xl font-bold text-gray-800 min-w-0 truncate">{t("படத் தொகுப்பு மேலாண்மை","Gallery Management")}</h1>
           <button onClick={() => setShowCreateAlbum(true)}
-            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-            <Plus className="w-4 h-4" /> {t("புது அல்பம்","New Album")}
+            className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors shrink-0">
+            <Plus className="w-4 h-4" /><span className="hidden sm:inline">{t("புது அல்பம்","New Album")}</span><span className="sm:hidden">{t("அல்பம்","Album")}</span>
           </button>
         </div>
 
@@ -401,9 +401,9 @@ export default function GalleryAdmin() {
 
         {/* Save album order bar */}
         {isAlbumsDirty && (
-          <div className="mb-4 flex items-center justify-between bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
             <p className="text-sm text-orange-700">{t("அல்பம் வரிசை மாற்றப்பட்டது. சேமிக்கவும்.","Album order changed. Save to apply.")}</p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 shrink-0">
               <button onClick={() => { setOrderedAlbums([...albums].sort((a, b) => a.sortOrder - b.sortOrder)); setIsAlbumsDirty(false); }}
                 className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">{t("ரத்து","Cancel")}</button>
               <button onClick={saveAlbumOrder} disabled={savingAlbumOrder}
@@ -449,13 +449,13 @@ export default function GalleryAdmin() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-4 p-4">
+                    <div className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4">
                       <div className="text-gray-300 hover:text-gray-500 flex-shrink-0 cursor-grab active:cursor-grabbing touch-none"
                         title={t("இழுத்து வரிசை மாற்றுங்கள்","Drag to reorder")}
                         onTouchStart={() => handleAlbumTouchStart(albumIdx)}>
                         <GripVertical className="w-5 h-5" />
                       </div>
-                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-orange-50 flex-shrink-0 cursor-pointer" onClick={() => setSelectedAlbum(album)}>
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-orange-50 flex-shrink-0 cursor-pointer" onClick={() => setSelectedAlbum(album)}>
                         {album.photos.length > 0 ? (
                           <img src={photoSrc(album.photos[0].url)} alt="" className="w-full h-full object-cover" />
                         ) : (
