@@ -125,6 +125,7 @@ ON CONFLICT (key) DO UPDATE
 
 CREATE TABLE IF NOT EXISTS in_kind_contributions (
   id              SERIAL PRIMARY KEY,
+  receipt_token   TEXT UNIQUE,
   donor_name      VARCHAR(200) NOT NULL,
   place           VARCHAR(200),
   description     TEXT NOT NULL,
@@ -134,55 +135,10 @@ CREATE TABLE IF NOT EXISTS in_kind_contributions (
   is_active       BOOLEAN DEFAULT TRUE
 );
 
--- Session store table (used by connect-pg-simple)
--- Create as the app user so it owns the table and no GRANT is needed.
--- If the table already exists and is owned by a different role, the ALTER/GRANT
--- below will be skipped (IF NOT EXISTS + DO block guard).
-CREATE TABLE IF NOT EXISTS "sessions" (
-  "sid"    varchar   NOT NULL COLLATE "default",
-  "sess"   json      NOT NULL,
-  "expire" timestamp(6) NOT NULL
-) WITH (OIDS=FALSE);
-
-DO $$
-BEGIN
-  -- Add primary key only if it doesn't already exist
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conname = 'session_pkey'
-  ) THEN
-    ALTER TABLE "sessions"
-      ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
-  END IF;
-END $$;
-
-CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "sessions" ("expire");
-
--- Grant session table access to the app user (no-op if already granted or if role missing)
-DO $$
-BEGIN
-  IF EXISTS (SELECT FROM pg_roles WHERE rolname = 'ayyappan_user') THEN
-    BEGIN
-      GRANT ALL PRIVILEGES ON TABLE sessions TO ayyappan_user;
-    EXCEPTION WHEN insufficient_privilege THEN
-      -- Table is owned by a superuser; run the GRANT manually as postgres:
-      -- sudo -u postgres psql ayyappan_temple -c "GRANT ALL ON TABLE sessions TO ayyappan_user;"
-      RAISE NOTICE 'Could not GRANT sessions to ayyappan_user — run the GRANT manually as the postgres superuser.';
-    END;
-  END IF;
-END $$;
-
 CREATE TABLE IF NOT EXISTS visits (
   id          SERIAL PRIMARY KEY,
-  ip          VARCHAR(100),
-  user_agent  TEXT,
-  page        TEXT,
-  day_key     VARCHAR(10),
+  day_key     VARCHAR(10) NOT NULL,
   created_at  TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS visits_day_key_idx ON visits(day_key);
 CREATE INDEX IF NOT EXISTS visits_created_at_idx ON visits(created_at DESC);
-CREATE INDEX IF NOT EXISTS visits_ip_idx ON visits(ip);
--- If visits table was created with the old schema (ip/user_agent/page columns),
--- add the day_key column that the current code expects.
-ALTER TABLE visits ADD COLUMN IF NOT EXISTS day_key VARCHAR(10);
