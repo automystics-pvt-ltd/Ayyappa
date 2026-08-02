@@ -575,9 +575,8 @@ export default function Receipt() {
             <div className="hdr">
               <img src={logo} alt="" className="hdr-logo"
                 onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
-              <div className="hdr-en">Sri Arulmigu Iyyappan Thirukovil</div>
-              <div className="hdr-ta">அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்</div>
-              <div className="hdr-addr">R.S Road, Vadamadurai, Tamil Nadu</div>
+              <div className="hdr-ta">{s.hero_subtitle || "அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்"}</div>
+              <div className="hdr-addr">{s.temple_address || "R.S Road, Vadamadurai, Tamil Nadu"}</div>
               <div><span className="hdr-pill">✦ &nbsp;ஸ்வாமியே சரணம் ஐயப்பா&nbsp; ✦</span></div>
             </div>
 
@@ -751,8 +750,8 @@ export default function Receipt() {
             {/* FOOTER */}
             <div className="ftr">
               <div className="ftr-issued">Receipt Issued By &nbsp;·&nbsp; வழங்கியவர்கள்</div>
-              <div className="ftr-org-ta">வடமதுரை ஐயப்பன் திருப்பணி குழு</div>
-              <div className="ftr-org-en">Vadamadurai Ayyappan Thirupani Kulu</div>
+              <div className="ftr-org-ta">{s.footer_temple_name || "வடமதுரை ஐயப்பன் திருப்பணி குழு"}</div>
+              <div className="ftr-org-en">{s.footer_temple_name || "Vadamadurai Ayyappan Thirupani Kulu"}</div>
               <div className="ftr-rcpt">Official receipt &nbsp;·&nbsp; {receiptNo} &nbsp;·&nbsp; {fmtEn(dateISO)}</div>
             </div>
 
