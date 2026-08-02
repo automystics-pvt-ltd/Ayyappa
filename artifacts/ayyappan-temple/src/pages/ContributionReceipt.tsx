@@ -3,6 +3,7 @@ import { useParams } from "wouter";
 import html2canvas from "html2canvas";
 import { api } from "@/lib/api";
 import { ikcCaptureOnClone, IKC_CAPTURE_SCALE, IKC_CAPTURE_BACKGROUND } from "@/lib/ikc-capture";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 type ContributionData = {
   id: number;
@@ -42,6 +43,7 @@ function NotFound({ msg }: { msg: string }) {
 
 export default function ContributionReceipt() {
   const { token } = useParams<{ token: string }>();
+  const s = useSiteSettings();
   const [data, setData]       = useState<ContributionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState<string | null>(null);
@@ -62,6 +64,14 @@ export default function ContributionReceipt() {
   const receiptNo = `IKC-${String(data.id).padStart(6, "0")}`;
   const dateISO   = data.contributedAt ?? data.createdAt;
   const logo      = `${import.meta.env.BASE_URL}iyyappan-logo.png`;
+
+  // Split the issuer name across up to 3 lines for the SVG seal
+  const sealFullText = s.footer_temple_name || "வடமதுரை ஐயப்பன் திருப்பணி குழு";
+  const sealWords = sealFullText.trim().split(/\s+/);
+  const third = Math.ceil(sealWords.length / 3);
+  const sealL1 = sealWords.slice(0, third).join(" ");
+  const sealL2 = sealWords.slice(third, third * 2).join(" ");
+  const sealL3 = sealWords.slice(third * 2).join(" ");
 
   const captureCanvas = async () => {
     await document.fonts.ready;
@@ -440,9 +450,8 @@ export default function ContributionReceipt() {
             <div className="ikc-hdr">
               <img src={logo} alt="" className="ikc-hdr-logo"
                 onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
-              <div className="ikc-hdr-en">Sri Arulmigu Iyyappan Thirukovil</div>
-              <div className="ikc-hdr-ta">அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்</div>
-              <div className="ikc-hdr-addr">R.S Road, Vadamadurai, Tamil Nadu</div>
+              <div className="ikc-hdr-ta">{s.hero_subtitle || "அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்"}</div>
+              <div className="ikc-hdr-addr">{s.temple_address || "R.S Road, Vadamadurai, Tamil Nadu"}</div>
               <div><span className="ikc-hdr-pill">✦ &nbsp;ஸ்வாமியே சரணம் ஐயப்பா&nbsp; ✦</span></div>
             </div>
 
@@ -517,21 +526,25 @@ export default function ContributionReceipt() {
                     ஸ்வாமியே சரணம் ஐயப்பா
                   </textPath>
                 </text>
-                <text x="75" y="78" textAnchor="middle"
+                <text x="75" y="81" textAnchor="middle"
                       fontFamily="'Noto Serif Tamil',serif"
-                      fontSize="17" fontWeight="900" fill="#c2410c">
-                  வடமதுரை
+                      fontSize="11" fontWeight="900" fill="#c2410c">
+                  {sealL1}
                 </text>
-                <text x="75" y="93" textAnchor="middle"
-                      fontFamily="'Noto Serif Tamil',serif"
-                      fontSize="11" fontWeight="700" fill="#9a3412">
-                  ஐயப்பன் கோவில்
-                </text>
-                <text x="75" y="107" textAnchor="middle"
-                      fontFamily="'Noto Serif Tamil',serif"
-                      fontSize="9.5" fontWeight="700" fill="#9a3412">
-                  திருப்பணி குழு
-                </text>
+                {sealL2 && (
+                  <text x="75" y="95" textAnchor="middle"
+                        fontFamily="'Noto Serif Tamil',serif"
+                        fontSize="10" fontWeight="700" fill="#9a3412">
+                    {sealL2}
+                  </text>
+                )}
+                {sealL3 && (
+                  <text x="75" y="108" textAnchor="middle"
+                        fontFamily="'Noto Serif Tamil',serif"
+                        fontSize="9.5" fontWeight="700" fill="#9a3412">
+                    {sealL3}
+                  </text>
+                )}
                 <text x="75" y="124" textAnchor="middle"
                       fontFamily="sans-serif" fontSize="8"
                       fill="#ea580c" letterSpacing="5">
@@ -543,8 +556,7 @@ export default function ContributionReceipt() {
             {/* FOOTER */}
             <div className="ikc-ftr">
               <div className="ikc-ftr-issued">Receipt Issued By &nbsp;·&nbsp; வழங்கியவர்கள்</div>
-              <div className="ikc-ftr-org-ta">வடமதுரை ஐயப்பன் திருப்பணி குழு</div>
-              <div className="ikc-ftr-org-en">Vadamadurai Ayyappan Thirupani Kulu</div>
+              <div className="ikc-ftr-org-ta">{s.footer_temple_name || "வடமதுரை ஐயப்பன் திருப்பணி குழு"}</div>
               <div className="ikc-ftr-rcpt">Official receipt &nbsp;·&nbsp; {receiptNo} &nbsp;·&nbsp; {fmtEn(dateISO)}</div>
             </div>
 
