@@ -49,50 +49,24 @@ type ViewMode = 'card' | 'list';
 type SortKey  = 'date_asc' | 'date_desc' | 'amount_desc' | 'amount_asc';
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SERIAL BADGE  — date-based rank (earliest = #1)
+   SERIAL BADGE  — uniform for every donor, date-based (earliest = #1)
    ═══════════════════════════════════════════════════════════════════════════ */
 function SerialBadge({ rank, size = 'md' }: { rank: number; size?: 'sm' | 'md' }) {
-  const pad    = String(rank).padStart(2, '0');
-  const isBig  = size === 'md';
+  const pad   = String(rank).padStart(2, '0');
+  const isBig = size === 'md';
 
-  /* Top-3 get a distinct coloured badge */
-  if (rank <= 3) {
-    const meta = [
-      { bg: 'bg-amber-500',  ring: 'ring-amber-300',  text: 'text-white' },
-      { bg: 'bg-slate-400',  ring: 'ring-slate-300',  text: 'text-white' },
-      { bg: 'bg-orange-500', ring: 'ring-orange-300', text: 'text-white' },
-    ][rank - 1];
-    return (
-      <div className={`flex items-center justify-center rounded-xl
-        ${meta.bg} ring-2 ${meta.ring} ring-offset-1 shadow
-        ${isBig ? 'w-12 h-12' : 'w-10 h-10'} flex-shrink-0`}>
-        <span className={`font-black leading-none ${isBig ? 'text-lg' : 'text-base'} ${meta.text}`}>
-          {pad}
-        </span>
-      </div>
-    );
-  }
-
-  /* #4–10 : warm accent */
-  if (rank <= 10) {
-    return (
-      <div className={`flex items-center justify-center rounded-xl
-        bg-primary/10 border border-primary/25
-        ${isBig ? 'w-12 h-12' : 'w-10 h-10'} flex-shrink-0`}>
-        <span className={`font-black text-primary leading-none ${isBig ? 'text-base' : 'text-sm'}`}>
-          {pad}
-        </span>
-      </div>
-    );
-  }
-
-  /* #11+ : neutral */
   return (
-    <div className={`flex items-center justify-center rounded-xl
-      bg-muted border border-border
-      ${isBig ? 'w-12 h-12' : 'w-10 h-10'} flex-shrink-0`}>
-      <span className={`font-bold text-muted-foreground leading-none ${isBig ? 'text-base' : 'text-sm'}`}>
+    <div className={`flex flex-col items-center justify-center rounded-xl
+      bg-primary/10 border border-primary/30
+      ${isBig ? 'w-14 min-h-[52px] px-1' : 'w-11 min-h-[42px] px-0.5'}
+      flex-shrink-0`}>
+      <span className={`font-black text-primary leading-none
+        ${isBig ? 'text-lg' : 'text-base'}`}>
         {pad}
+      </span>
+      <span className={`text-primary/70 font-medium leading-tight text-center
+        ${isBig ? 'text-[8px] mt-0.5' : 'text-[7px]'}`}>
+        நன்கொடை
       </span>
     </div>
   );
