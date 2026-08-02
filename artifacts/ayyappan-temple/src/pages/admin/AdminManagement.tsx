@@ -208,11 +208,11 @@ function AdminRow({ user, currentAdminId, onUpdated, onDeleted }: {
           {editing ? (
             <select value={newRole} onChange={(e) => setNewRole(e.target.value)}
               className="text-xs border border-orange-300 rounded-lg px-2 py-1.5 bg-white text-orange-900 focus:outline-none focus:ring-2 focus:ring-orange-300">
-              {ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+              {ROLES.map((r) => <option key={r.value} value={r.value}>{t(r.labelTa, r.label)}</option>)}
             </select>
           ) : (
             <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${ri.badge}`}>
-              <ri.Icon className="w-3 h-3" />{ri.label}
+              <ri.Icon className="w-3 h-3" />{t(ri.labelTa, ri.label)}
             </span>
           )}
         </td>
@@ -318,7 +318,7 @@ export default function AdminManagement() {
     <AdminLayout>
       <div className="bg-white border-b border-orange-100 px-6 py-4">
         <h1 className="text-lg font-bold text-orange-900">{t("நிர்வாகிகள் மேலாண்மை","Admin Management")}</h1>
-        <p className="text-xs text-orange-500">Admin Management · {t("பட்டியல் மற்றும் புதிய நிர்வாகி சேர்க்க","List & add admins")}</p>
+        <p className="text-xs text-orange-500">{t("நிர்வாகிகள் நிர்வாகம்","Admin Management")} · {t("பட்டியல் மற்றும் புதிய நிர்வாகி சேர்க்க","List & add admins")}</p>
       </div>
 
       <div className="p-4 sm:p-6 space-y-6 max-w-4xl mx-auto">
@@ -332,7 +332,7 @@ export default function AdminManagement() {
               </div>
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="text-xs font-bold text-orange-900">{r.label}</p>
+                  <p className="text-xs font-bold text-orange-900">{t(r.labelTa, r.label)}</p>
                   <p className="text-[9px] text-orange-600/70 leading-snug mt-0.5 hidden sm:block">{t(r.desc, r.descEn)}</p>
                 </div>
                 <span className="text-2xl font-black text-orange-900/20 leading-none">{r.count}</span>
@@ -366,7 +366,7 @@ export default function AdminManagement() {
                     <th className="px-4 py-2.5 font-semibold">{t("பயனர்","User")}</th>
                     <th className="px-4 py-2.5 font-semibold">{t("பொறுப்பு","Role")}</th>
                     <th className="px-4 py-2.5 font-semibold hidden sm:table-cell">{t("கடைசி உள்நுழைவு","Last Login")}</th>
-                    <th className="px-4 py-2.5 font-semibold text-right">Actions</th>
+                    <th className="px-4 py-2.5 font-semibold text-right">{t("செயல்கள்","Actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -386,7 +386,7 @@ export default function AdminManagement() {
             <UserPlus className="w-5 h-5 text-white" />
             <div>
               <p className="text-sm font-bold text-white">{t("புதிய நிர்வாகி","New Admin")}</p>
-              <p className="text-[10px] text-white/60">New Admin Account</p>
+              <p className="text-[10px] text-white/60">{t("புதிய நிர்வாகி கணக்கு","New Admin Account")}</p>
             </div>
           </div>
 
@@ -428,8 +428,8 @@ export default function AdminManagement() {
                     <input type="radio" name="role" value={r.value} checked={form.role === r.value}
                       onChange={() => setForm({ ...form, role: r.value })} className="accent-orange-500 flex-shrink-0" />
                     <div>
-                      <p className="text-xs font-bold text-orange-900">{r.label}</p>
-                      <p className="text-[9px] text-orange-500 leading-snug">{r.labelTa}</p>
+                      <p className="text-xs font-bold text-orange-900">{t(r.labelTa, r.label)}</p>
+                      <p className="text-[9px] text-orange-500 leading-snug">{t(r.label, r.labelTa)}</p>
                     </div>
                   </label>
                 ))}

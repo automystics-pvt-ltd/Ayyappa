@@ -78,7 +78,7 @@ export default function EventsAdmin() {
       <div className="bg-white border-b border-orange-100 px-6 py-4 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold text-orange-900">{t("நிகழ்வுகள்","Events")}</h1>
-          <p className="text-xs text-orange-500">Events Management · {events.length} {t("நிகழ்வுகள்","events")}</p>
+          <p className="text-xs text-orange-500">{t("நிகழ்வு நிர்வாகம்","Events Management")} · {events.length} {t("நிகழ்வுகள்","events")}</p>
         </div>
         <button onClick={openCreate}
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white shadow-md shadow-orange-200 transition-all hover:scale-105"
@@ -120,8 +120,8 @@ export default function EventsAdmin() {
                       </span>
                     )}
                     {e.published
-                      ? <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200"><Eye className="w-2.5 h-2.5"/>Live</span>
-                      : <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200"><EyeOff className="w-2.5 h-2.5"/>Draft</span>
+                      ? <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200"><Eye className="w-2.5 h-2.5"/>{t("வெளியீட்டில்","Live")}</span>
+                      : <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200"><EyeOff className="w-2.5 h-2.5"/>{t("வரைவு","Draft")}</span>
                     }
                   </div>
                   {e.description && <p className="text-sm text-orange-600/70 line-clamp-1 mb-2">{e.description}</p>}
@@ -187,7 +187,7 @@ export default function EventsAdmin() {
                 <input value={form.location} onChange={e => setForm({ ...form, location: e.target.value })}
                   placeholder={t("நிகழ்வு இடம்","Event location")} className={inputCls} />
               </Field>
-              <Field label={`Poster URL (${t("விருப்பம்","optional")})`}>
+              <Field label={`${t("போஸ்டர் URL","Poster URL")} (${t("விருப்பம்","optional")})`}>
                 <input value={form.posterUrl} onChange={e => setForm({ ...form, posterUrl: e.target.value })}
                   placeholder="https://..." className={inputCls} />
               </Field>

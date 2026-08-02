@@ -245,7 +245,7 @@ export default function GalleryAdmin() {
               {album.description && <p className="text-sm text-gray-500 mt-0.5 truncate">{album.description}</p>}
             </div>
             <span className={`shrink-0 text-xs px-2 py-1 rounded-full font-medium ${album.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-              {album.published ? t("வெளியிடப்பட்டது","Published") : "Draft"}
+              {album.published ? t("வெளியிடப்பட்டது","Published") : t("வரைவு","Draft")}
             </span>
           </div>
 
@@ -265,7 +265,7 @@ export default function GalleryAdmin() {
                   {t("படங்களை இங்கே இழுத்து விடுங்கள் அல்லது","Drag images here or")}{" "}
                   <span className="text-orange-500 font-medium">{t("கோப்புகளை தேர்வு செய்யுங்கள்","choose files")}</span>
                 </p>
-                <p className="text-xs text-gray-400 mt-1">JPEG, PNG, WebP, GIF • max 20 MB each</p>
+                <p className="text-xs text-gray-400 mt-1">{t("JPEG, PNG, WebP, GIF • அதிகபட்சம் 20 MB","JPEG, PNG, WebP, GIF • max 20 MB each")}</p>
               </>
             )}
           </div>
@@ -386,7 +386,7 @@ export default function GalleryAdmin() {
                 placeholder={`${t("அல்பம் பெயர்","Album name")} *`}
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300" autoFocus />
               <input type="text" value={newAlbumDesc} onChange={(e) => setNewAlbumDesc(e.target.value)}
-                placeholder={`${t("விளக்கம்","Description")} (optional)`}
+                placeholder={`${t("விளக்கம்","Description")} (${t("விருப்பம்","optional")})`}
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300" />
               <div className="flex gap-2 justify-end">
                 <button onClick={() => setShowCreateAlbum(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">{t("ரத்து","Cancel")}</button>
@@ -466,7 +466,7 @@ export default function GalleryAdmin() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-semibold text-gray-800 truncate">{album.title}</h3>
                           <span className={`text-xs px-2 py-0.5 rounded-full ${album.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                            {album.published ? t("வெளியிடப்பட்டது","Published") : "Draft"}
+                            {album.published ? t("வெளியிடப்பட்டது","Published") : t("வரைவு","Draft")}
                           </span>
                         </div>
                         {album.description && <p className="text-xs text-gray-400 truncate">{album.description}</p>}

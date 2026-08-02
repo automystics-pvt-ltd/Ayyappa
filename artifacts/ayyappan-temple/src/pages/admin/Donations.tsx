@@ -22,10 +22,11 @@ const TAB_META = {
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
+  const { t } = useLanguage();
   const map: Record<string, { cls: string; icon: React.ReactNode; text: string }> = {
-    approved: { cls: "bg-emerald-100 text-emerald-700 border border-emerald-200", icon: <CheckCircle2 className="w-3 h-3"/>, text: "அங்கீகரிக்கப்பட்டது" },
-    rejected:  { cls: "bg-rose-100 text-rose-700 border border-rose-200",         icon: <XCircle className="w-3 h-3"/>,      text: "நிராகரிக்கப்பட்டது" },
-    pending:   { cls: "bg-amber-100 text-amber-700 border border-amber-200",       icon: <AlertCircle className="w-3 h-3"/>,  text: "நிலுவையில்" },
+    approved: { cls: "bg-emerald-100 text-emerald-700 border border-emerald-200", icon: <CheckCircle2 className="w-3 h-3"/>, text: t("அங்கீகரிக்கப்பட்டது","Approved") },
+    rejected:  { cls: "bg-rose-100 text-rose-700 border border-rose-200",         icon: <XCircle className="w-3 h-3"/>,      text: t("நிராகரிக்கப்பட்டது","Rejected") },
+    pending:   { cls: "bg-amber-100 text-amber-700 border border-amber-200",       icon: <AlertCircle className="w-3 h-3"/>,  text: t("நிலுவையில்","Pending") },
   };
   const s = map[status] ?? map.pending;
   return (
@@ -43,6 +44,7 @@ function DonationsReport({
   donations: Donation[];
   onClose: () => void;
 }) {
+  const { t } = useLanguage();
   const reportRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
 
@@ -87,14 +89,14 @@ function DonationsReport({
               style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
             >
               <Download className="w-4 h-4" />
-              {downloading ? "Downloading..." : "Download as Image"}
+              {downloading ? t("இறக்குகிறது...","Downloading...") : t("படமாக இறக்கு","Download as Image")}
             </button>
           </div>
           <button
             onClick={onClose}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white text-sm font-medium transition-colors"
           >
-            <X className="w-4 h-4" /> Close
+            <X className="w-4 h-4" /> {t("மூடு","Close")}
           </button>
         </div>
 
@@ -336,7 +338,7 @@ export default function Donations() {
       const blobUrl = URL.createObjectURL(blob);
       setPreviewUrl(blobUrl);
     } catch {
-      alert("Screenshot ஏற்றமுடியவில்லை");
+      alert(t("Screenshot ஏற்றமுடியவில்லை","Could not load screenshot"));
     } finally {
       setPreviewLoading(false);
     }
@@ -516,7 +518,7 @@ export default function Donations() {
                         <button
                           onClick={() => window.open(`${import.meta.env.BASE_URL}receipt/${d.receiptToken}`, "_blank")}
                           className="inline-flex items-center gap-1.5 text-xs text-orange-700 hover:text-orange-900 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200 transition-colors">
-                          <Printer className="w-3.5 h-3.5" />Print
+                          <Printer className="w-3.5 h-3.5" />{t("அச்சிடு","Print")}
                         </button>
                         <button
                           onClick={() => shareWhatsApp(d.donorName, d.amount, d.receiptToken!, d.anonymous, d.mobile)}
@@ -573,7 +575,7 @@ export default function Donations() {
                           </div>
                         )}
                         {d.anonymous && (
-                          <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">Anonymous</span>
+                          <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">{t("அடையாளம் தெரியாதவர்","Anonymous")}</span>
                         )}
                       </div>
                     </div>
@@ -604,7 +606,7 @@ export default function Donations() {
                         <button onClick={() => openScreenshot(d.screenshotUrl!)}
                           disabled={previewLoading}
                           className="flex items-center gap-1 text-xs text-orange-600 bg-orange-50 hover:bg-orange-100 px-2.5 py-1 rounded-lg border border-orange-200 transition-colors mt-1 disabled:opacity-50">
-                          <Image className="w-3 h-3" />{previewLoading ? t("ஏற்றுகிறது...", "Loading...") : "Screenshot"}
+                          <Image className="w-3 h-3" />{previewLoading ? t("ஏற்றுகிறது...", "Loading...") : t("ரசீது புகைப்படம்","Screenshot")}
                         </button>
                       )}
                     </div>
@@ -843,7 +845,7 @@ export default function Donations() {
               <div className="relative z-10">
                 <div className="text-4xl mb-2">✅</div>
                 <h3 className="text-lg font-bold">{t("நன்கொடை அங்கீகரிக்கப்பட்டது!", "Donation Approved!")}</h3>
-                <p className="text-orange-100 text-xs mt-1">Donation Approved Successfully</p>
+                <p className="text-orange-100 text-xs mt-1">{t("நன்கொடை வெற்றிகரமாக அங்கீகரிக்கப்பட்டது","Donation Approved Successfully")}</p>
               </div>
             </div>
             <div className="px-6 py-5 text-center space-y-3">
@@ -908,7 +910,7 @@ export default function Donations() {
               </div>
               <div>
                 <h3 className="font-bold text-orange-900">{t("நிராகரிக்க காரணம்", "Rejection Reason")}</h3>
-                <p className="text-xs text-orange-400">Rejection reason (விருப்பமான)</p>
+                <p className="text-xs text-orange-400">{t("நிராகரிக்க காரணம் (விருப்பமான)","Rejection reason (optional)")}</p>
               </div>
             </div>
             <textarea

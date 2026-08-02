@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
-import { Radio } from 'lucide-react';
+import { Radio, Heart } from 'lucide-react';
 import { api } from '@/lib/api';
 
+/* ── Types ──────────────────────────────────────────────────────────────── */
 type NewsPost = {
   id: number;
   title: string;
@@ -9,101 +10,148 @@ type NewsPost = {
   createdAt: string;
 };
 
-const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+type RecentDonation = {
+  id: number;
+  donorName: string;
+  anonymous: boolean;
+  amount: string;
+  reviewedAt: string;
+};
 
+type TickerItem = {
+  key: string;
+  kind: 'news' | 'donation';
+  text: string;
+  target: string; // scroll target selector
+};
+
+/* ── Helpers ─────────────────────────────────────────────────────────────── */
+const fmt = (n: number) =>
+  '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+
+const REFRESH_MS = 5 * 60 * 1000; // 5 minutes
+
+function donationToTicker(d: RecentDonation): TickerItem {
+  const name   = d.anonymous ? 'ஒரு பக்தர்' : d.donorName;
+  const amount = fmt(Number(d.amount));
+  return {
+    key:    `d-${d.id}`,
+    kind:   'donation',
+    text:   `${name} அவர்கள் ${amount} நன்கொடை வழங்கினார்கள் 🙏`,
+    target: '#donors',
+  };
+}
+
+function newsToTicker(p: NewsPost): TickerItem {
+  return {
+    key:    `n-${p.id}`,
+    kind:   'news',
+    text:   p.title,
+    target: '#news',
+  };
+}
+
+/* ── Component ───────────────────────────────────────────────────────────── */
 export function NewsTicker() {
-  const [posts, setPosts] = useState<NewsPost[]>([]);
+  const [items,     setItems]     = useState<TickerItem[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const activeIdxRef = useRef(0);
   activeIdxRef.current = activeIdx;
 
+  /* Fetch + merge */
   useEffect(() => {
     let cancelled = false;
 
-    const fetchNews = () => {
-      api
-        .getNews()
-        .then((data) => {
-          if (cancelled) return;
-          const next = (data as NewsPost[]).slice(0, 5);
-          setPosts((prev) => {
-            // Only update if the list actually changed (by id sequence)
-            const prevIds = prev.map((p) => p.id).join(',');
-            const nextIds = next.map((p) => p.id).join(',');
-            if (prevIds === nextIds) return prev;
-            // Keep activeIdx in range after update
-            setActiveIdx((idx) => Math.min(idx, Math.max(next.length - 1, 0)));
-            return next;
-          });
-        })
-        .catch(() => {});
+    const fetchAll = async () => {
+      try {
+        const [newsRaw, donationsRaw] = await Promise.all([
+          api.getNews().catch(() => []),
+          api.getRecentDonationTicker().catch(() => []),
+        ]);
+
+        if (cancelled) return;
+
+        const donations = (donationsRaw as RecentDonation[]).map(donationToTicker);
+        const news      = (newsRaw as NewsPost[]).slice(0, 5).map(newsToTicker);
+
+        // Donations first (most recent activity), then news
+        const merged = [...donations, ...news].slice(0, 8);
+
+        setItems(prev => {
+          const prevKeys = prev.map(i => i.key).join(',');
+          const nextKeys = merged.map(i => i.key).join(',');
+          if (prevKeys === nextKeys) return prev;
+          setActiveIdx(idx => Math.min(idx, Math.max(merged.length - 1, 0)));
+          return merged;
+        });
+      } catch {
+        // silently ignore
+      }
     };
 
-    fetchNews();
-    const refreshTimer = setInterval(fetchNews, REFRESH_INTERVAL_MS);
-
-    return () => {
-      cancelled = true;
-      clearInterval(refreshTimer);
-    };
+    fetchAll();
+    const id = setInterval(fetchAll, REFRESH_MS);
+    return () => { cancelled = true; clearInterval(id); };
   }, []);
 
-  // Cycle through titles every 4 seconds
+  /* Cycle every 4 s */
   useEffect(() => {
-    if (posts.length <= 1) return;
-    intervalRef.current = setInterval(() => {
-      setActiveIdx((prev) => (prev + 1) % posts.length);
+    if (items.length <= 1) return;
+    timerRef.current = setInterval(() => {
+      setActiveIdx(prev => (prev + 1) % items.length);
     }, 4000);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [posts.length]);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [items.length]);
 
-  if (posts.length === 0) return null;
+  if (items.length === 0) return null;
 
-  const scrollToNews = () => {
-    document.querySelector('#news')?.scrollIntoView({ behavior: 'smooth' });
+  const active = items[activeIdx];
+
+  const handleClick = () => {
+    document.querySelector(active.target)?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <div className="w-full max-w-3xl mx-auto mt-6">
       <button
-        onClick={scrollToNews}
+        onClick={handleClick}
         className="w-full flex items-center gap-3 bg-black/50 backdrop-blur-sm border border-secondary/40 rounded-xl px-4 py-2.5 hover:bg-black/60 transition-colors group"
-        aria-label="செய்திகள் பகுதிக்கு செல்க"
+        aria-label="தகவலுக்கு செல்க"
       >
-        {/* Label */}
-        <span className="flex items-center gap-1.5 shrink-0 text-secondary font-bold text-xs uppercase tracking-widest border-r border-secondary/30 pr-3">
-          <Radio className="w-3.5 h-3.5 animate-pulse" />
-          செய்தி
+        {/* Kind badge — switches between news and donation */}
+        <span className={`flex items-center gap-1.5 shrink-0 font-bold text-xs uppercase tracking-widest border-r border-secondary/30 pr-3 transition-colors
+          ${active.kind === 'donation' ? 'text-amber-400' : 'text-secondary'}`}>
+          {active.kind === 'donation'
+            ? <Heart className="w-3.5 h-3.5 fill-amber-400 stroke-none" />
+            : <Radio  className="w-3.5 h-3.5 animate-pulse" />}
+          {active.kind === 'donation' ? 'நன்கொடை' : 'செய்தி'}
         </span>
 
-        {/* Scrolling title */}
+        {/* Scrolling text */}
         <div className="flex-1 overflow-hidden text-left relative h-5">
-          {posts.map((post, i) => (
+          {items.map((item, i) => (
             <span
-              key={post.id}
-              className={`absolute inset-0 text-sm text-white/90 font-medium truncate transition-all duration-500 ${
-                i === activeIdx
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-4'
-              }`}
+              key={item.key}
+              className={`absolute inset-0 text-sm font-medium truncate transition-all duration-500
+                ${item.kind === 'donation' ? 'text-amber-100' : 'text-white/90'}
+                ${i === activeIdx ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
             >
-              {post.title}
+              {item.text}
             </span>
           ))}
         </div>
 
         {/* Dot indicators */}
-        {posts.length > 1 && (
+        {items.length > 1 && (
           <div className="flex gap-1 shrink-0">
-            {posts.map((_, i) => (
+            {items.map((item, i) => (
               <span
-                key={i}
-                className={`block w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
-                  i === activeIdx ? 'bg-secondary' : 'bg-white/30'
-                }`}
+                key={item.key}
+                className={`block rounded-full transition-all duration-300
+                  ${i === activeIdx
+                    ? `w-3 h-1.5 ${item.kind === 'donation' ? 'bg-amber-400' : 'bg-secondary'}`
+                    : 'w-1.5 h-1.5 bg-white/30'}`}
               />
             ))}
           </div>

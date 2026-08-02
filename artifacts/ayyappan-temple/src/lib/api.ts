@@ -88,6 +88,7 @@ export const api = {
   // Public
   getDonationStats: () => apiFetch("/donations/stats"),
   getApprovedDonors: () => apiFetch("/donations/approved"),
+  getRecentDonationTicker: () => apiFetch("/donations/recent-ticker"),
   getNews: () => apiFetch("/news"),
   getEvents: () => apiFetch("/events"),
   getSettings: () => apiFetch<Record<string, string>>("/settings"),

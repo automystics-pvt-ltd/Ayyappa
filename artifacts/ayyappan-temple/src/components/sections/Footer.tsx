@@ -58,11 +58,13 @@ export function Footer() {
     };
   }, []);
 
-  const phone     = s.temple_phone;
-  const email     = s.temple_email;
-  const address   = s.temple_address   || 'வடமதுரை, திண்டுக்கல் மாவட்டம்';
-  const mapsEmbed = s.temple_maps_embed || DEFAULT_MAPS_EMBED;
-  const mapsLink  = s.temple_maps_link  || DEFAULT_MAPS_LINK;
+  const phone       = s.temple_phone;
+  const email       = s.temple_email;
+  const address     = s.temple_address     || 'வடமதுரை, திண்டுக்கல் மாவட்டம்';
+  const mapsEmbed   = s.temple_maps_embed  || DEFAULT_MAPS_EMBED;
+  const mapsLink    = s.temple_maps_link   || DEFAULT_MAPS_LINK;
+  const templeName  = s.footer_temple_name || 'அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்';
+  const footerTagline = s.footer_tagline   || 'திருப்பணி மற்றும் மகா கும்பாபிஷேக நிதி திரட்டும் இணையதளம்';
 
   return (
     <footer id="contact" className="bg-foreground text-white pt-20 pb-8 border-t-[8px] border-secondary">
@@ -70,10 +72,10 @@ export function Footer() {
         <div className="grid md:grid-cols-2 gap-12 mb-12">
           <div>
             <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-secondary mb-4 sm:mb-6 leading-snug">
-              அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்
+              {templeName}
             </h3>
             <p className="text-white/70 text-lg max-w-md">
-              திருப்பணி மற்றும் மகா கும்பாபிஷேக நிதி திரட்டும் இணையதளம்
+              {footerTagline}
             </p>
           </div>
 

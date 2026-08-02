@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "wouter";
 import html2canvas from "html2canvas";
 import { api } from "@/lib/api";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 type ReceiptDonation = {
   id: number; donorName: string; mobile: string; place?: string;
@@ -66,6 +67,7 @@ export default function Receipt() {
   const docRef                  = useRef<HTMLDivElement>(null);
   const [imgBusy, setImgBusy]   = useState(false);
   const [shareMsg, setShareMsg] = useState('');
+  const s = useSiteSettings();
 
   useEffect(() => {
     api.getDonationReceipt(token)
@@ -701,34 +703,48 @@ export default function Receipt() {
             <div className="bank">
               <div className="bank-hdr">🏦 &nbsp;Pay by Bank Transfer &nbsp;·&nbsp; வங்கி கணக்கு விவரம்</div>
               <div className="bank-grid">
-                <div className="bank-cell">
-                  <span className="bank-cell-lbl">Bank</span>
-                  <span className="bank-cell-val">Indian Overseas Bank (IOB)</span>
-                </div>
-                <div className="bank-cell">
-                  <span className="bank-cell-lbl">Branch</span>
-                  <span className="bank-cell-val">Vadamadurai &nbsp;<span style={{color:'#6b7280',fontSize:'0.88em'}}>(2461)</span></span>
-                </div>
-                <div className="bank-cell">
-                  <span className="bank-cell-lbl">Account Holder</span>
-                  <span className="bank-cell-val">Mr. N. Anand</span>
-                </div>
-                <div className="bank-cell">
-                  <span className="bank-cell-lbl">Account Number</span>
-                  <span className="bank-cell-val mono">246101000019314</span>
-                </div>
-                <div className="bank-cell">
-                  <span className="bank-cell-lbl">IFSC Code</span>
-                  <span className="bank-cell-val mono">IOBA0002461</span>
-                </div>
-                <div className="bank-cell">
-                  <span className="bank-cell-lbl">Account Type</span>
-                  <span className="bank-cell-val">Savings Bank (SB)</span>
-                </div>
-                <div className="bank-cell" style={{gridColumn:"1 / -1", marginTop:"4px"}}>
-                  <span className="bank-cell-lbl">📞 &nbsp;உதவி எண் · Help</span>
-                  <span className="bank-cell-val mono">93451 27734</span>
-                </div>
+                {s.bank_name && (
+                  <div className="bank-cell">
+                    <span className="bank-cell-lbl">Bank</span>
+                    <span className="bank-cell-val">{s.bank_name}</span>
+                  </div>
+                )}
+                {s.bank_branch && (
+                  <div className="bank-cell">
+                    <span className="bank-cell-lbl">Branch</span>
+                    <span className="bank-cell-val">{s.bank_branch}</span>
+                  </div>
+                )}
+                {s.bank_account_name && (
+                  <div className="bank-cell">
+                    <span className="bank-cell-lbl">Account Holder</span>
+                    <span className="bank-cell-val">{s.bank_account_name}</span>
+                  </div>
+                )}
+                {s.bank_account_number && (
+                  <div className="bank-cell">
+                    <span className="bank-cell-lbl">Account Number</span>
+                    <span className="bank-cell-val mono">{s.bank_account_number}</span>
+                  </div>
+                )}
+                {s.bank_ifsc && (
+                  <div className="bank-cell">
+                    <span className="bank-cell-lbl">IFSC Code</span>
+                    <span className="bank-cell-val mono">{s.bank_ifsc}</span>
+                  </div>
+                )}
+                {s.bank_account_type && (
+                  <div className="bank-cell">
+                    <span className="bank-cell-lbl">Account Type</span>
+                    <span className="bank-cell-val">{s.bank_account_type}</span>
+                  </div>
+                )}
+                {(s.bank_help_phone || s.temple_phone) && (
+                  <div className="bank-cell" style={{gridColumn:"1 / -1", marginTop:"4px"}}>
+                    <span className="bank-cell-lbl">📞 &nbsp;உதவி எண் · Help</span>
+                    <span className="bank-cell-val mono">{s.bank_help_phone || s.temple_phone}</span>
+                  </div>
+                )}
               </div>
             </div>
 

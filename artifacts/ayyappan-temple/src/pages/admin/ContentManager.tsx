@@ -62,12 +62,13 @@ function ProgressListEditor({ label, hint, items, onChange, addLabel }: {
   items: { title: string; value: number }[];
   onChange: (v: { title: string; value: number }[]) => void;
 }) {
+  const { t } = useLanguage();
   return (
     <Field label={label} hint={hint}>
       <div className="space-y-2">
         {items.map((item, i) => (
           <div key={i} className="flex gap-2 items-center">
-            <input className={`${inputCls} flex-1`} placeholder="பணியின் பெயர்"
+            <input className={`${inputCls} flex-1`} placeholder={t('பணியின் பெயர்','Work title')}
               value={item.title}
               onChange={e => { const n = [...items]; n[i] = { ...n[i], title: e.target.value }; onChange(n); }} />
             <input type="number" min={0} max={100} className="w-20 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
@@ -94,6 +95,7 @@ function FaqListEditor({ items, onChange, questionLabel, addLabel }: {
   onChange: (v: { q: string; a: string }[]) => void;
   questionLabel: string; addLabel: string;
 }) {
+  const { t } = useLanguage();
   return (
     <div className="space-y-4">
       {items.map((item, i) => (
@@ -105,10 +107,10 @@ function FaqListEditor({ items, onChange, questionLabel, addLabel }: {
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
-          <input className={inputCls} placeholder="கேள்வி..."
+          <input className={inputCls} placeholder={t('கேள்வி...','Question...')}
             value={item.q}
             onChange={e => { const n = [...items]; n[i] = { ...n[i], q: e.target.value }; onChange(n); }} />
-          <textarea className={areaCls} placeholder="பதில்..."
+          <textarea className={areaCls} placeholder={t('பதில்...','Answer...')}
             value={item.a}
             onChange={e => { const n = [...items]; n[i] = { ...n[i], a: e.target.value }; onChange(n); }} />
         </div>
@@ -153,13 +155,16 @@ export default function ContentManager() {
   const [loaded, setLoaded] = useState(false);
 
   const TABS = [
-    { id: 'hero',       label: t('முகப்பு','Home'),            emoji: '🏛️' },
-    { id: 'contact',    label: t('தொடர்பு','Contact'),          emoji: '📍' },
-    { id: 'about',      label: t('வரலாறு','History'),           emoji: '📖' },
-    { id: 'renovation', label: t('திருப்பணி','Renovation'),      emoji: '🔨' },
-    { id: 'pujas',      label: t('சிறப்பு பூஜைகள்','Pujas'),   emoji: '🙏' },
-    { id: 'gurus',      label: t('குருநாதர்கள்','Gurus'),        emoji: '👨‍🏫' },
-    { id: 'faq',        label: t('கேள்வி-பதில்','FAQ'),          emoji: '❓' },
+    { id: 'hero',            label: t('முகப்பு','Home'),              emoji: '🏛️' },
+    { id: 'contact',         label: t('தொடர்பு','Contact'),            emoji: '📍' },
+    { id: 'about',           label: t('வரலாறு','History'),             emoji: '📖' },
+    { id: 'renovation',      label: t('திருப்பணி','Renovation'),        emoji: '🔨' },
+    { id: 'pujas',           label: t('சிறப்பு பூஜைகள்','Pujas'),     emoji: '🙏' },
+    { id: 'gurus',           label: t('குருநாதர்கள்','Gurus'),          emoji: '👨‍🏫' },
+    { id: 'kumbhabhishekam', label: t('கும்பாபிஷேகம்','Kumbhabhishekam'), emoji: '🪔' },
+    { id: 'appeal',          label: t('வேண்டுகோள்','Appeal'),           emoji: '🙌' },
+    { id: 'branding',        label: t('பிராண்டிங்','Branding'),         emoji: '🏷️' },
+    { id: 'faq',             label: t('கேள்வி-பதில்','FAQ'),            emoji: '❓' },
   ];
 
   useEffect(() => {
@@ -189,10 +194,11 @@ export default function ContentManager() {
     );
   }
 
-  const renovationWorks    = parseJson<string[]>(settings.renovation_works, ['கருவறை திருப்பணி','ராஜகோபுரம் அமைத்தல்','முன்மண்டபம் புதுப்பித்தல்','சுற்றுச்சுவர் கட்டுமானம்','கோவில் தரை அமைத்தல்','மின்வசதி மேம்பாடு','குடிநீர் வசதி','அன்னதான மண்டபம்','பக்தர்கள் அமரும் இட வசதி']);
-  const renovationProgress = parseJson<{ title: string; value: number }[]>(settings.renovation_progress, [{ title:'கருவறை',value:100 },{ title:'மண்டபம்',value:70 },{ title:'ராஜகோபுரம்',value:40 },{ title:'சுற்றுச்சுவர்',value:60 },{ title:'மின்வசதி',value:35 }]);
-  const specialPujas       = parseJson<string[]>(settings.special_pujas, ['மாத முதல் சனி','பௌர்ணமி பூஜை','அமாவாசை பூஜை','மண்டல பூஜை','மகரஜோதி பூஜை']);
-  const faqs               = parseJson<{ q: string; a: string }[]>(settings.faqs, [{ q:'நன்கொடை வருமான வரி விலக்கு பெறுமா?',a:'தேவையான அனுமதி இருந்தால் விவரங்கள் வழங்கப்படும்.' },{ q:'ஆன்லைனில் நன்கொடை வழங்கலாமா?',a:'ஆம். UPI, Net Banking, Debit Card, Credit Card ஆகியவற்றின் மூலம் வழங்கலாம்.' },{ q:'ரசீது கிடைக்குமா?',a:'ஆம். உடனடியாக மின்னஞ்சல் மற்றும் WhatsApp மூலம் அனுப்பப்படும்.' }]);
+  const renovationWorks         = parseJson<string[]>(settings.renovation_works, ['கருவறை திருப்பணி','ராஜகோபுரம் அமைத்தல்','முன்மண்டபம் புதுப்பித்தல்','சுற்றுச்சுவர் கட்டுமானம்','கோவில் தரை அமைத்தல்','மின்வசதி மேம்பாடு','குடிநீர் வசதி','அன்னதான மண்டபம்','பக்தர்கள் அமரும் இட வசதி']);
+  const renovationProgress      = parseJson<{ title: string; value: number }[]>(settings.renovation_progress, [{ title:'கருவறை',value:100 },{ title:'மண்டபம்',value:70 },{ title:'ராஜகோபுரம்',value:40 },{ title:'சுற்றுச்சுவர்',value:60 },{ title:'மின்வசதி',value:35 }]);
+  const specialPujas            = parseJson<string[]>(settings.special_pujas, ['மாத முதல் சனி','பௌர்ணமி பூஜை','அமாவாசை பூஜை','மண்டல பூஜை','மகரஜோதி பூஜை']);
+  const faqs                    = parseJson<{ q: string; a: string }[]>(settings.faqs, [{ q:'நன்கொடை வருமான வரி விலக்கு பெறுமா?',a:'தேவையான அனுமதி இருந்தால் விவரங்கள் வழங்கப்படும்.' },{ q:'ஆன்லைனில் நன்கொடை வழங்கலாமா?',a:'ஆம். UPI, Net Banking, Debit Card, Credit Card ஆகியவற்றின் மூலம் வழங்கலாம்.' },{ q:'ரசீது கிடைக்குமா?',a:'ஆம். உடனடியாக மின்னஞ்சல் மற்றும் WhatsApp மூலம் அனுப்பப்படும்.' }]);
+  const kumbhabhishekamEvents   = parseJson<string[]>(settings.kumbhabhishekam_events, ['கணபதி ஹோமம்','யாகசாலை பூஜைகள்','வேத பாராயணம்','மகா அபிஷேகம்','கும்பாபிஷேகம்','அன்னதானம்','பக்தர்களுக்கு பிரசாதம்']);
 
   const saveLabel = t('சேமி','Save');
 
@@ -254,10 +260,10 @@ export default function ContentManager() {
             <Field label={t('கோவில் நேரங்கள்','Temple Timings')}>
               <input className={inputCls} value={settings.temple_timings || ''} onChange={e => set('temple_timings', e.target.value)} placeholder="காலை 6:00 - 12:00 | மாலை 4:00 - 8:00" />
             </Field>
-            <Field label="Google Maps Link" hint={t("'Google Maps-ல் பார்க்க' என்ற பட்டனுக்கு","For the 'View on Google Maps' button")}>
+            <Field label={t("Google Maps இணைப்பு","Google Maps Link")} hint={t("'Google Maps-ல் பார்க்க' என்ற பட்டனுக்கு","For the 'View on Google Maps' button")}>
               <input className={inputCls} value={settings.temple_maps_link || ''} onChange={e => set('temple_maps_link', e.target.value)} placeholder="https://maps.google.com/..." />
             </Field>
-            <Field label="Google Maps Embed URL" hint="Maps → Share → Embed a map → src='...' URL">
+            <Field label={t("Google Maps உட்பொதிக்கும் URL","Google Maps Embed URL")} hint="Maps → Share → Embed a map → src='...' URL">
               <textarea className={areaCls} value={settings.temple_maps_embed || ''} onChange={e => set('temple_maps_embed', e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." />
             </Field>
           </TabPanel>
@@ -323,6 +329,65 @@ export default function ContentManager() {
             </Field>
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
               💡 {t('குருநாதர்களின் புகைப்படங்கள் தொழில்நுட்ப உதவியுடன் மாற்றலாம்.','Guru photos can be changed with technical assistance.')}
+            </div>
+          </TabPanel>
+        )}
+
+        {/* ── KUMBHABHISHEKAM ── */}
+        {activeTab === 'kumbhabhishekam' && (
+          <TabPanel title={t('கும்பாபிஷேகம் பகுதி','Kumbhabhishekam Section')} emoji="🪔" saving={saving} saveLabel={saveLabel}
+            onSave={() => { setJson('kumbhabhishekam_events', kumbhabhishekamEvents); saveKeys(['kumbhabhishekam_badge','kumbhabhishekam_title','kumbhabhishekam_desc','kumbhabhishekam_events']); }}>
+            <Field label={t('சிறிய லேபிள்','Badge Text')} hint={t('தலைப்பின் மேலே காட்டப்படும் சிறிய லேபிள்','Small badge above the heading')}>
+              <input className={inputCls} value={settings.kumbhabhishekam_badge || ''} onChange={e => set('kumbhabhishekam_badge', e.target.value)} placeholder="புனித குடமுழுக்கு விழா" />
+            </Field>
+            <Field label={t('பிரிவு தலைப்பு','Section Heading')}>
+              <input className={inputCls} value={settings.kumbhabhishekam_title || ''} onChange={e => set('kumbhabhishekam_title', e.target.value)} placeholder="மகா கும்பாபிஷேகம்" />
+            </Field>
+            <Field label={t('விளக்கம்','Description')}>
+              <textarea className={areaCls} value={settings.kumbhabhishekam_desc || ''} onChange={e => set('kumbhabhishekam_desc', e.target.value)}
+                placeholder="இறைவனின் அருளால் நடைபெறவுள்ள மகா கும்பாபிஷேக விழாவிற்கு..." />
+            </Field>
+            <StringListEditor
+              label={t('நிகழ்வுகள் பட்டியல்','Events List')}
+              hint={t('ஒவ்வொரு நிகழ்வும் ஒரு card ஆக காட்டப்படும்','Each event is shown as a card')}
+              items={kumbhabhishekamEvents}
+              onChange={v => setJson('kumbhabhishekam_events', v)}
+              addLabel={t('நிகழ்வு சேர்க்க','Add event')} />
+          </TabPanel>
+        )}
+
+        {/* ── APPEAL ── */}
+        {activeTab === 'appeal' && (
+          <TabPanel title={t('வேண்டுகோள் பகுதி','Appeal Section')} emoji="🙌" saving={saving} saveLabel={saveLabel}
+            onSave={() => saveKeys(['appeal_heading','appeal_body','appeal_tagline','appeal_closing'])}>
+            <Field label={t('தலைப்பு','Heading')}>
+              <input className={inputCls} value={settings.appeal_heading || ''} onChange={e => set('appeal_heading', e.target.value)} placeholder="பக்தர்களுக்கான வேண்டுகோள்" />
+            </Field>
+            <Field label={t('முக்கிய பத்தி','Body Text')} hint={t('பக்தர்களை நன்கொடை வழங்க அழைக்கும் பத்தி','Paragraph inviting devotees to donate')}>
+              <textarea className={`${areaCls} min-h-[120px]`} value={settings.appeal_body || ''} onChange={e => set('appeal_body', e.target.value)}
+                placeholder="அன்பார்ந்த ஐயப்ப பக்தர்களே, ஆலய திருப்பணி மற்றும்..." />
+            </Field>
+            <Field label={t('ஊக்க வாசகம்','Tagline')} hint={t('பெரிய எழுத்தில் காட்டப்படும் முக்கிய வாசகம்','Main motivational line in large text')}>
+              <input className={inputCls} value={settings.appeal_tagline || ''} onChange={e => set('appeal_tagline', e.target.value)} placeholder="நாம் கட்டும் கோவில்... நம் சந்ததியினர் வழிபடும் தெய்வீக தலம்." />
+            </Field>
+            <Field label={t('இறுதி வாசகம்','Closing Chant')}>
+              <input className={inputCls} value={settings.appeal_closing || ''} onChange={e => set('appeal_closing', e.target.value)} placeholder="ஸ்வாமியே சரணம் ஐயப்பா" />
+            </Field>
+          </TabPanel>
+        )}
+
+        {/* ── BRANDING ── */}
+        {activeTab === 'branding' && (
+          <TabPanel title={t('Footer பிராண்டிங்','Footer Branding')} emoji="🏷️" saving={saving} saveLabel={saveLabel}
+            onSave={() => saveKeys(['footer_temple_name','footer_tagline'])}>
+            <Field label={t('Footer கோவில் பெயர்','Footer Temple Name')} hint={t('கீழ்-பகுதியில் காட்டப்படும் கோவிலின் பெயர்','Temple name shown in the footer')}>
+              <input className={inputCls} value={settings.footer_temple_name || ''} onChange={e => set('footer_temple_name', e.target.value)} placeholder="அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்" />
+            </Field>
+            <Field label={t('Footer தலைக்கீழ் வாசகம்','Footer Tagline')} hint={t('கோவில் பெயரின் கீழே சிறிய எழுத்தில் காட்டப்படும்','Shown below the temple name in smaller text')}>
+              <input className={inputCls} value={settings.footer_tagline || ''} onChange={e => set('footer_tagline', e.target.value)} placeholder="திருப்பணி மற்றும் மகா கும்பாபிஷேக நிதி திரட்டும் இணையதளம்" />
+            </Field>
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+              💡 {t('வங்கி விவரங்கள் மாற்ற Settings பக்கத்திற்கு செல்லவும். மாறியதும் ரசீதிலும் தானாக காட்டப்படும்.','To update bank details, go to the Settings page. Changes appear on receipts automatically.')}
             </div>
           </TabPanel>
         )}

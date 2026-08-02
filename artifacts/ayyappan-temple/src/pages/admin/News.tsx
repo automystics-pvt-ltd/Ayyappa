@@ -66,7 +66,7 @@ export default function NewsAdmin() {
       <div className="bg-white border-b border-orange-100 px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h1 className="text-lg font-bold text-orange-900 truncate">{t("செய்திகள் & அறிவிப்புகள்","News & Announcements")}</h1>
-          <p className="text-xs text-orange-500">News Management · {posts.length} {t("செய்திகள்","posts")}</p>
+          <p className="text-xs text-orange-500">{t("செய்திகள் நிர்வாகம்","News Management")} · {posts.length} {t("செய்திகள்","posts")}</p>
         </div>
         <button onClick={openCreate}
           className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-sm font-bold text-white shadow-md shadow-orange-200 transition-all hover:scale-105 shrink-0"
@@ -103,7 +103,7 @@ export default function NewsAdmin() {
                     <h3 className="font-bold text-orange-900 truncate">{p.title}</h3>
                     {p.published
                       ? <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200"><Eye className="w-2.5 h-2.5"/>{t("வெளியிடப்பட்டது","Published")}</span>
-                      : <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200"><EyeOff className="w-2.5 h-2.5"/>Draft</span>
+                      : <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200"><EyeOff className="w-2.5 h-2.5"/>{t("வரைவு","Draft")}</span>
                     }
                   </div>
                   <p className="text-sm text-orange-600/70 line-clamp-2 mb-2">{p.content}</p>

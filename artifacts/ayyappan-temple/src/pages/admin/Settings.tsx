@@ -48,7 +48,7 @@ function ChangePasswordCard() {
         </div>
         <div>
           <p className="text-sm font-bold text-orange-900 leading-tight">{t("கடவுச்சொல் மாற்று","Change Password")}</p>
-          <p className="text-[10px] text-orange-400">Change Password</p>
+          <p className="text-[10px] text-orange-400">{t("கடவுச்சொல் மாற்று","Change Password")}</p>
         </div>
       </div>
       <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
@@ -231,8 +231,8 @@ export default function SettingsAdmin() {
                   <QrCode className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-orange-900 leading-tight">QR Code & GPay</p>
-                  <p className="text-[10px] text-orange-400">Payment QR · Google Pay</p>
+                  <p className="text-sm font-bold text-orange-900 leading-tight">{t("QR Code & GPay","QR Code & GPay")}</p>
+                  <p className="text-[10px] text-orange-400">{t("கட்டண QR · Google Pay","Payment QR · Google Pay")}</p>
                 </div>
               </div>
 
@@ -279,7 +279,7 @@ export default function SettingsAdmin() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-orange-700 mb-1.5">GPay / PhonePe {t("எண்","Number")}</label>
+                  <label className="block text-xs font-bold text-orange-700 mb-1.5">{t("GPay / PhonePe எண்","GPay / PhonePe Number")}</label>
                   <input value={settings.gpay_number ?? ""} onChange={e => setSettings({ ...settings, gpay_number: e.target.value })}
                     placeholder="+91 XXXXXXXXXX" className={inputCls} />
                 </div>

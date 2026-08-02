@@ -1,18 +1,25 @@
 import { motion } from 'framer-motion';
 import { fadeUpVariant, staggerContainer } from '@/lib/animations';
 import { Sparkles } from 'lucide-react';
+import { useSiteSettings, parseJsonSetting } from '@/hooks/useSiteSettings';
 
-const events = [
+const DEFAULT_EVENTS = [
   'கணபதி ஹோமம்',
   'யாகசாலை பூஜைகள்',
   'வேத பாராயணம்',
   'மகா அபிஷேகம்',
   'கும்பாபிஷேகம்',
   'அன்னதானம்',
-  'பக்தர்களுக்கு பிரசாதம்'
+  'பக்தர்களுக்கு பிரசாதம்',
 ];
 
 export function Kumbhabhishekam() {
+  const s = useSiteSettings();
+  const badge   = s.kumbhabhishekam_badge || 'புனித குடமுழுக்கு விழா';
+  const title   = s.kumbhabhishekam_title || 'மகா கும்பாபிஷேகம்';
+  const desc    = s.kumbhabhishekam_desc  || 'இறைவனின் அருளால் நடைபெறவுள்ள மகா கும்பாபிஷேக விழாவிற்கு அனைத்து பக்தர்களையும் அன்புடன் வரவேற்கிறோம்.';
+  const events  = parseJsonSetting<string[]>(s.kumbhabhishekam_events, DEFAULT_EVENTS);
+
   return (
     <section id="kumbhabhishekam" className="py-24 relative overflow-hidden bg-foreground">
       {/* Golden rich background pattern */}
@@ -28,14 +35,14 @@ export function Kumbhabhishekam() {
         >
           <div className="inline-flex items-center justify-center gap-2 text-secondary mb-4">
             <Sparkles className="w-6 h-6" />
-            <span className="uppercase tracking-widest text-sm font-bold">புனித குடமுழுக்கு விழா</span>
+            <span className="uppercase tracking-widest text-sm font-bold">{badge}</span>
             <Sparkles className="w-6 h-6" />
           </div>
           <h2 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-secondary mb-4 sm:mb-6 drop-shadow-md leading-tight">
-            மகா கும்பாபிஷேகம்
+            {title}
           </h2>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/90 max-w-3xl mx-auto font-medium leading-relaxed">
-            இறைவனின் அருளால் நடைபெறவுள்ள மகா கும்பாபிஷேக விழாவிற்கு அனைத்து பக்தர்களையும் அன்புடன் வரவேற்கிறோம்.
+            {desc}
           </p>
         </motion.div>
 

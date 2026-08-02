@@ -2,7 +2,7 @@ import { Router } from "express";
 import { randomUUID } from "crypto";
 import { db } from "@workspace/db";
 import { donationsTable, siteSettingsTable } from "@workspace/db/schema";
-import { eq, desc, sum, count } from "drizzle-orm";
+import { eq, desc, sum, count, and, gte } from "drizzle-orm";
 import { requireAuth, requireRole } from "../middlewares/auth";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { notifyDonationApproved } from "../lib/smsService";
@@ -243,6 +243,33 @@ router.get("/stats", async (_req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch stats" });
+  }
+});
+
+// GET /api/donations/recent-ticker — public, approved donations from last 3 days
+router.get("/recent-ticker", async (_req, res) => {
+  try {
+    const cutoff = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+    const rows = await db
+      .select({
+        id: donationsTable.id,
+        donorName: donationsTable.donorName,
+        anonymous: donationsTable.anonymous,
+        amount: donationsTable.amount,
+        reviewedAt: donationsTable.reviewedAt,
+      })
+      .from(donationsTable)
+      .where(
+        and(
+          eq(donationsTable.status, "approved"),
+          gte(donationsTable.reviewedAt, cutoff)
+        )
+      )
+      .orderBy(desc(donationsTable.reviewedAt))
+      .limit(5);
+    res.json(rows);
+  } catch {
+    res.status(500).json({ error: "Failed to fetch recent donations" });
   }
 });
 
