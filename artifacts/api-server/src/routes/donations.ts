@@ -157,6 +157,60 @@ router.post("/", async (req, res) => {
   }
 });
 
+// POST /api/donations/admin-create — admin only, adds a donor directly as approved/pending
+router.post("/admin-create", requireRole("super_admin", "editor"), async (req, res) => {
+  const session = (req as any).session;
+  const { donorName, mobile, place, amount, transactionId, message, anonymous, status, donationDate } = req.body;
+
+  if (!donorName?.trim() || !mobile?.trim() || !amount) {
+    res.status(400).json({ error: "Donor name, mobile, and amount are required" });
+    return;
+  }
+
+  const parsedAmount = Number(amount);
+  if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    res.status(400).json({ error: "தொகை சரியாக இல்லை — positive value தேவை" });
+    return;
+  }
+  if (parsedAmount > 10_000_000) {
+    res.status(400).json({ error: "தொகை அதிகமாக உள்ளது" });
+    return;
+  }
+
+  const finalStatus = status === "pending" ? "pending" : "approved";
+  // Auto-generate a reference ID if no transaction ID is supplied (e.g. cash donations)
+  const finalTransactionId = transactionId?.trim() || `ADMIN-${randomUUID()}`;
+  const entryDate = donationDate ? new Date(donationDate) : new Date();
+
+  try {
+    const [donation] = await db
+      .insert(donationsTable)
+      .values({
+        receiptToken: randomUUID(),
+        donorName: donorName.trim(),
+        mobile: mobile.trim(),
+        place: place?.trim() || null,
+        amount: String(parsedAmount),
+        transactionId: finalTransactionId,
+        anonymous: !!anonymous,
+        message: message?.trim() || null,
+        status: finalStatus,
+        reviewedBy: finalStatus === "approved" ? session.adminId : null,
+        reviewedAt: finalStatus === "approved" ? entryDate : null,
+        createdAt: entryDate,
+      })
+      .returning();
+    res.json(donation);
+  } catch (err: any) {
+    if (err?.code === "23505" && err?.constraint?.includes("transaction_id")) {
+      res.status(409).json({ error: "இந்த Transaction ID ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது." });
+      return;
+    }
+    req.log.error({ err }, "Error creating admin donation");
+    res.status(500).json({ error: "நன்கொடை சேர்க்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்." });
+  }
+});
+
 // GET /api/donations/stats — public
 router.get("/stats", async (_req, res) => {
   try {

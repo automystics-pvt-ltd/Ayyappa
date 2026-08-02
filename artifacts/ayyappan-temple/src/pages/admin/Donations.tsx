@@ -3,7 +3,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { api } from "@/lib/api";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useLanguage } from "@/hooks/useLanguage";
-import { MapPin, Image, CheckCircle2, XCircle, AlertCircle, Phone, Hash, MessageSquare, CalendarDays, MoreHorizontal, FileText, Printer, BarChart2, Download, X, Pencil, Check } from "lucide-react";
+import { MapPin, Image, CheckCircle2, XCircle, AlertCircle, Phone, Hash, MessageSquare, CalendarDays, MoreHorizontal, FileText, Printer, BarChart2, Download, X, Pencil, Check, Plus, UserPlus } from "lucide-react";
 import html2canvas from "html2canvas";
 
 type Donation = {
@@ -268,6 +268,42 @@ export default function Donations() {
   const [editNameValue, setEditNameValue] = useState("");
   const [editNameBusy, setEditNameBusy]   = useState(false);
 
+  // ── Add Donor (admin-create) ──
+  const DONOR_BLANK = { donorName: "", mobile: "", place: "", amount: "", transactionId: "", message: "", anonymous: false, status: "approved", donationDate: "" };
+  const [showAddDonor, setShowAddDonor]   = useState(false);
+  const [addDonorForm, setAddDonorForm]   = useState(DONOR_BLANK);
+  const [addDonorSaving, setAddDonorSaving] = useState(false);
+  const [addDonorError, setAddDonorError]   = useState("");
+
+  const handleAddDonor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!addDonorForm.donorName.trim() || !addDonorForm.mobile.trim() || !addDonorForm.amount) {
+      setAddDonorError(t("பெயர், மொபைல், தொகை அவசியம்", "Name, mobile and amount are required"));
+      return;
+    }
+    setAddDonorSaving(true); setAddDonorError("");
+    try {
+      await api.adminCreateDonation({
+        donorName:    addDonorForm.donorName.trim(),
+        mobile:       addDonorForm.mobile.trim(),
+        place:        addDonorForm.place.trim() || undefined,
+        amount:       Number(addDonorForm.amount),
+        transactionId: addDonorForm.transactionId.trim() || undefined,
+        message:      addDonorForm.message.trim() || undefined,
+        anonymous:    addDonorForm.anonymous,
+        status:       addDonorForm.status,
+        donationDate: addDonorForm.donationDate || undefined,
+      });
+      setShowAddDonor(false);
+      setAddDonorForm(DONOR_BLANK);
+      await fetchDonations();
+    } catch (err: any) {
+      setAddDonorError(err.message || t("சேர்க்க முடியவில்லை", "Could not add donor"));
+    } finally {
+      setAddDonorSaving(false);
+    }
+  };
+
   const isSuperAdmin = admin?.role === "super_admin";
 
   const saveEditName = async () => {
@@ -383,14 +419,26 @@ export default function Donations() {
               {t("Donation Management", "நன்கொடை மேலாண்மை")} · {donations.length} {t("பதிவுகள்", "records")}
             </p>
           </div>
-          <button
-            onClick={() => setShowReport(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white shadow-md transition-all hover:opacity-90 active:scale-95"
-            style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
-          >
-            <BarChart2 className="w-4 h-4" />
-            {t("அறிக்கை", "Report")}
-          </button>
+          <div className="flex items-center gap-2">
+            {canApprove && (
+              <button
+                onClick={() => { setAddDonorForm(DONOR_BLANK); setAddDonorError(""); setShowAddDonor(true); }}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white shadow-md transition-all hover:opacity-90 active:scale-95"
+                style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
+              >
+                <UserPlus className="w-4 h-4" />
+                {t("நன்கொடையாளர் சேர்", "Add Donor")}
+              </button>
+            )}
+            <button
+              onClick={() => setShowReport(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white shadow-md transition-all hover:opacity-90 active:scale-95"
+              style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+            >
+              <BarChart2 className="w-4 h-4" />
+              {t("அறிக்கை", "Report")}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -606,6 +654,177 @@ export default function Donations() {
           </div>
         )}
       </div>
+
+      {/* ── Add Donor modal ── */}
+      {showAddDonor && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden my-4">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+                  <UserPlus className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-white font-bold text-lg leading-tight">{t("நன்கொடையாளர் சேர்க்க", "Add Donor")}</h2>
+                  <p className="text-orange-100 text-xs">{t("நேரடியாக நன்கொடை பதிவு செய்க", "Record a donation directly")}</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAddDonor(false)} className="text-white/70 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddDonor} className="p-6 space-y-4">
+              {/* Row 1: Name + Mobile */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-orange-900 mb-1.5">
+                    {t("நன்கொடையாளர் பெயர்", "Donor Name")} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    className="w-full border border-orange-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white placeholder-orange-300 text-orange-900"
+                    placeholder={t("முழு பெயர்", "Full name")}
+                    value={addDonorForm.donorName}
+                    onChange={e => setAddDonorForm(f => ({ ...f, donorName: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-orange-900 mb-1.5">
+                    {t("மொபைல்", "Mobile")} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    className="w-full border border-orange-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white placeholder-orange-300 text-orange-900"
+                    placeholder="9876543210"
+                    value={addDonorForm.mobile}
+                    onChange={e => setAddDonorForm(f => ({ ...f, mobile: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Amount + Place */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-orange-900 mb-1.5">
+                    {t("தொகை (₹)", "Amount (₹)")} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    step="0.01"
+                    className="w-full border border-orange-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white placeholder-orange-300 text-orange-900"
+                    placeholder="1000"
+                    value={addDonorForm.amount}
+                    onChange={e => setAddDonorForm(f => ({ ...f, amount: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-orange-900 mb-1.5">{t("ஊர் / இடம்", "Place")}</label>
+                  <input
+                    className="w-full border border-orange-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white placeholder-orange-300 text-orange-900"
+                    placeholder={t("வடமதுரை", "City / Town")}
+                    value={addDonorForm.place}
+                    onChange={e => setAddDonorForm(f => ({ ...f, place: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Transaction ID + Date */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-orange-900 mb-1.5">
+                    {t("Transaction ID / Reference", "Transaction ID / Reference")}
+                    <span className="text-orange-400 font-normal ml-1">{t("(விருப்பம்)", "(optional)")}</span>
+                  </label>
+                  <input
+                    className="w-full border border-orange-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white placeholder-orange-300 text-orange-900 font-mono"
+                    placeholder={t("UPI/Cash — காலி விட்டால் தானாக உருவாகும்", "Auto-generated if blank")}
+                    value={addDonorForm.transactionId}
+                    onChange={e => setAddDonorForm(f => ({ ...f, transactionId: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-orange-900 mb-1.5">{t("நன்கொடை தேதி", "Donation Date")}</label>
+                  <input
+                    type="date"
+                    className="w-full border border-orange-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white text-orange-900"
+                    value={addDonorForm.donationDate}
+                    onChange={e => setAddDonorForm(f => ({ ...f, donationDate: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              {/* Message */}
+              <div>
+                <label className="block text-xs font-semibold text-orange-900 mb-1.5">
+                  {t("செய்தி", "Message")}
+                  <span className="text-orange-400 font-normal ml-1">{t("(விருப்பம்)", "(optional)")}</span>
+                </label>
+                <textarea
+                  rows={2}
+                  className="w-full border border-orange-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white placeholder-orange-300 text-orange-900 resize-none"
+                  placeholder={t("நன்கொடையாளர் கூறிய செய்தி…", "Donor's message...")}
+                  value={addDonorForm.message}
+                  onChange={e => setAddDonorForm(f => ({ ...f, message: e.target.value }))}
+                />
+              </div>
+
+              {/* Status + Anonymous */}
+              <div className="flex items-center gap-6 flex-wrap">
+                <div>
+                  <label className="block text-xs font-semibold text-orange-900 mb-1.5">{t("நிலை", "Status")}</label>
+                  <select
+                    className="border border-orange-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white text-orange-900"
+                    value={addDonorForm.status}
+                    onChange={e => setAddDonorForm(f => ({ ...f, status: e.target.value }))}
+                  >
+                    <option value="approved">{t("✓ அங்கீகரிக்கப்பட்டது", "✓ Approved")}</option>
+                    <option value="pending">{t("⏳ நிலுவையில்", "⏳ Pending")}</option>
+                  </select>
+                </div>
+                <label className="flex items-center gap-2 cursor-pointer select-none mt-4">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded accent-orange-500"
+                    checked={addDonorForm.anonymous}
+                    onChange={e => setAddDonorForm(f => ({ ...f, anonymous: e.target.checked }))}
+                  />
+                  <span className="text-sm text-orange-900">{t("அடையாளம் மறை (Anonymous)", "Anonymous donor")}</span>
+                </label>
+              </div>
+
+              {addDonorError && (
+                <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-2.5 text-sm">
+                  <AlertCircle className="w-4 h-4 shrink-0" />{addDonorError}
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-1">
+                <button
+                  type="submit"
+                  disabled={addDonorSaving}
+                  className="flex-1 flex items-center justify-center gap-2 text-white font-bold py-3 rounded-xl text-sm disabled:opacity-60 transition-all hover:opacity-90 active:scale-95 shadow-md shadow-orange-200"
+                  style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
+                >
+                  {addDonorSaving ? (
+                    <span className="flex items-center gap-2"><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />{t("சேமிக்கிறது…", "Saving...")}</span>
+                  ) : (
+                    <><Plus className="w-4 h-4" />{t("நன்கொடை பதிவு செய்க", "Add Donation")}</>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddDonor(false)}
+                  className="px-5 py-3 border border-orange-200 rounded-xl text-sm font-medium text-orange-700 hover:bg-orange-50 transition-colors"
+                >
+                  {t("ரத்து", "Cancel")}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* ── Report modal ── */}
       {showReport && (

@@ -112,6 +112,8 @@ export const api = {
     apiFetch(`/donations/${id}/reject`, { method: "PATCH", body: JSON.stringify({ reason }) }),
   deleteDonation: (id: number) =>
     apiFetch(`/donations/${id}`, { method: "DELETE" }),
+  adminCreateDonation: (data: Record<string, unknown>) =>
+    apiFetch("/donations/admin-create", { method: "POST", body: JSON.stringify(data) }),
 
   // Admin - Dashboard
   getDashboardStats: () => apiFetch("/dashboard/stats"),
