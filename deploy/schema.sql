@@ -142,3 +142,12 @@ CREATE TABLE IF NOT EXISTS visits (
 );
 CREATE INDEX IF NOT EXISTS visits_day_key_idx ON visits(day_key);
 CREATE INDEX IF NOT EXISTS visits_created_at_idx ON visits(created_at DESC);
+
+-- Session store table used by connect-pg-simple (express-session)
+CREATE TABLE IF NOT EXISTS sessions (
+  "sid"    VARCHAR        NOT NULL COLLATE "default",
+  "sess"   JSON           NOT NULL,
+  "expire" TIMESTAMP(6)   NOT NULL,
+  CONSTRAINT "sessions_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE
+);
+CREATE INDEX IF NOT EXISTS "IDX_sessions_expire" ON sessions ("expire");
