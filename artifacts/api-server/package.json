@@ -15,6 +15,7 @@
     "test:receipt-long-amount": "node ./tests/receipt-long-amount.test.mjs",
     "test:receipt-pdf-page-count": "node ./tests/receipt-pdf-page-count.test.mjs",
     "test:receipt-small-amount": "node ./tests/receipt-small-amount.test.mjs",
+    "test:receipt-image-download": "node ./tests/receipt-image-download.test.mjs",
     "test:inkind-receipt-long-desc": "node ./tests/inkind-receipt-long-desc.test.mjs",
     "test:inkind-receipt-pdf-page-count": "node ./tests/inkind-receipt-pdf-page-count.test.mjs",
     "test:inkind-receipt-mobile": "node ./tests/inkind-receipt-mobile.test.mjs",
