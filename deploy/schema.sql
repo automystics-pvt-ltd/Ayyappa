@@ -123,6 +123,24 @@ CREATE TABLE IF NOT EXISTS visits (
 CREATE INDEX IF NOT EXISTS visits_day_key_idx ON visits(day_key);
 CREATE INDEX IF NOT EXISTS visits_created_at_idx ON visits(created_at DESC);
 
+-- ── Column migrations (idempotent — ADD COLUMN IF NOT EXISTS) ───────────────
+-- receipt_token was added after initial deployment; safe to re-run on any DB.
+ALTER TABLE donations           ADD COLUMN IF NOT EXISTS receipt_token TEXT;
+ALTER TABLE in_kind_contributions ADD COLUMN IF NOT EXISTS receipt_token TEXT;
+
+-- Ensure the UNIQUE constraint exists on in_kind_contributions.receipt_token.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conrelid = 'in_kind_contributions'::regclass
+      AND contype = 'u'
+      AND conname = 'in_kind_contributions_receipt_token_key'
+  ) THEN
+    ALTER TABLE in_kind_contributions ADD CONSTRAINT in_kind_contributions_receipt_token_key UNIQUE (receipt_token);
+  END IF;
+END $$;
+
 -- ── Default site settings (INSERT … ON CONFLICT DO NOTHING = never overwrites) ──
 INSERT INTO site_settings (key, value) VALUES
   ('temple_name',       'அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்'),
