@@ -84,6 +84,7 @@ function DonationsReport({
     return html2canvas(reportRef.current, {
       scale: 2.5,
       useCORS: true,
+      allowTaint: false,
       backgroundColor: "#fff9f0",
       logging: false,
       imageTimeout: 8000,
