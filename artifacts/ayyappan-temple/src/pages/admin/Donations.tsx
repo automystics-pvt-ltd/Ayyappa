@@ -37,6 +37,9 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 /* ════════════ Consolidated Report Component ════════════ */
+type SortField = "date" | "amount";
+type SortDir   = "desc" | "asc";
+
 function DonationsReport({
   donations,
   onClose,
@@ -45,207 +48,374 @@ function DonationsReport({
   onClose: () => void;
 }) {
   const { t } = useLanguage();
-  const reportRef = useRef<HTMLDivElement>(null);
-  const [downloading, setDownloading] = useState(false);
+  const reportRef   = useRef<HTMLDivElement>(null);
+  const [busy, setBusy]         = useState<"" | "download" | "whatsapp">("");
+  const [sortField, setSortField] = useState<SortField>("date");
+  const [sortDir,   setSortDir]   = useState<SortDir>("desc");
 
   const approved = donations.filter(d => d.status === "approved");
   const pending  = donations.filter(d => d.status === "pending");
-  const rejected = donations.filter(d => d.status === "rejected");
   const totalApproved = approved.reduce((s, d) => s + Number(d.amount), 0);
   const fmt = (a: number) => `₹${a.toLocaleString("en-IN")}`;
   const today = new Date().toLocaleDateString("en-IN", { day:"2-digit", month:"long", year:"numeric" });
 
+  const sortLabel = sortField === "date"
+    ? (sortDir === "desc" ? t("தேதி (புதியது முதலில்)","Date (Newest first)") : t("தேதி (பழையது முதலில்)","Date (Oldest first)"))
+    : (sortDir === "desc" ? t("தொகை (அதிகம் முதலில்)","Amount (High to Low)") : t("தொகை (குறைவு முதலில்)","Amount (Low to High)"));
+
+  const sortedApproved = [...approved].sort((a, b) => {
+    if (sortField === "date") {
+      const da = new Date(a.reviewedAt || a.createdAt).getTime();
+      const db = new Date(b.reviewedAt || b.createdAt).getTime();
+      return sortDir === "desc" ? db - da : da - db;
+    } else {
+      const diff = Number(b.amount) - Number(a.amount);
+      return sortDir === "desc" ? diff : -diff;
+    }
+  });
+
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) setSortDir(d => d === "desc" ? "asc" : "desc");
+    else { setSortField(field); setSortDir("desc"); }
+  };
+
+  const captureCanvas = async () => {
+    if (!reportRef.current) return null;
+    return html2canvas(reportRef.current, {
+      scale: 2.5,
+      useCORS: true,
+      backgroundColor: "#fff9f0",
+      logging: false,
+      imageTimeout: 8000,
+    });
+  };
+
   const downloadImage = async () => {
-    if (!reportRef.current) return;
-    setDownloading(true);
+    setBusy("download");
     try {
-      const canvas = await html2canvas(reportRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#fff9f0",
-        logging: false,
-      });
+      const canvas = await captureCanvas();
+      if (!canvas) return;
       const a = document.createElement("a");
       a.download = `donations-report-${new Date().toISOString().slice(0,10)}.png`;
       a.href = canvas.toDataURL("image/png");
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-    } finally {
-      setDownloading(false);
-    }
+    } finally { setBusy(""); }
+  };
+
+  const shareWhatsAppReport = async () => {
+    setBusy("whatsapp");
+    try {
+      const canvas = await captureCanvas();
+      if (!canvas) return;
+      const blob: Blob | null = await new Promise(res => canvas.toBlob(res, "image/png"));
+      if (!blob) return;
+      const file = new File([blob], "donations-report.png", { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: "நன்கொடை அறிக்கை",
+          text: `அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் — நன்கொடை அறிக்கை\n${today}\nமொத்தம்: ${fmt(totalApproved)}`,
+        });
+      } else {
+        // Fallback: download + open WhatsApp
+        const a = document.createElement("a");
+        a.download = "donations-report.png";
+        a.href = URL.createObjectURL(blob);
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        const msg = encodeURIComponent(`அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் — நன்கொடை அறிக்கை\n${today}\nமொத்தம்: ${fmt(totalApproved)}`);
+        setTimeout(() => window.open(`https://wa.me/?text=${msg}`, "_blank"), 500);
+      }
+    } finally { setBusy(""); }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
-      {/* Controls above report */}
-      <div className="w-full max-w-3xl">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={downloadImage}
-              disabled={downloading}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-60"
-              style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
-            >
-              <Download className="w-4 h-4" />
-              {downloading ? t("இறக்குகிறது...","Downloading...") : t("படமாக இறக்கு","Download as Image")}
-            </button>
-          </div>
-          <button
-            onClick={onClose}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white text-sm font-medium transition-colors"
-          >
-            <X className="w-4 h-4" /> {t("மூடு","Close")}
-          </button>
-        </div>
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-start justify-center p-3 overflow-y-auto">
+      <div className="w-full max-w-2xl">
 
-        {/* ══ Printable / Capturable Report ══ */}
-        <div
-          ref={reportRef}
-          style={{ background: "#fff9f0", fontFamily: "system-ui, sans-serif" }}
-          className="rounded-2xl overflow-hidden shadow-2xl"
-        >
-          {/* Header */}
-          <div
-            style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
-            className="px-8 py-6 text-white"
-          >
-            <div className="flex items-center gap-4 mb-1">
-              <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center overflow-hidden shrink-0">
-                <img src="/iyyappan-logo.png" alt="Temple" className="w-12 h-12 object-contain" />
-              </div>
-              <div>
-                <h1 className="text-xl font-extrabold leading-tight">அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்</h1>
-                <p className="text-orange-100 text-sm">Vadamadurai, Dindigul · Donations Report</p>
-              </div>
-            </div>
-            <div className="mt-3 flex items-center gap-3 flex-wrap">
-              <span className="text-xs bg-white/20 px-3 py-1 rounded-full font-medium">
-                Generated: {today}
-              </span>
-              <span className="text-xs bg-white/20 px-3 py-1 rounded-full font-medium">
-                Total records: {donations.length}
-              </span>
-            </div>
-          </div>
-
-          {/* Stats row */}
-          <div className="grid grid-cols-4 divide-x divide-orange-100 bg-white border-b border-orange-100">
-            {[
-              { label: "Total Donations", value: donations.length.toString(), sub: "All statuses",       color: "#ea580c" },
-              { label: "Approved",        value: approved.length.toString(),  sub: "Confirmed",          color: "#10b981" },
-              { label: "Pending",         value: pending.length.toString(),   sub: "Awaiting review",    color: "#d97706" },
-              { label: "Amount Raised",   value: fmt(totalApproved),          sub: "Approved total",     color: "#ea580c" },
-            ].map(s => (
-              <div key={s.label} className="px-5 py-4 text-center">
-                <p className="text-2xl font-extrabold" style={{ color: s.color }}>{s.value}</p>
-                <p className="text-xs font-bold text-gray-700 mt-0.5">{s.label}</p>
-                <p className="text-[10px] text-gray-400">{s.sub}</p>
-              </div>
+        {/* ── Toolbar (not captured) ── */}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          {/* Sort pills */}
+          <div className="flex items-center gap-1.5 bg-white/10 rounded-xl px-2 py-1.5 border border-white/20">
+            <span className="text-white/60 text-[10px] font-bold uppercase tracking-wider mr-1">
+              {t("வரிசை","Sort")}
+            </span>
+            {(["date","amount"] as SortField[]).map(f => (
+              <button
+                key={f}
+                onClick={() => toggleSort(f)}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                  sortField === f
+                    ? "bg-orange-500 text-white shadow"
+                    : "text-white/70 hover:bg-white/10"
+                }`}
+              >
+                {f === "date" ? t("தேதி","Date") : t("தொகை","Amount")}
+                {sortField === f && (
+                  <span className="text-[9px]">{sortDir === "desc" ? "↓" : "↑"}</span>
+                )}
+              </button>
             ))}
           </div>
 
-          {/* Section: Approved donations */}
-          <div className="px-6 py-4">
-            <h2 className="text-sm font-extrabold text-orange-900 mb-3 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              Approved Donations ({approved.length})
-            </h2>
+          <div className="flex items-center gap-2 ml-auto">
+            {/* WhatsApp share */}
+            <button
+              onClick={shareWhatsAppReport}
+              disabled={!!busy}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-50"
+              style={{ background: "linear-gradient(135deg,#25d366,#128c7e)" }}
+            >
+              <span className="text-base leading-none">💬</span>
+              {busy === "whatsapp" ? t("தயாரிக்கிறது...","Preparing...") : t("WhatsApp","WhatsApp")}
+            </button>
+            {/* Download */}
+            <button
+              onClick={downloadImage}
+              disabled={!!busy}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-50"
+              style={{ background: "linear-gradient(135deg,#ea580c,#d97706)" }}
+            >
+              <Download className="w-4 h-4" />
+              {busy === "download" ? t("இறக்குகிறது...","Downloading...") : t("படமாக இறக்கு","Download")}
+            </button>
+            {/* Close */}
+            <button
+              onClick={onClose}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-sm font-medium transition-colors border border-white/20"
+            >
+              <X className="w-4 h-4" /> {t("மூடு","Close")}
+            </button>
+          </div>
+        </div>
 
-            {approved.length === 0 ? (
-              <p className="text-xs text-orange-300 py-4 text-center">No approved donations</p>
-            ) : (
-              <div className="rounded-xl overflow-hidden border border-orange-100">
-                {/* Table header */}
-                <div className="grid grid-cols-[32px_1fr_auto_auto_auto] gap-2 px-4 py-2.5 text-[10px] font-bold text-orange-400 uppercase tracking-wider"
-                  style={{ background: "#fff3e0" }}>
-                  <span>#</span>
-                  <span>Donor</span>
-                  <span className="text-right">Amount</span>
-                  <span>Date</span>
-                  <span>Trans. ID</span>
+        {/* ══ Capturable Report ══ */}
+        <div
+          ref={reportRef}
+          style={{ background: "#fff9f0", fontFamily: "'Noto Sans Tamil', 'Segoe UI', system-ui, sans-serif", position: "relative" }}
+          className="rounded-2xl overflow-hidden shadow-2xl"
+        >
+          {/* Ayyappan watermark — centered, low opacity */}
+          <div
+            style={{
+              position: "absolute", inset: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              pointerEvents: "none", zIndex: 0,
+            }}
+            aria-hidden
+          >
+            <img
+              src="/iyyappan-logo.png"
+              alt=""
+              crossOrigin="anonymous"
+              style={{
+                width: 340, height: 340,
+                objectFit: "contain",
+                opacity: 0.07,
+                filter: "sepia(60%) saturate(150%)",
+              }}
+            />
+          </div>
+
+          {/* All content above the watermark */}
+          <div style={{ position: "relative", zIndex: 1 }}>
+
+            {/* Header */}
+            <div style={{ background: "linear-gradient(135deg,#c2410c,#d97706)" }} className="px-7 py-5 text-white">
+              <div className="flex items-center gap-4">
+                {/* Circular seal */}
+                <div style={{
+                  width: 64, height: 64, borderRadius: "50%",
+                  background: "rgba(255,255,255,0.18)",
+                  border: "2px solid rgba(255,255,255,0.35)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0, overflow: "hidden",
+                }}>
+                  <img src="/iyyappan-logo.png" alt="Temple" crossOrigin="anonymous"
+                    style={{ width: 52, height: 52, objectFit: "contain" }} />
                 </div>
-                {/* Rows */}
-                {approved.map((d, idx) => (
-                  <div
-                    key={d.id}
-                    className="grid grid-cols-[32px_1fr_auto_auto_auto] gap-2 px-4 py-2.5 items-center border-t border-orange-50 text-xs"
-                    style={{ background: idx % 2 === 0 ? "#ffffff" : "#fffbf5" }}
-                  >
-                    <span className="text-orange-300 font-bold">{idx + 1}</span>
-                    <div>
-                      <p className="font-bold text-orange-900">
-                        {d.anonymous ? "Anonymous" : d.donorName}
-                      </p>
-                      {d.place && <p className="text-orange-400 text-[10px]">{d.place}</p>}
-                    </div>
-                    <span className="font-extrabold text-right" style={{ color: "#ea580c" }}>
-                      {`₹${Number(d.amount).toLocaleString("en-IN")}`}
+                <div className="flex-1 min-w-0">
+                  <h1 style={{ fontSize: 17, fontWeight: 800, lineHeight: 1.25, letterSpacing: "-0.01em" }}>
+                    அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்
+                  </h1>
+                  <p style={{ fontSize: 11, color: "rgba(255,255,255,0.8)", marginTop: 2 }}>
+                    வடமதுரை, திண்டுக்கல் மாவட்டம் &nbsp;·&nbsp; நன்கொடை அறிக்கை
+                  </p>
+                  <div style={{ marginTop: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 10, background: "rgba(255,255,255,0.2)", padding: "2px 10px", borderRadius: 99 }}>
+                      📅 {today}
                     </span>
-                    <span className="text-orange-400 whitespace-nowrap">
-                      {new Date(d.reviewedAt || d.createdAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })}
+                    <span style={{ fontSize: 10, background: "rgba(255,255,255,0.2)", padding: "2px 10px", borderRadius: 99 }}>
+                      {t("மொத்தம்","Total")} {donations.length} {t("பதிவுகள்","records")}
                     </span>
-                    <span className="text-orange-300 font-mono text-[10px] truncate max-w-[100px]">{d.transactionId}</span>
+                    <span style={{ fontSize: 10, background: "rgba(255,255,255,0.15)", padding: "2px 10px", borderRadius: 99 }}>
+                      ↕ {sortLabel}
+                    </span>
                   </div>
-                ))}
-                {/* Footer total */}
-                <div className="grid grid-cols-[32px_1fr_auto_auto_auto] gap-2 px-4 py-2.5 items-center border-t border-orange-200"
-                  style={{ background: "#fff3e0" }}>
-                  <span />
-                  <span className="text-xs font-bold text-orange-700">Total Approved</span>
-                  <span className="text-sm font-extrabold text-right" style={{ color: "#ea580c" }}>
-                    {fmt(totalApproved)}
+                </div>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", background: "#fff", borderBottom: "1px solid #fed7aa" }}>
+              {[
+                { label: t("மொத்த நன்கொடைகள்","Total Donations"), value: donations.length.toString(), sub: t("அனைத்தும்","All statuses"), color: "#ea580c" },
+                { label: t("அங்கீகரிக்கப்பட்டவை","Approved"),       value: approved.length.toString(), sub: t("உறுதிப்படுத்தப்பட்டது","Confirmed"),  color: "#10b981" },
+                { label: t("நிலுவையில்","Pending"),                  value: pending.length.toString(),  sub: t("மதிப்பாய்வு தேவை","Awaiting review"), color: "#d97706" },
+                { label: t("திரட்டிய தொகை","Amount Raised"),         value: fmt(totalApproved),         sub: t("அங்கீகரித்த மொத்தம்","Approved total"), color: "#c2410c" },
+              ].map((s, i) => (
+                <div key={i} style={{ padding: "14px 10px", textAlign: "center", borderRight: i < 3 ? "1px solid #fed7aa" : undefined }}>
+                  <p style={{ fontSize: 22, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</p>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: "#44403c", marginTop: 3 }}>{s.label}</p>
+                  <p style={{ fontSize: 9, color: "#a8a29e" }}>{s.sub}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Approved table */}
+            <div style={{ padding: "16px 20px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+                <CheckCircle2 style={{ width: 14, height: 14, color: "#10b981", flexShrink: 0 }} />
+                <span style={{ fontSize: 12, fontWeight: 800, color: "#7c2d12" }}>
+                  {t("அங்கீகரிக்கப்பட்ட நன்கொடைகள்","Approved Donations")} ({approved.length})
+                </span>
+              </div>
+
+              {sortedApproved.length === 0 ? (
+                <p style={{ fontSize: 11, color: "#fdba74", textAlign: "center", padding: "16px 0" }}>
+                  {t("அங்கீகரிக்கப்பட்ட நன்கொடைகள் இல்லை","No approved donations")}
+                </p>
+              ) : (
+                <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #fed7aa" }}>
+                  {/* Table head */}
+                  <div style={{
+                    display: "grid", gridTemplateColumns: "28px 1fr 90px 88px 96px",
+                    gap: 8, padding: "8px 14px",
+                    background: "linear-gradient(to right,#fff7ed,#fef3c7)",
+                    fontSize: 9, fontWeight: 700, color: "#ea580c",
+                    textTransform: "uppercase", letterSpacing: "0.06em",
+                  }}>
+                    <span>#</span>
+                    <span>{t("நன்கொடையாளர்","Donor")}</span>
+                    <span style={{ textAlign: "right" }}>{t("தொகை","Amount")}</span>
+                    <span>{t("தேதி","Date")}</span>
+                    <span>{t("பரிவர்த்தனை","Trans. ID")}</span>
+                  </div>
+
+                  {sortedApproved.map((d, idx) => (
+                    <div
+                      key={d.id}
+                      style={{
+                        display: "grid", gridTemplateColumns: "28px 1fr 90px 88px 96px",
+                        gap: 8, padding: "9px 14px", alignItems: "center",
+                        borderTop: "1px solid #fff7ed",
+                        background: idx % 2 === 0 ? "#ffffff" : "#fffbf5",
+                        fontSize: 11,
+                      }}
+                    >
+                      <span style={{ color: "#fdba74", fontWeight: 700, fontSize: 10 }}>{idx + 1}</span>
+                      <div>
+                        <p style={{ fontWeight: 700, color: "#7c2d12", margin: 0, lineHeight: 1.3 }}>
+                          {d.anonymous ? t("அடையாளம் மறை","Anonymous") : d.donorName}
+                        </p>
+                        {d.place && (
+                          <p style={{ fontSize: 9, color: "#fb923c", margin: 0, marginTop: 1 }}>{d.place}</p>
+                        )}
+                      </div>
+                      <span style={{ fontWeight: 800, textAlign: "right", color: "#c2410c", fontSize: 12 }}>
+                        {`₹${Number(d.amount).toLocaleString("en-IN")}`}
+                      </span>
+                      <span style={{ color: "#92400e", whiteSpace: "nowrap", fontSize: 10 }}>
+                        {new Date(d.reviewedAt || d.createdAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })}
+                      </span>
+                      <span style={{ color: "#d97706", fontFamily: "monospace", fontSize: 9, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {d.transactionId}
+                      </span>
+                    </div>
+                  ))}
+
+                  {/* Total row */}
+                  <div style={{
+                    display: "grid", gridTemplateColumns: "28px 1fr 90px 88px 96px",
+                    gap: 8, padding: "10px 14px", alignItems: "center",
+                    borderTop: "2px solid #fed7aa",
+                    background: "linear-gradient(to right,#fff7ed,#fef3c7)",
+                  }}>
+                    <span />
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#92400e" }}>
+                      {t("மொத்த அங்கீகரித்தவை","Total Approved")}
+                    </span>
+                    <span style={{ fontSize: 14, fontWeight: 800, textAlign: "right", color: "#c2410c" }}>
+                      {fmt(totalApproved)}
+                    </span>
+                    <span /><span />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Pending section */}
+            {pending.length > 0 && (
+              <div style={{ padding: "0 20px 16px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+                  <AlertCircle style={{ width: 14, height: 14, color: "#d97706", flexShrink: 0 }} />
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#7c2d12" }}>
+                    {t("நிலுவையில் உள்ளவை","Pending Donations")} ({pending.length})
                   </span>
-                  <span /><span />
+                </div>
+                <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #fed7aa" }}>
+                  <div style={{
+                    display: "grid", gridTemplateColumns: "28px 1fr 90px 88px",
+                    gap: 8, padding: "8px 14px",
+                    background: "linear-gradient(to right,#fffbeb,#fef9c3)",
+                    fontSize: 9, fontWeight: 700, color: "#d97706", textTransform: "uppercase", letterSpacing: "0.06em",
+                  }}>
+                    <span>#</span><span>{t("நன்கொடையாளர்","Donor")}</span>
+                    <span style={{ textAlign: "right" }}>{t("தொகை","Amount")}</span>
+                    <span>{t("சமர்ப்பித்த தேதி","Submitted")}</span>
+                  </div>
+                  {pending.map((d, idx) => (
+                    <div key={d.id} style={{
+                      display: "grid", gridTemplateColumns: "28px 1fr 90px 88px",
+                      gap: 8, padding: "9px 14px", alignItems: "center",
+                      borderTop: "1px solid #fef3c7",
+                      background: idx % 2 === 0 ? "#ffffff" : "#fffdf5",
+                      fontSize: 11,
+                    }}>
+                      <span style={{ color: "#fcd34d", fontWeight: 700, fontSize: 10 }}>{idx + 1}</span>
+                      <div>
+                        <p style={{ fontWeight: 700, color: "#7c2d12", margin: 0 }}>{d.anonymous ? t("அடையாளம் மறை","Anonymous") : d.donorName}</p>
+                        {d.place && <p style={{ fontSize: 9, color: "#fb923c", margin: 0, marginTop: 1 }}>{d.place}</p>}
+                      </div>
+                      <span style={{ fontWeight: 800, textAlign: "right", color: "#d97706", fontSize: 12 }}>
+                        {`₹${Number(d.amount).toLocaleString("en-IN")}`}
+                      </span>
+                      <span style={{ color: "#92400e", whiteSpace: "nowrap", fontSize: 10 }}>
+                        {new Date(d.createdAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Section: Pending */}
-          {pending.length > 0 && (
-            <div className="px-6 pb-4">
-              <h2 className="text-sm font-extrabold text-orange-900 mb-3 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-amber-500" />
-                Pending Donations ({pending.length})
-              </h2>
-              <div className="rounded-xl overflow-hidden border border-orange-100">
-                <div className="grid grid-cols-[32px_1fr_auto_auto] gap-2 px-4 py-2.5 text-[10px] font-bold text-orange-400 uppercase tracking-wider"
-                  style={{ background: "#fff3e0" }}>
-                  <span>#</span><span>Donor</span><span className="text-right">Amount</span><span>Submitted</span>
-                </div>
-                {pending.map((d, idx) => (
-                  <div key={d.id}
-                    className="grid grid-cols-[32px_1fr_auto_auto] gap-2 px-4 py-2.5 items-center border-t border-orange-50 text-xs"
-                    style={{ background: idx % 2 === 0 ? "#ffffff" : "#fffbf5" }}>
-                    <span className="text-orange-300 font-bold">{idx + 1}</span>
-                    <div>
-                      <p className="font-bold text-orange-900">{d.anonymous ? "Anonymous" : d.donorName}</p>
-                      {d.place && <p className="text-orange-400 text-[10px]">{d.place}</p>}
-                    </div>
-                    <span className="font-extrabold text-right" style={{ color: "#d97706" }}>
-                      {`₹${Number(d.amount).toLocaleString("en-IN")}`}
-                    </span>
-                    <span className="text-orange-400 whitespace-nowrap">
-                      {new Date(d.createdAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            {/* Footer */}
+            <div style={{
+              padding: "12px 20px",
+              borderTop: "1px solid #fed7aa",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              background: "linear-gradient(to right,#fff7ed,#fffbeb)",
+            }}>
+              <p style={{ fontSize: 9, color: "#fb923c", margin: 0 }}>
+                ஸ்வாமியே சரணம் ஐயப்பா 🙏 · அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில், வடமதுரை
+              </p>
+              <p style={{ fontSize: 9, color: "#fdba74", fontFamily: "monospace", margin: 0 }}>
+                Powered by Automystics Technologies
+              </p>
             </div>
-          )}
-
-          {/* Footer */}
-          <div className="px-6 py-4 border-t border-orange-100 flex items-center justify-between">
-            <p className="text-[10px] text-orange-300">
-              அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் · Vadamadurai
-            </p>
-            <p className="text-[10px] text-orange-300 font-mono">
-              Powered by Automystics Technologies
-            </p>
-          </div>
-        </div>
+          </div>{/* /z-1 */}
+        </div>{/* /report */}
       </div>
     </div>
   );
