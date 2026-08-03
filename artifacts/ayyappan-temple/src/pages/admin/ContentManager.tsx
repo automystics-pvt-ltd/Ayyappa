@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { api } from '@/lib/api';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Trash2, Save, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, Save, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -254,6 +254,15 @@ export default function ContentManager() {
     } finally { setSaving(false); }
   }, [settings, toast]);
 
+  // ── Setup-progress totals (derived from persisted baseline) ──────────────
+  // Must be above the early-return guard so hook order is stable every render.
+  const { totalFields, customizedFields } = useMemo(() => {
+    const allKeys = Object.values(TAB_KEYS).flat();
+    const total = allKeys.length;
+    const customized = allKeys.filter(k => !isDefaultSaved(savedSettings, k)).length;
+    return { totalFields: total, customizedFields: customized };
+  }, [savedSettings]);
+
   if (!loaded) {
     return (
       <AdminLayout>
@@ -275,12 +284,52 @@ export default function ContentManager() {
   // so typing in a field does not prematurely clear the badge.
   const def = (key: string) => isDefaultSaved(savedSettings, key);
 
+  const allCustomized = customizedFields === totalFields;
+  const progressPct   = totalFields > 0 ? Math.round((customizedFields / totalFields) * 100) : 100;
+
   return (
     <AdminLayout>
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">🖊️ {t('இணையதள உள்ளடக்க மேலாண்மை','Website Content Manager')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('இங்கு மாற்றியதும் இணையதளில் உடனே காட்டப்படும்','Changes appear on the website immediately')}</p>
+        </div>
+
+        {/* ── Setup progress banner ── */}
+        <div className={`mb-5 rounded-2xl border px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3 ${
+          allCustomized
+            ? 'bg-green-50 border-green-200'
+            : 'bg-amber-50 border-amber-200'
+        }`}>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-2">
+              {allCustomized ? (
+                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+              ) : (
+                <span className="text-lg leading-none">⚙️</span>
+              )}
+              <span className={`text-sm font-semibold ${allCustomized ? 'text-green-700' : 'text-amber-700'}`}>
+                {allCustomized
+                  ? t('அனைத்து புலங்களும் தனிப்பயனாக்கப்பட்டன!', 'All fields customized!')
+                  : t('தொகுப்பு முன்னேற்றம்', 'Setup progress')}
+              </span>
+              <span className={`text-xs font-medium ml-auto sm:ml-0 ${allCustomized ? 'text-green-600' : 'text-amber-600'}`}>
+                {customizedFields} / {totalFields} {t('புலங்கள்', 'fields')}
+              </span>
+            </div>
+            {/* Progress bar */}
+            <div className="w-full bg-white rounded-full h-2.5 overflow-hidden border border-gray-200">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${allCustomized ? 'bg-green-400' : 'bg-amber-400'}`}
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+            {!allCustomized && (
+              <p className="text-xs text-amber-600 mt-1.5">
+                {totalFields - customizedFields} {t('புலங்கள் இன்னும் இயல்புநிலையில் உள்ளன — கீழே உள்ள தாவல்களில் தனிப்பயனாக்கவும்.', 'fields still using defaults — customise them in the tabs below.')}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Tab bar */}
