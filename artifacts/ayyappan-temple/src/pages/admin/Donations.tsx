@@ -465,7 +465,7 @@ function DonationsReport({
                           <p style={{ fontSize: 9, color: "#7c3aed", margin: 0, marginTop: 1 }}>{c.place}</p>
                         )}
                       </div>
-                      <span style={{ color: "#5b21b6", fontSize: 11 }}>{c.description}</span>
+                      <span style={{ color: "#5b21b6", fontSize: 11, display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.description}</span>
                       <span style={{ color: "#6d28d9", whiteSpace: "nowrap", fontSize: 10 }}>
                         {new Date(c.contributedAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })}
                       </span>
