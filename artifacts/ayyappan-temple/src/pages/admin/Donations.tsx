@@ -64,6 +64,12 @@ function DonationsReport({
   const pending  = donations.filter(d => d.status === "pending");
   const totalApproved = approved.reduce((s, d) => s + Number(d.amount), 0);
   const fmt = (a: number) => `₹${a.toLocaleString("en-IN")}`;
+  /** Compact format for narrow stat cells: ₹500 → ₹500, ₹5000 → ₹5K, ₹100000 → ₹1L */
+  const fmtCompact = (a: number) => {
+    if (a >= 100_000) return `₹${(a / 100_000).toLocaleString("en-IN", { maximumFractionDigits: 1 })}L`;
+    if (a >= 1_000)   return `₹${(a / 1_000).toLocaleString("en-IN", { maximumFractionDigits: 1 })}K`;
+    return `₹${a}`;
+  };
   const today = new Date().toLocaleDateString("en-IN", { day:"2-digit", month:"long", year:"numeric" });
 
   const sortLabel = sortField === "date"
@@ -280,16 +286,16 @@ function DonationsReport({
             {/* Stats */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", background: "#fff", borderBottom: "1px solid #fed7aa" }}>
               {[
-                { label: t("மொத்த நன்கொடைகள்","Total Donations"), value: donations.length.toString(), sub: t("அனைத்தும்","All statuses"), color: "#ea580c" },
-                { label: t("அங்கீகரிக்கப்பட்டவை","Approved"),       value: approved.length.toString(), sub: t("உறுதிப்படுத்தப்பட்டது","Confirmed"),  color: "#10b981" },
-                { label: t("நிலுவையில்","Pending"),                  value: pending.length.toString(),  sub: t("மதிப்பாய்வு தேவை","Awaiting review"), color: "#d97706" },
-                { label: t("திரட்டிய தொகை","Amount Raised"),         value: fmt(totalApproved),         sub: t("அங்கீகரித்த மொத்தம்","Approved total"), color: "#c2410c" },
-                { label: t("இயற்கை நன்கொடைகள்","In-Kind"),           value: contributions.length.toString(), sub: t("பொருள் நன்கொடைகள்","Material gifts"), color: "#7c3aed" },
+                { label: t("மொத்த நன்கொடைகள்","Total"), value: donations.length.toString(), sub: t("அனைத்தும்","All"), color: "#ea580c" },
+                { label: t("அங்கீகரிக்கப்பட்டவை","Approved"), value: approved.length.toString(), sub: t("உறுதிப்படுத்தப்பட்டது","Confirmed"), color: "#10b981" },
+                { label: t("நிலுவையில்","Pending"), value: pending.length.toString(), sub: t("மதிப்பாய்வு","Review"), color: "#d97706" },
+                { label: t("திரட்டிய தொகை","Raised"), value: fmtCompact(totalApproved), sub: t("அங்கீகரித்தவை","Approved"), color: "#c2410c" },
+                { label: t("இயற்கை நன்கொடைகள்","In-Kind"), value: contributions.length.toString(), sub: t("பொருட்கள்","Gifts"), color: "#7c3aed" },
               ].map((s, i) => (
-                <div key={i} style={{ padding: "14px 10px", textAlign: "center", borderRight: i < 4 ? "1px solid #fed7aa" : undefined }}>
-                  <p style={{ fontSize: 22, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</p>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: "#44403c", marginTop: 3 }}>{s.label}</p>
-                  <p style={{ fontSize: 9, color: "#a8a29e" }}>{s.sub}</p>
+                <div key={i} style={{ padding: "10px 4px", textAlign: "center", borderRight: i < 4 ? "1px solid #fed7aa" : undefined }}>
+                  <p style={{ fontSize: 17, fontWeight: 800, color: s.color, lineHeight: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.value}</p>
+                  <p style={{ fontSize: 8, fontWeight: 700, color: "#44403c", marginTop: 3, lineHeight: 1.2, wordBreak: "break-word", hyphens: "auto" }}>{s.label}</p>
+                  <p style={{ fontSize: 7, color: "#a8a29e", lineHeight: 1.2 }}>{s.sub}</p>
                 </div>
               ))}
             </div>
