@@ -36,6 +36,7 @@
     "test:content-manager-badge-browser": "node ./tests/content-manager-badge.browser.test.mjs",
     "test:donations-report-watermark": "node ./tests/donations-report-watermark.test.mjs",
     "test:donations-report-inkind": "node ./tests/donations-report-inkind.test.mjs",
+    "test:donations-report-narrow": "node ./tests/donations-report-narrow.test.mjs",
     "test:donations-report-inkind-long-desc": "node ./tests/donations-report-inkind-long-desc.test.mjs"
   },
   "dependencies": {
