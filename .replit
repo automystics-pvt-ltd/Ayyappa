@@ -30,18 +30,6 @@ args = "test:receipt-long-name"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "test:receipt-long-amount"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "test:receipt-pdf-page-count"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "test:receipt-small-amount"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "test:inkind-receipt-long-desc"
 
 [[workflows.workflow.tasks]]
@@ -51,6 +39,10 @@ args = "test:inkind-receipt-mobile"
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "test:ticker-auto-refresh"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test:receipt-strip-whatsapp"
 
 [[workflows.workflow]]
 name = "test:visits-dedup"
@@ -81,39 +73,6 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pnpm --filter @workspace/api-server run test:receipt-long-name"
-
-[[workflows.workflow]]
-name = "test:receipt-long-amount"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm --filter @workspace/api-server run test:receipt-long-amount"
-
-[workflows.workflow.metadata]
-outputType = "console"
-
-[[workflows.workflow]]
-name = "test:receipt-pdf-page-count"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm --filter @workspace/api-server run test:receipt-pdf-page-count"
-
-[workflows.workflow.metadata]
-outputType = "console"
-
-[[workflows.workflow]]
-name = "test:receipt-small-amount"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm --filter @workspace/api-server run test:receipt-small-amount"
-
-[workflows.workflow.metadata]
-outputType = "console"
 
 [[workflows.workflow]]
 name = "test:inkind-receipt-long-desc"
@@ -147,6 +106,17 @@ args = "pnpm --filter @workspace/api-server run test:ticker-auto-refresh"
 
 [workflows.workflow.metadata]
 isValidation = true
+
+[[workflows.workflow]]
+name = "test:receipt-strip-whatsapp"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/api-server run test:receipt-strip-whatsapp"
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [agent]
 stack = "PNPM_WORKSPACE"
