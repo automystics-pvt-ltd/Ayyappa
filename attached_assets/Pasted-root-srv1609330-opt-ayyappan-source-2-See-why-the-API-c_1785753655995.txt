@@ -1,0 +1,156 @@
+root@srv1609330:/opt/ayyappan-source# # 2. See why the API crashed
+pm2 logs ayyappan-api --lines 30
+[TAILING] Tailing last 30 lines for [ayyappan-api] process (change the value with --lines option)
+/root/.pm2/logs/ayyappan-api-out-42.log last 30 lines:
+42|ayyappa | 1785744966475,"pid":3822956,"hostname":"srv1609330","req":{"id":16,"method":"GET","url":"/api/auth/me"},"res":{"statusCode":200},"responseTime":37,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744966526,"pid":3822956,"hostname":"srv1609330","req":{"id":13,"method":"GET","url":"/api/donations/approved"},"res":{"statusCode":304},"responseTime":120,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744966538,"pid":3822956,"hostname":"srv1609330","req":{"id":14,"method":"GET","url":"/api/donations/stats"},"res":{"statusCode":304},"responseTime":124,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744966565,"pid":3822956,"hostname":"srv1609330","req":{"id":15,"method":"POST","url":"/api/visits/track"},"res":{"statusCode":204},"responseTime":143,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744966576,"pid":3822956,"hostname":"srv1609330","req":{"id":17,"method":"GET","url":"/api/visits/count"},"res":{"statusCode":304},"responseTime":133,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744966665,"pid":3822956,"hostname":"srv1609330","req":{"id":18,"method":"GET","url":"/api/settings"},"res":{"statusCode":304},"responseTime":23,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744966710,"pid":3822956,"hostname":"srv1609330","req":{"id":19,"method":"GET","url":"/api/gallery/albums"},"res":{"statusCode":304},"responseTime":14,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968144,"pid":3822956,"hostname":"srv1609330","req":{"id":20,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":46,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968148,"pid":3822956,"hostname":"srv1609330","req":{"id":21,"method":"GET","url":"/api/events"},"res":{"statusCode":304},"responseTime":49,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968173,"pid":3822956,"hostname":"srv1609330","req":{"id":23,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":50,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968174,"pid":3822956,"hostname":"srv1609330","req":{"id":22,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":66,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968183,"pid":3822956,"hostname":"srv1609330","req":{"id":24,"method":"GET","url":"/api/events"},"res":{"statusCode":304},"responseTime":58,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968233,"pid":3822956,"hostname":"srv1609330","req":{"id":25,"method":"GET","url":"/api/donations/recent-ticker"},"res":{"statusCode":304},"responseTime":89,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968368,"pid":3822956,"hostname":"srv1609330","req":{"id":26,"method":"GET","url":"/api/contributions"},"res":{"statusCode":500},"err":{"type":"Error","message":"failed with status code 500","stack":"Error: failed with status code 500\n    at onResFinished (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:115:39)\n    at ServerResponse.onResponseComplete (/node_modules/.pnpm/pino-http@10.5.0/node_modules/pino-http/logger.js:178:14)\n    at ServerResponse.emit (node:events:521:24)\n    at onFinish (node:_http_outgoing:1031:10)\n    at callback (node:internal/streams/writable:764:21)\n    at afterWrite (node:internal/streams/writable:708:5)\n    at afterWriteTick (node:internal/streams/writable:694:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"},"responseTime":13,"msg":"request errored"}
+42|ayyappa | {"level":30,"time":1785744968404,"pid":3822956,"hostname":"srv1609330","req":{"id":27,"method":"GET","url":"/api/donations/stats"},"res":{"statusCode":304},"responseTime":34,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968414,"pid":3822956,"hostname":"srv1609330","req":{"id":28,"method":"GET","url":"/api/donations/approved"},"res":{"statusCode":304},"responseTime":33,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968414,"pid":3822956,"hostname":"srv1609330","req":{"id":29,"method":"POST","url":"/api/visits/track"},"res":{"statusCode":204},"responseTime":14,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968419,"pid":3822956,"hostname":"srv1609330","req":{"id":30,"method":"GET","url":"/api/settings"},"res":{"statusCode":304},"responseTime":18,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968455,"pid":3822956,"hostname":"srv1609330","req":{"id":31,"method":"GET","url":"/api/auth/me"},"res":{"statusCode":200},"responseTime":10,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968584,"pid":3822956,"hostname":"srv1609330","req":{"id":32,"method":"GET","url":"/api/gallery/albums"},"res":{"statusCode":304},"responseTime":10,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968634,"pid":3822956,"hostname":"srv1609330","req":{"id":33,"method":"GET","url":"/api/visits/count"},"res":{"statusCode":304},"responseTime":12,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785744968641,"pid":3822956,"hostname":"srv1609330","req":{"id":34,"method":"GET","url":"/api/settings"},"res":{"statusCode":304},"responseTime":9,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785745268731,"pid":3822956,"hostname":"srv1609330","req":{"id":35,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":35,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785745269146,"pid":3822956,"hostname":"srv1609330","req":{"id":36,"method":"GET","url":"/api/donations/recent-ticker"},"res":{"statusCode":304},"responseTime":21,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785745313797,"pid":3822956,"hostname":"srv1609330","req":{"id":37,"method":"GET","url":"/api/visits/count"},"res":{"statusCode":304},"responseTime":56,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785745568822,"pid":3822956,"hostname":"srv1609330","req":{"id":38,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":28,"msg":"request completed"}
+42|ayyappa | {"level":30,"time":1785745569256,"pid":3822956,"hostname":"srv1609330","req":{"id":39,"method":"GET","url":"/api/donations/recent-ticker"},"res":{"statusCode":304},"responseTime":25,"msg":"request completed"}
+
+/root/.pm2/logs/ayyappan-api-error-42.log last 30 lines:
+42|ayyappa |   column: undefined,
+42|ayyappa |   dataType: undefined,
+42|ayyappa |   constraint: undefined,
+42|ayyappa |   file: 'aclchk.c',
+42|ayyappa |   line: '2950',
+42|ayyappa |   routine: 'aclcheck_error'
+42|ayyappa | }
+42|ayyappa | error: must be owner of table sessions
+42|ayyappa |     at <anonymous> (/node_modules/.pnpm/pg@8.22.0/node_modules/pg/lib/client.js:652:17)
+42|ayyappa |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+42|ayyappa |     at async bootstrapSessionsTable (/opt/ayyappan-api/src/lib/bootstrap.ts:26:5)
+42|ayyappa |     at async <anonymous> (/opt/ayyappan-api/src/index.ts:20:1) {
+42|ayyappa |   length: 91,
+42|ayyappa |   severity: 'ERROR',
+42|ayyappa |   code: '42501',
+42|ayyappa |   detail: undefined,
+42|ayyappa |   hint: undefined,
+42|ayyappa |   position: undefined,
+42|ayyappa |   internalPosition: undefined,
+42|ayyappa |   internalQuery: undefined,
+42|ayyappa |   where: undefined,
+42|ayyappa |   schema: undefined,
+42|ayyappa |   table: undefined,
+42|ayyappa |   column: undefined,
+42|ayyappa |   dataType: undefined,
+42|ayyappa |   constraint: undefined,
+42|ayyappa |   file: 'aclchk.c',
+42|ayyappa |   line: '2950',
+42|ayyappa |   routine: 'aclcheck_error'
+42|ayyappa | }
+
+42|ayyappan-api  | error: must be owner of table sessions
+42|ayyappan-api  |     at <anonymous> (/node_modules/.pnpm/pg@8.22.0/node_modules/pg/lib/client.js:652:17)
+42|ayyappan-api  |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+42|ayyappan-api  |     at async bootstrapSessionsTable (/opt/ayyappan-api/src/lib/bootstrap.ts:26:5)
+42|ayyappan-api  |     at async <anonymous> (/opt/ayyappan-api/src/index.ts:20:1) {
+42|ayyappan-api  |   length: 91,
+42|ayyappan-api  |   severity: 'ERROR',
+42|ayyappan-api  |   code: '42501',
+42|ayyappan-api  |   detail: undefined,
+42|ayyappan-api  |   hint: undefined,
+42|ayyappan-api  |   position: undefined,
+42|ayyappan-api  |   internalPosition: undefined,
+42|ayyappan-api  |   internalQuery: undefined,
+42|ayyappan-api  |   where: undefined,
+42|ayyappan-api  |   schema: undefined,
+42|ayyappan-api  |   table: undefined,
+42|ayyappan-api  |   column: undefined,
+42|ayyappan-api  |   dataType: undefined,
+42|ayyappan-api  |   constraint: undefined,
+42|ayyappan-api  |   file: 'aclchk.c',
+42|ayyappan-api  |   line: '2950',
+42|ayyappan-api  |   routine: 'aclcheck_error'
+42|ayyappan-api  | }
+42|ayyappan-api  | error: must be owner of table sessions
+42|ayyappan-api  |     at <anonymous> (/node_modules/.pnpm/pg@8.22.0/node_modules/pg/lib/client.js:652:17)
+42|ayyappan-api  |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+42|ayyappan-api  |     at async bootstrapSessionsTable (/opt/ayyappan-api/src/lib/bootstrap.ts:26:5)
+42|ayyappan-api  |     at async <anonymous> (/opt/ayyappan-api/src/index.ts:20:1) {
+42|ayyappan-api  |   length: 91,
+42|ayyappan-api  |   severity: 'ERROR',
+42|ayyappan-api  |   code: '42501',
+42|ayyappan-api  |   detail: undefined,
+42|ayyappan-api  |   hint: undefined,
+42|ayyappan-api  |   position: undefined,
+42|ayyappan-api  |   internalPosition: undefined,
+42|ayyappan-api  |   internalQuery: undefined,
+42|ayyappan-api  |   where: undefined,
+42|ayyappan-api  |   schema: undefined,
+42|ayyappan-api  |   table: undefined,
+42|ayyappan-api  |   column: undefined,
+42|ayyappan-api  |   dataType: undefined,
+42|ayyappan-api  |   constraint: undefined,
+42|ayyappan-api  |   file: 'aclchk.c',
+42|ayyappan-api  |   line: '2950',
+42|ayyappan-api  |   routine: 'aclcheck_error'
+42|ayyappan-api  | }
+42|ayyappan-api  | error: must be owner of table sessions
+42|ayyappan-api  |     at <anonymous> (/node_modules/.pnpm/pg@8.22.0/node_modules/pg/lib/client.js:652:17)
+42|ayyappan-api  |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+42|ayyappan-api  |     at async bootstrapSessionsTable (/opt/ayyappan-api/src/lib/bootstrap.ts:26:5)
+42|ayyappan-api  |     at async <anonymous> (/opt/ayyappan-api/src/index.ts:20:1) {
+42|ayyappan-api  |   length: 91,
+42|ayyappan-api  |   severity: 'ERROR',
+42|ayyappan-api  |   code: '42501',
+42|ayyappan-api  |   detail: undefined,
+42|ayyappan-api  |   hint: undefined,
+42|ayyappan-api  |   position: undefined,
+42|ayyappan-api  |   internalPosition: undefined,
+42|ayyappan-api  |   internalQuery: undefined,
+42|ayyappan-api  |   where: undefined,
+42|ayyappan-api  |   schema: undefined,
+42|ayyappan-api  |   table: undefined,
+42|ayyappan-api  |   column: undefined,
+42|ayyappan-api  |   dataType: undefined,
+42|ayyappan-api  |   constraint: undefined,
+42|ayyappan-api  |   file: 'aclchk.c',
+42|ayyappan-api  |   line: '2950',
+42|ayyappan-api  |   routine: 'aclcheck_error'
+42|ayyappan-api  | }
+42|ayyappan-api  | error: must be owner of table sessions
+42|ayyappan-api  |     at <anonymous> (/node_modules/.pnpm/pg@8.22.0/node_modules/pg/lib/client.js:652:17)
+42|ayyappan-api  |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+42|ayyappan-api  |     at async bootstrapSessionsTable (/opt/ayyappan-api/src/lib/bootstrap.ts:26:5)
+42|ayyappan-api  |     at async <anonymous> (/opt/ayyappan-api/src/index.ts:20:1) {
+42|ayyappan-api  |   length: 91,
+42|ayyappan-api  |   severity: 'ERROR',
+42|ayyappan-api  |   code: '42501',
+42|ayyappan-api  |   detail: undefined,
+42|ayyappan-api  |   hint: undefined,
+42|ayyappan-api  |   position: undefined,
+42|ayyappan-api  |   internalPosition: undefined,
+42|ayyappan-api  |   internalQuery: undefined,
+42|ayyappan-api  |   where: undefined,
+42|ayyappan-api  |   schema: undefined,
+42|ayyappan-api  |   table: undefined,
+42|ayyappan-api  |   column: undefined,
+42|ayyappan-api  |   dataType: undefined,
+42|ayyappan-api  |   constraint: undefined,
+42|ayyappan-api  |   file: 'aclchk.c',
+42|ayyappan-api  |   line: '2950',
+42|ayyappan-api  |   routine: 'aclcheck_error'
+42|ayyappan-api  | }
