@@ -1,5 +1,6 @@
 -- Ayyappan Temple — full database schema
--- Run once on a fresh PostgreSQL database
+-- Idempotent: safe to run on an existing database (CREATE IF NOT EXISTS, INSERT … ON CONFLICT DO NOTHING)
+-- Run automatically by deploy.sh on every deploy.
 
 CREATE TABLE IF NOT EXISTS admins (
   id              SERIAL PRIMARY KEY,
@@ -93,7 +94,36 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   created_at   TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Default site settings
+CREATE TABLE IF NOT EXISTS in_kind_contributions (
+  id              SERIAL PRIMARY KEY,
+  receipt_token   TEXT UNIQUE,
+  donor_name      VARCHAR(200) NOT NULL,
+  place           VARCHAR(200),
+  description     TEXT NOT NULL,
+  contributed_at  TIMESTAMPTZ DEFAULT NOW(),
+  created_by      INTEGER,
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  is_active       BOOLEAN DEFAULT TRUE
+);
+
+-- Session store (connect-pg-simple / express-session)
+CREATE TABLE IF NOT EXISTS sessions (
+  sid    VARCHAR        NOT NULL COLLATE "default",
+  sess   JSON           NOT NULL,
+  expire TIMESTAMP(6)   NOT NULL,
+  CONSTRAINT sessions_pkey PRIMARY KEY (sid) NOT DEFERRABLE INITIALLY IMMEDIATE
+) WITH (OIDS=FALSE);
+CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON sessions (expire);
+
+CREATE TABLE IF NOT EXISTS visits (
+  id          SERIAL PRIMARY KEY,
+  day_key     VARCHAR(10) NOT NULL,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS visits_day_key_idx ON visits(day_key);
+CREATE INDEX IF NOT EXISTS visits_created_at_idx ON visits(created_at DESC);
+
+-- ── Default site settings (INSERT … ON CONFLICT DO NOTHING = never overwrites) ──
 INSERT INTO site_settings (key, value) VALUES
   ('temple_name',       'அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில்'),
   ('temple_location',   'வடமதுரை, திண்டுக்கல்'),
@@ -110,7 +140,7 @@ INSERT INTO site_settings (key, value) VALUES
   ('gpay_number',       '')
 ON CONFLICT (key) DO NOTHING;
 
--- IOB bank details — fills in empty values; does NOT overwrite what admin has set
+-- IOB bank details — fills in empty values only; never overwrites what admin has saved
 INSERT INTO site_settings (key, value) VALUES
   ('bank_name',           'Indian Overseas Bank (IOB)'),
   ('bank_account_name',   'Mr. N. Anand'),
@@ -122,41 +152,3 @@ INSERT INTO site_settings (key, value) VALUES
 ON CONFLICT (key) DO UPDATE
   SET value = EXCLUDED.value
   WHERE site_settings.value IS NULL OR site_settings.value = '';
-
-CREATE TABLE IF NOT EXISTS in_kind_contributions (
-  id              SERIAL PRIMARY KEY,
-  receipt_token   TEXT UNIQUE,
-  donor_name      VARCHAR(200) NOT NULL,
-  place           VARCHAR(200),
-  description     TEXT NOT NULL,
-  contributed_at  TIMESTAMPTZ DEFAULT NOW(),
-  created_by      INTEGER,
-  created_at      TIMESTAMPTZ DEFAULT NOW(),
-  is_active       BOOLEAN DEFAULT TRUE
-);
-
--- Session store (connect-pg-simple)
-CREATE TABLE IF NOT EXISTS "sessions" (
-  "sid"    varchar   NOT NULL COLLATE "default",
-  "sess"   json      NOT NULL,
-  "expire" timestamp(6) NOT NULL,
-  CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE
-) WITH (OIDS=FALSE);
-CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "sessions" ("expire");
-
-CREATE TABLE IF NOT EXISTS visits (
-  id          SERIAL PRIMARY KEY,
-  day_key     VARCHAR(10) NOT NULL,
-  created_at  TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS visits_day_key_idx ON visits(day_key);
-CREATE INDEX IF NOT EXISTS visits_created_at_idx ON visits(created_at DESC);
-
--- Session store table used by connect-pg-simple (express-session)
-CREATE TABLE IF NOT EXISTS sessions (
-  "sid"    VARCHAR        NOT NULL COLLATE "default",
-  "sess"   JSON           NOT NULL,
-  "expire" TIMESTAMP(6)   NOT NULL,
-  CONSTRAINT "sessions_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE
-);
-CREATE INDEX IF NOT EXISTS "IDX_sessions_expire" ON sessions ("expire");

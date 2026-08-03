@@ -1,3 +1,6 @@
 - [Object Storage Setup](object-storage.md) — bucket provisioned; screenshot upload flow uses presigned GCS URLs via /api/donations/upload-screenshot-url (public, image-only, 10 MB cap)
 - [Drizzle push non-interactive](drizzle-push.md) — drizzle-kit push prompts kill non-TTY shells; apply DDL via psql + deploy/schema.sql, then rebuild lib/db dist
 - [Donation Form Architecture](donation-form.md) — form has inline validation, place field, file upload; objectPath stored in donations.screenshot_url; admin serves via /api/storage/objects/*
+- [Sessions table bootstrap](sessions-bootstrap.md) — sessions table is not Drizzle-managed; bootstrapSessionsTable() in bootstrap.ts creates it with inline SQL on every startup (idempotent); this is the only reliable path for both dev and production
+- [Production first deploy](production-first-deploy.md) — production DB is provisioned only on first Publish; no data or admin exists until then; bootstrap auto-creates sessions table + first admin on startup
+- [Tamil badge label overflow](tamil-badge-overflow.md) — single Tamil words (no spaces) cannot wrap; always check rendered width vs badge width before using long labels inside fixed-width badges
