@@ -26,14 +26,6 @@ args = "test:admin-self-protect"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "test:receipt-long-name"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "test:inkind-receipt-long-desc"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "test:inkind-receipt-mobile"
 
 [[workflows.workflow.tasks]]
@@ -43,6 +35,14 @@ args = "test:ticker-auto-refresh"
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "test:receipt-strip-whatsapp"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test:inkind-receipt-strip-narrow"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test:inkind-receipt-long-desc"
 
 [[workflows.workflow]]
 name = "test:visits-dedup"
@@ -65,25 +65,6 @@ args = "pnpm --filter @workspace/api-server run test:admin-self-protect"
 
 [workflows.workflow.metadata]
 isValidation = true
-
-[[workflows.workflow]]
-name = "test:receipt-long-name"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm --filter @workspace/api-server run test:receipt-long-name"
-
-[[workflows.workflow]]
-name = "test:inkind-receipt-long-desc"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "pnpm --filter @workspace/api-server run test:inkind-receipt-long-desc"
-
-[workflows.workflow.metadata]
-outputType = "console"
 
 [[workflows.workflow]]
 name = "test:inkind-receipt-mobile"
@@ -117,6 +98,22 @@ args = "pnpm --filter @workspace/api-server run test:receipt-strip-whatsapp"
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow]]
+name = "test:inkind-receipt-strip-narrow"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/api-server run test:inkind-receipt-strip-narrow"
+
+[[workflows.workflow]]
+name = "test:inkind-receipt-long-desc"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/api-server run test:inkind-receipt-long-desc"
 
 [agent]
 stack = "PNPM_WORKSPACE"
