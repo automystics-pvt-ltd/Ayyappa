@@ -13,6 +13,11 @@ type Donation = {
   createdAt: string; reviewedAt?: string;
 };
 
+type Contribution = {
+  id: number; receiptToken?: string; donorName: string; place?: string;
+  description: string; contributedAt: string; createdAt: string; isActive: boolean;
+};
+
 const TABS = ["all", "pending", "approved", "rejected"] as const;
 const TAB_META = {
   all:      { labelTa: "அனைத்தும்",            labelEn: "All",       color: "from-orange-500 to-amber-400" },
@@ -42,9 +47,11 @@ type SortDir   = "desc" | "asc";
 
 function DonationsReport({
   donations,
+  contributions,
   onClose,
 }: {
   donations: Donation[];
+  contributions: Contribution[];
   onClose: () => void;
 }) {
   const { t } = useLanguage();
@@ -115,10 +122,11 @@ function DonationsReport({
       const file = new File([blob], "donations-report.png", { type: "image/png" });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
+          const inKindSuffix = contributions.length > 0 ? `\nஇயற்கை நன்கொடைகள்: ${contributions.length}` : "";
           await navigator.share({
             files: [file],
             title: "நன்கொடை அறிக்கை",
-            text: `அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் — நன்கொடை அறிக்கை\n${today}\nமொத்தம்: ${fmt(totalApproved)}`,
+            text: `அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் — நன்கொடை அறிக்கை\n${today}\nமொத்தம்: ${fmt(totalApproved)}${inKindSuffix}`,
           });
           return; // share succeeded — nothing more to do
         } catch (err: unknown) {
@@ -135,7 +143,8 @@ function DonationsReport({
         a.href = objectUrl;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(objectUrl), 10_000);
-        const msg = encodeURIComponent(`அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் — நன்கொடை அறிக்கை\n${today}\nமொத்தம்: ${fmt(totalApproved)}`);
+        const inKindLine = contributions.length > 0 ? `\nஇயற்கை நன்கொடைகள்: ${contributions.length}` : "";
+        const msg = encodeURIComponent(`அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் — நன்கொடை அறிக்கை\n${today}\nமொத்தம்: ${fmt(totalApproved)}${inKindLine}`);
         setTimeout(() => window.open(`https://wa.me/?text=${msg}`, "_blank"), 500);
       }
     } finally { setBusy(""); }
@@ -269,14 +278,15 @@ function DonationsReport({
             </div>
 
             {/* Stats */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", background: "#fff", borderBottom: "1px solid #fed7aa" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", background: "#fff", borderBottom: "1px solid #fed7aa" }}>
               {[
                 { label: t("மொத்த நன்கொடைகள்","Total Donations"), value: donations.length.toString(), sub: t("அனைத்தும்","All statuses"), color: "#ea580c" },
                 { label: t("அங்கீகரிக்கப்பட்டவை","Approved"),       value: approved.length.toString(), sub: t("உறுதிப்படுத்தப்பட்டது","Confirmed"),  color: "#10b981" },
                 { label: t("நிலுவையில்","Pending"),                  value: pending.length.toString(),  sub: t("மதிப்பாய்வு தேவை","Awaiting review"), color: "#d97706" },
                 { label: t("திரட்டிய தொகை","Amount Raised"),         value: fmt(totalApproved),         sub: t("அங்கீகரித்த மொத்தம்","Approved total"), color: "#c2410c" },
+                { label: t("இயற்கை நன்கொடைகள்","In-Kind"),           value: contributions.length.toString(), sub: t("பொருள் நன்கொடைகள்","Material gifts"), color: "#7c3aed" },
               ].map((s, i) => (
-                <div key={i} style={{ padding: "14px 10px", textAlign: "center", borderRight: i < 3 ? "1px solid #fed7aa" : undefined }}>
+                <div key={i} style={{ padding: "14px 10px", textAlign: "center", borderRight: i < 4 ? "1px solid #fed7aa" : undefined }}>
                   <p style={{ fontSize: 22, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</p>
                   <p style={{ fontSize: 10, fontWeight: 700, color: "#44403c", marginTop: 3 }}>{s.label}</p>
                   <p style={{ fontSize: 9, color: "#a8a29e" }}>{s.sub}</p>
@@ -411,6 +421,54 @@ function DonationsReport({
               </div>
             )}
 
+            {/* In-Kind Contributions section */}
+            {contributions.length > 0 && (
+              <div style={{ padding: "0 20px 16px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+                  <span style={{ fontSize: 14 }}>🎁</span>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#7c2d12" }}>
+                    {t("இயற்கை நன்கொடைகள்","In-Kind Contributions")} ({contributions.length})
+                  </span>
+                </div>
+                <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #e9d5ff" }}>
+                  {/* Table head */}
+                  <div style={{
+                    display: "grid", gridTemplateColumns: "28px 1fr 1fr 88px",
+                    gap: 8, padding: "8px 14px",
+                    background: "linear-gradient(to right,#f5f3ff,#ede9fe)",
+                    fontSize: 9, fontWeight: 700, color: "#7c3aed",
+                    textTransform: "uppercase", letterSpacing: "0.06em",
+                  }}>
+                    <span>#</span>
+                    <span>{t("நன்கொடையாளர்","Contributor")}</span>
+                    <span>{t("பொருள் விவரம்","Item / Description")}</span>
+                    <span>{t("தேதி","Date")}</span>
+                  </div>
+                  {contributions.map((c, idx) => (
+                    <div key={c.id} style={{
+                      display: "grid", gridTemplateColumns: "28px 1fr 1fr 88px",
+                      gap: 8, padding: "9px 14px", alignItems: "center",
+                      borderTop: "1px solid #f5f3ff",
+                      background: idx % 2 === 0 ? "#ffffff" : "#fdfcff",
+                      fontSize: 11,
+                    }}>
+                      <span style={{ color: "#c4b5fd", fontWeight: 700, fontSize: 10 }}>{idx + 1}</span>
+                      <div>
+                        <p style={{ fontWeight: 700, color: "#4c1d95", margin: 0, lineHeight: 1.3 }}>{c.donorName}</p>
+                        {c.place && (
+                          <p style={{ fontSize: 9, color: "#7c3aed", margin: 0, marginTop: 1 }}>{c.place}</p>
+                        )}
+                      </div>
+                      <span style={{ color: "#5b21b6", fontSize: 11 }}>{c.description}</span>
+                      <span style={{ color: "#6d28d9", whiteSpace: "nowrap", fontSize: 10 }}>
+                        {new Date(c.contributedAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Footer */}
             <div style={{
               padding: "12px 20px",
@@ -447,6 +505,7 @@ export default function Donations() {
   const [justApproved, setJustApproved] = useState<{ id: number; name: string; amount: string; token: string; mobile: string; anonymous: boolean } | null>(null);
   const [siteBaseUrl, setSiteBaseUrl] = useState("");
   const [showReport, setShowReport] = useState(false);
+  const [reportContributions, setReportContributions] = useState<Contribution[]>([]);
   const [editNameId, setEditNameId]     = useState<number | null>(null);
   const [editNameValue, setEditNameValue] = useState("");
   const [editNameBusy, setEditNameBusy]   = useState(false);
@@ -614,7 +673,13 @@ export default function Donations() {
               </button>
             )}
             <button
-              onClick={() => setShowReport(true)}
+              onClick={async () => {
+                try {
+                  const contribs = await api.getAllContributions() as Contribution[];
+                  setReportContributions(contribs);
+                } catch { setReportContributions([]); }
+                setShowReport(true);
+              }}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white shadow-md transition-all hover:opacity-90 active:scale-95"
               style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
             >
@@ -1013,6 +1078,7 @@ export default function Donations() {
       {showReport && (
         <DonationsReport
           donations={donations}
+          contributions={reportContributions}
           onClose={() => setShowReport(false)}
         />
       )}
