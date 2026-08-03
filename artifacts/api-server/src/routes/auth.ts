@@ -7,6 +7,12 @@ import { requireAuth } from "../middlewares/auth";
 
 const router = Router();
 
+// All /api/auth/* responses must never be cached — they depend on session state.
+router.use((_req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+  next();
+});
+
 // POST /api/auth/login
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;

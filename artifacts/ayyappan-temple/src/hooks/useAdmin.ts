@@ -32,6 +32,23 @@ export function useAdminState() {
       .then((data: any) => setAdmin(data?.admin ?? null))
       .catch(() => setAdmin(null))
       .finally(() => setLoading(false));
+
+    // When the browser restores this page from bfcache (e.g. pressing Back after
+    // logout on mobile), immediately hide admin content and re-check the session.
+    // Setting loading=true first ensures AdminGuard shows the loading screen
+    // rather than stale dashboard content while the request is in flight.
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        setAdmin(null);
+        setLoading(true);
+        api.me()
+          .then((data: any) => setAdmin(data?.admin ?? null))
+          .catch(() => setAdmin(null))
+          .finally(() => setLoading(false));
+      }
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
   }, []);
 
   const login = async (username: string, password: string) => {
