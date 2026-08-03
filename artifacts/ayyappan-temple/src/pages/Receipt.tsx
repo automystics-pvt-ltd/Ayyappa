@@ -91,13 +91,24 @@ export default function Receipt() {
   const captureCanvas = async () => {
     // Wait for all fonts (Noto Serif Tamil, Cinzel, Oswald, Inter) to load
     await document.fonts.ready;
-    return html2canvas(docRef.current!, {
+    const el = docRef.current!;
+    return html2canvas(el, {
       scale: 2,
       useCORS: true,
       allowTaint: false,
       backgroundColor: "#d97706",
       imageTimeout: 0,
       logging: false,
+      // KEY: compensate for page scroll so the capture always starts from the
+      // top of the receipt element, not from the current viewport position.
+      // Without this, mobile devices crop the receipt when the user has
+      // scrolled past the buttons to see the document.
+      scrollX: 0,
+      scrollY: -window.scrollY,
+      // Tell html2canvas the "viewport" is the full element height so it
+      // renders all content, not just what fits in window.innerHeight.
+      windowWidth:  document.documentElement.offsetWidth,
+      windowHeight: el.offsetHeight,
       // Inject the self-hosted fonts.css into the cloned document so
       // Noto Serif Tamil and Cinzel are always available — even when
       // Google Fonts is blocked by an ad blocker or corporate proxy.

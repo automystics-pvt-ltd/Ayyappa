@@ -75,14 +75,23 @@ export default function ContributionReceipt() {
 
   const captureCanvas = async () => {
     await document.fonts.ready;
-    return html2canvas(docRef.current!, {
+    const el = docRef.current!;
+    return html2canvas(el, {
       scale:           IKC_CAPTURE_SCALE,
       useCORS:         true,
       allowTaint:      false,
       backgroundColor: IKC_CAPTURE_BACKGROUND,
       imageTimeout:    0,
       logging:         false,
-      onclone:         ikcCaptureOnClone,
+      // KEY: compensate for page scroll so the capture always starts from the
+      // top of the receipt element, not from the current viewport position.
+      // Without this, mobile devices crop the receipt when the user has
+      // scrolled past the buttons to see the document.
+      scrollX:      0,
+      scrollY:      -window.scrollY,
+      windowWidth:  document.documentElement.offsetWidth,
+      windowHeight: el.offsetHeight,
+      onclone:      ikcCaptureOnClone,
     });
   };
 
