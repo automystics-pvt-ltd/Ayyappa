@@ -239,11 +239,14 @@ export default function ContentManager() {
   const set = (key: string, val: string) => setSettings(prev => ({ ...prev, [key]: val }));
   const setJson = (key: string, val: unknown) => set(key, JSON.stringify(val));
 
-  const saveKeys = useCallback(async (keys: string[]) => {
+  // extra: explicit values for JSON-backed keys whose state update (setJson) is
+  // batched by React and therefore not yet reflected in the `settings` closure
+  // at the time the save button is clicked.  Plain text keys can be omitted.
+  const saveKeys = useCallback(async (keys: string[], extra: Record<string, string> = {}) => {
     setSaving(true);
     try {
       const updates: Record<string, string> = {};
-      keys.forEach(k => { updates[k] = settings[k] ?? ''; });
+      keys.forEach(k => { updates[k] = extra[k] ?? settings[k] ?? ''; });
       await api.updateSettings(updates);
       // Only update the persisted baseline after the PATCH succeeds.
       // This keeps badges accurate: a failed save leaves indicators unchanged.
@@ -429,7 +432,10 @@ export default function ContentManager() {
         {activeTab === 'renovation' && (
           <TabPanel title={t('திருப்பணி விவரங்கள்','Renovation Details')} emoji="🔨" saving={saving} saveLabel={saveLabel}
             uncustomized={tabDefaultCount(savedSettings, 'renovation')}
-            onSave={() => { setJson('renovation_works', renovationWorks); setJson('renovation_progress', renovationProgress); saveKeys(['renovation_works','renovation_progress']); }}>
+            onSave={() => saveKeys(['renovation_works','renovation_progress'], {
+              renovation_works: JSON.stringify(renovationWorks),
+              renovation_progress: JSON.stringify(renovationProgress),
+            })}>
             <StringListEditor label={t('நடைபெறும் பணிகள்','Ongoing Works')} hint={t('ஒவ்வொரு பணியையும் தனியாக சேர்க்கவும்','Add each work item separately')}
               items={renovationWorks} onChange={v => setJson('renovation_works', v)}
               addLabel={t('புதிதாக சேர்க்க','Add item')}
@@ -445,7 +451,7 @@ export default function ContentManager() {
         {activeTab === 'pujas' && (
           <TabPanel title={t('சிறப்பு பூஜைகள்','Special Pujas')} emoji="🙏" saving={saving} saveLabel={saveLabel}
             uncustomized={tabDefaultCount(savedSettings, 'pujas')}
-            onSave={() => { setJson('special_pujas', specialPujas); saveKeys(['special_pujas']); }}>
+            onSave={() => saveKeys(['special_pujas'], { special_pujas: JSON.stringify(specialPujas) })}>
             <StringListEditor label={t('சிறப்பு பூஜைகள் பட்டியல்','Special Pujas List')} hint={t("'சிறப்பு பூஜைகள்' பகுதியில் badges ஆக காட்டப்படும்","Shown as badges in the Special Pujas section")}
               items={specialPujas} onChange={v => setJson('special_pujas', v)}
               addLabel={t('புதிதாக சேர்க்க','Add puja')}
@@ -476,7 +482,9 @@ export default function ContentManager() {
         {activeTab === 'kumbhabhishekam' && (
           <TabPanel title={t('கும்பாபிஷேகம் பகுதி','Kumbhabhishekam Section')} emoji="🪔" saving={saving} saveLabel={saveLabel}
             uncustomized={tabDefaultCount(savedSettings, 'kumbhabhishekam')}
-            onSave={() => { setJson('kumbhabhishekam_events', kumbhabhishekamEvents); saveKeys(['kumbhabhishekam_badge','kumbhabhishekam_title','kumbhabhishekam_desc','kumbhabhishekam_events']); }}>
+            onSave={() => saveKeys(['kumbhabhishekam_badge','kumbhabhishekam_title','kumbhabhishekam_desc','kumbhabhishekam_events'], {
+              kumbhabhishekam_events: JSON.stringify(kumbhabhishekamEvents),
+            })}>
             <Field label={t('சிறிய லேபிள்','Badge Text')} hint={t('தலைப்பின் மேலே காட்டப்படும் சிறிய லேபிள்','Small badge above the heading')} showDefault={def('kumbhabhishekam_badge')}>
               <input className={inputCls} value={settings.kumbhabhishekam_badge || ''} onChange={e => set('kumbhabhishekam_badge', e.target.value)} placeholder="புனித குடமுழுக்கு விழா" />
             </Field>
@@ -539,7 +547,7 @@ export default function ContentManager() {
         {activeTab === 'faq' && (
           <TabPanel title={t('அடிக்கடி கேட்கப்படும் கேள்விகள்','Frequently Asked Questions')} emoji="❓" saving={saving} saveLabel={saveLabel}
             uncustomized={tabDefaultCount(savedSettings, 'faq')}
-            onSave={() => { setJson('faqs', faqs); saveKeys(['faqs']); }}>
+            onSave={() => saveKeys(['faqs'], { faqs: JSON.stringify(faqs) })}>
             <FaqListEditor items={faqs} onChange={v => setJson('faqs', v)}
               questionLabel={t('கேள்வி','Question')}
               addLabel={t('புதிய கேள்வி சேர்க்க','Add Question')}

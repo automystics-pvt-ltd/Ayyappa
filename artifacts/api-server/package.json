@@ -30,7 +30,9 @@
     "test:donations-ticker": "node ./tests/donations-ticker.test.mjs",
     "test:ticker-auto-refresh": "node ./tests/ticker-auto-refresh.test.mjs",
     "test:receipt-strip-whatsapp": "node ./tests/receipt-strip-whatsapp.test.mjs",
-    "test:inkind-receipt-strip-narrow": "node ./tests/inkind-receipt-strip-narrow.test.mjs"
+    "test:inkind-receipt-strip-narrow": "node ./tests/inkind-receipt-strip-narrow.test.mjs",
+    "test:content-manager-badge": "node ./tests/content-manager-badge.test.mjs",
+    "test:content-manager-badge-browser": "node ./tests/content-manager-badge.browser.test.mjs"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.21.0",
