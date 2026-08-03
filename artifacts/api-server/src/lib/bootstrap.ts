@@ -11,6 +11,13 @@ import { logger } from "./logger";
  * connect-pg-simple's built-in createTableIfMissing reads a .sql file via
  * __dirname, which breaks in the esbuild bundle.  We create it inline instead.
  * Safe to call on every startup — IF NOT EXISTS is idempotent.
+ *
+ * On shared/managed PostgreSQL (e.g. cPanel, Plesk, hosting providers) the
+ * table is often pre-created by schema.sql running as a superuser, so the app
+ * user doesn't own it.  PostgreSQL raises error 42501 ("must be owner") when
+ * you run CREATE TABLE IF NOT EXISTS on a table you don't own.  We catch that
+ * and the "already exists" error (42P07) and continue — the table is there,
+ * which is all we need.
  */
 export async function bootstrapSessionsTable(): Promise<void> {
   const client = await pool.connect();
@@ -23,11 +30,34 @@ export async function bootstrapSessionsTable(): Promise<void> {
         CONSTRAINT sessions_pkey PRIMARY KEY (sid)
       ) WITH (OIDS=FALSE)
     `);
-    await client.query(
-      `CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON sessions (expire)`
-    );
+  } catch (err: unknown) {
+    const code = (err as { code?: string }).code;
+    if (code === "42501" || code === "42P07") {
+      // 42501 = insufficient_privilege (table owned by another user, e.g. postgres)
+      // 42P07 = duplicate_table (race condition on parallel startup)
+      // Either way the table already exists — that's all we need.
+      logger.warn(
+        { pgCode: code },
+        "bootstrapSessionsTable: sessions table already exists (owned by another DB user) — skipping DDL"
+      );
+    } else {
+      throw err;
+    }
   } finally {
     client.release();
+  }
+
+  // Best-effort index creation — ignore permission/duplicate errors too.
+  const idxClient = await pool.connect();
+  try {
+    await idxClient.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON sessions (expire)`
+    );
+  } catch (err: unknown) {
+    const code = (err as { code?: string }).code;
+    if (code !== "42501" && code !== "42P07") throw err;
+  } finally {
+    idxClient.release();
   }
 }
 
