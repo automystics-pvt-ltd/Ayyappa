@@ -120,19 +120,21 @@ function DonationsReport({
             title: "நன்கொடை அறிக்கை",
             text: `அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் — நன்கொடை அறிக்கை\n${today}\nமொத்தம்: ${fmt(totalApproved)}`,
           });
+          return; // share succeeded — nothing more to do
         } catch (err: unknown) {
           // User cancelled the share sheet — not an error worth surfacing
           if (err instanceof Error && err.name === "AbortError") return;
-          // Permission denied — fall through to the WhatsApp text fallback below
+          // Permission denied or other error — fall through to the download+WhatsApp fallback
         }
-        return;
       }
+      // Fallback: save image locally then open WhatsApp with summary text
       {
-        // Fallback: download + open WhatsApp
+        const objectUrl = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.download = "donations-report.png";
-        a.href = URL.createObjectURL(blob);
+        a.href = objectUrl;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 10_000);
         const msg = encodeURIComponent(`அருள்மிகு ஸ்ரீ ஐயப்பன் திருக்கோவில் — நன்கொடை அறிக்கை\n${today}\nமொத்தம்: ${fmt(totalApproved)}`);
         setTimeout(() => window.open(`https://wa.me/?text=${msg}`, "_blank"), 500);
       }
