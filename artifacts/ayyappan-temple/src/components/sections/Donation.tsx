@@ -277,7 +277,7 @@ function SubmissionReceipt({ receipt, onDone }: { receipt: ReceiptData; onDone: 
             ].map((row) => (
               <div key={row.label} className="flex justify-between items-center py-2 text-sm">
                 <span className="text-muted-foreground">{row.label}</span>
-                <span className="font-semibold text-foreground text-right max-w-[55%] break-all">{row.val}</span>
+                <span className="font-semibold text-foreground text-right max-w-[55%] break-words">{row.val}</span>
               </div>
             ))}
           </div>

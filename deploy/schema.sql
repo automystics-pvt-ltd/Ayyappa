@@ -135,6 +135,15 @@ CREATE TABLE IF NOT EXISTS in_kind_contributions (
   is_active       BOOLEAN DEFAULT TRUE
 );
 
+-- Session store (connect-pg-simple)
+CREATE TABLE IF NOT EXISTS "sessions" (
+  "sid"    varchar   NOT NULL COLLATE "default",
+  "sess"   json      NOT NULL,
+  "expire" timestamp(6) NOT NULL,
+  CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE
+) WITH (OIDS=FALSE);
+CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "sessions" ("expire");
+
 CREATE TABLE IF NOT EXISTS visits (
   id          SERIAL PRIMARY KEY,
   day_key     VARCHAR(10) NOT NULL,

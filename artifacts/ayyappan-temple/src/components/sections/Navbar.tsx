@@ -241,7 +241,7 @@ export function Navbar() {
                 <img src="/iyyappan-logo.png" alt="ஐயப்பன்" className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow" />
               </div>
               <div className="text-left min-w-0">
-                <div className={`font-serif text-xs sm:text-sm md:text-base font-bold leading-tight transition-colors truncate max-w-[140px] sm:max-w-none ${
+                <div className={`font-serif text-xs sm:text-sm md:text-base font-bold leading-tight transition-colors truncate max-w-[100px] xs:max-w-[130px] sm:max-w-none ${
                   scrolled ? 'text-primary' : 'text-white drop-shadow-md'
                 }`}>
                   {t('ஸ்ரீ ஐயப்பன் திருக்கோவில்', 'Sri Ayyappan Temple')}

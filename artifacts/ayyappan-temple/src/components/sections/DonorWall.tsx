@@ -66,7 +66,7 @@ function SerialBadge({ rank, size = 'md' }: { rank: number; size?: 'sm' | 'md' }
       </span>
       <span className={`text-primary/70 font-medium leading-tight text-center
         ${isBig ? 'text-[8px] mt-0.5' : 'text-[7px]'}`}>
-        நன்கொடை
+        நன்கொடையாளர்
       </span>
     </div>
   );
@@ -500,35 +500,17 @@ export function DonorWall({
 type IKSort = 'date_asc' | 'date_desc' | 'name_asc';
 const IK_PAGE_SIZE = 20;
 
-/* ── In-Kind Serial Badge ────────────────────────────────────────────────── */
+/* ── In-Kind Serial Badge — uniform for every contributor ───────────────── */
 function IKSerialBadge({ rank }: { rank: number }) {
   const pad = String(rank).padStart(2, '0');
-  if (rank <= 3) {
-    const meta = [
-      { bg: 'bg-amber-500',  ring: 'ring-amber-300',  label: 'முதல்' },
-      { bg: 'bg-slate-400',  ring: 'ring-slate-300',  label: 'இரண்டாம்' },
-      { bg: 'bg-orange-500', ring: 'ring-orange-300', label: 'மூன்றாம்' },
-    ][rank - 1];
-    return (
-      <div className={`flex flex-col items-center justify-center rounded-xl w-12 min-h-[52px] px-1
-        ${meta.bg} ring-2 ${meta.ring} ring-offset-1 shadow flex-shrink-0`}>
-        <span className="font-black text-lg text-white leading-none">{pad}</span>
-        <span className="text-[8px] font-semibold text-white/90 leading-none mt-0.5 text-center">{meta.label}</span>
-      </div>
-    );
-  }
-  if (rank <= 10) {
-    return (
-      <div className="flex items-center justify-center rounded-xl w-12 h-12 flex-shrink-0
-        bg-orange-50 border border-orange-200">
-        <span className="font-black text-base text-orange-600 leading-none">{pad}</span>
-      </div>
-    );
-  }
   return (
-    <div className="flex items-center justify-center rounded-xl w-12 h-12 flex-shrink-0
-      bg-muted border border-border">
-      <span className="font-bold text-base text-muted-foreground leading-none">{pad}</span>
+    <div className="flex flex-col items-center justify-center rounded-xl
+      bg-orange-50 border border-orange-200
+      w-14 min-h-[52px] px-1 flex-shrink-0">
+      <span className="font-black text-lg text-orange-600 leading-none">{pad}</span>
+      <span className="text-[8px] font-medium text-orange-500 leading-tight mt-0.5 text-center">
+        நன்கொடையாளர்
+      </span>
     </div>
   );
 }
