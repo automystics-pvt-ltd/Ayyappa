@@ -1,6 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
-import { bootstrapFirstAdmin } from "./lib/bootstrap";
+import { bootstrapFirstAdmin, bootstrapSessionsTable } from "./lib/bootstrap";
 
 const rawPort = process.env["PORT"];
 
@@ -15,6 +15,9 @@ const port = Number(rawPort);
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
+
+// Ensure the sessions table exists (idempotent — safe on every restart)
+await bootstrapSessionsTable();
 
 // Seed the first admin if the database has no admins yet
 await bootstrapFirstAdmin();

@@ -64,9 +64,9 @@ function SerialBadge({ rank, size = 'md' }: { rank: number; size?: 'sm' | 'md' }
         ${isBig ? 'text-lg' : 'text-base'}`}>
         {pad}
       </span>
-      <span className={`text-primary/70 font-medium leading-tight text-center
-        ${isBig ? 'text-[8px] mt-0.5' : 'text-[7px]'}`}>
-        நன்கொடையாளர்
+      <span className={`text-primary/50 font-medium leading-tight text-center
+        ${isBig ? 'text-[7px] mt-0.5' : 'text-[6px]'}`}>
+        நன்கொடை
       </span>
     </div>
   );
@@ -508,8 +508,8 @@ function IKSerialBadge({ rank }: { rank: number }) {
       bg-orange-50 border border-orange-200
       w-14 min-h-[52px] px-1 flex-shrink-0">
       <span className="font-black text-lg text-orange-600 leading-none">{pad}</span>
-      <span className="text-[8px] font-medium text-orange-500 leading-tight mt-0.5 text-center">
-        நன்கொடையாளர்
+      <span className="text-[7px] font-medium text-orange-400 leading-tight mt-0.5 text-center">
+        நன்கொடை
       </span>
     </div>
   );

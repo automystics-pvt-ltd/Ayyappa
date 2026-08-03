@@ -1,9 +1,35 @@
 import { randomBytes } from "crypto";
 import bcrypt from "bcryptjs";
-import { db } from "@workspace/db";
+import { db, pool } from "@workspace/db";
 import { adminsTable } from "@workspace/db/schema";
 import { count } from "drizzle-orm";
 import { logger } from "./logger";
+
+/**
+ * Ensure the sessions table exists.
+ *
+ * connect-pg-simple's built-in createTableIfMissing reads a .sql file via
+ * __dirname, which breaks in the esbuild bundle.  We create it inline instead.
+ * Safe to call on every startup — IF NOT EXISTS is idempotent.
+ */
+export async function bootstrapSessionsTable(): Promise<void> {
+  const client = await pool.connect();
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS sessions (
+        sid    VARCHAR NOT NULL COLLATE "default",
+        sess   JSON    NOT NULL,
+        expire TIMESTAMP(6) NOT NULL,
+        CONSTRAINT sessions_pkey PRIMARY KEY (sid)
+      ) WITH (OIDS=FALSE)
+    `);
+    await client.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON sessions (expire)`
+    );
+  } finally {
+    client.release();
+  }
+}
 
 /**
  * If no admins exist yet, create the first super_admin account.
