@@ -44,6 +44,10 @@ args = "test:inkind-receipt-strip-narrow"
 task = "workflow.run"
 args = "test:inkind-receipt-long-desc"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test:donations-report-inkind"
+
 [[workflows.workflow]]
 name = "test:visits-dedup"
 author = "agent"
@@ -114,6 +118,17 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pnpm --filter @workspace/api-server run test:inkind-receipt-long-desc"
+
+[[workflows.workflow]]
+name = "test:donations-report-inkind"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/api-server run test:donations-report-inkind"
+
+[workflows.workflow.metadata]
+isValidation = true
 
 [agent]
 stack = "PNPM_WORKSPACE"
