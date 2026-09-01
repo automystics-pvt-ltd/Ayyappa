@@ -1,0 +1,31 @@
+HTTP/1.1 502 Bad Gateway
+Server: nginx
+Date: Tue, 01 Sep 2026 09:57:25 GMT
+Content-Type: text/html
+Content-Length: 150
+Connection: keep-alive
+
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+root@srv1609330:/home/automystics-ayyappan/src# pm2 status
+pm2 logs ayyappan-api --lines 50
+┌────┬─────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name            │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼─────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 2  │ ayyappan-api    │ default     │ N/A     │ cluster │ 212971   │ 2m     │ 1    │ online    │ 0%       │ 140.1mb  │ root     │ disabled │
+│ 1  │ mmwear-erp      │ default     │ 0.0.0   │ fork    │ 196431   │ 5h     │ 288  │ online    │ 0%       │ 460.8mb  │ root     │ disabled │
+└────┴─────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+host metrics | cpu: 0.9% | ram usage: 17.4% | lo: ⇓ 0.001mb/s ⇑ 0.001mb/s | eth0: ⇓ 0.001mb/s ⇑ 0.001mb/s | disk: ⇓ 0mb/s ⇑ 0.097mb/s |
+[TAILING] Tailing last 50 lines for [ayyappan-api] process (change the value with --lines option)
+/root/.pm2/logs/ayyappan-api-error-2.log last 50 lines:
+/root/.pm2/logs/ayyappan-api-out-2.log last 50 lines:
+2|ayyappan | {"level":30,"time":1788256399912,"pid":212896,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+2|ayyappan | {"level":30,"time":1788256484829,"pid":212971,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+2|ayyappan | {"level":30,"time":1788256485195,"pid":212971,"hostname":"srv1609330","req":{"id":1,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":11,"msg":"request completed"}
+
+^C
