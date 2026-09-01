@@ -44,6 +44,7 @@ trap 'echo -e "${RED}[FAIL]${NC} Deployment stopped at line $LINENO."; exit 1' E
 [[ "$EUID" -eq 0 ]] || fail "Run as root: sudo bash deploy.sh"
 [[ -d "$SOURCE_DIR" ]] || fail "Source directory not found: $SOURCE_DIR"
 [[ -d "$SOURCE_DIR/.git" ]] || fail "Git repository not found: $SOURCE_DIR"
+command -v git >/dev/null 2>&1 || fail "Git is not installed."
 command -v node >/dev/null 2>&1 || fail "Node.js is not installed."
 command -v pnpm >/dev/null 2>&1 || fail "pnpm is not installed. Run: npm install -g pnpm"
 command -v pm2 >/dev/null 2>&1 || fail "PM2 is not installed. Run: npm install -g pm2"
@@ -58,6 +59,11 @@ echo "API    : $API_DIR"
 echo "Web    : $WEB_ROOT"
 echo "Branch : $BRANCH"
 echo ""
+
+info "Allowing Git to use the source repository as root..."
+if ! git config --global --get-all safe.directory 2>/dev/null | grep -Fxq "$SOURCE_DIR"; then
+  git config --global --add safe.directory "$SOURCE_DIR"
+fi
 
 info "Pulling latest code from GitHub..."
 cd "$SOURCE_DIR"
