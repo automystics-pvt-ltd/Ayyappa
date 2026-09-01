@@ -1,0 +1,208 @@
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+curl: (7) Failed to connect to 127.0.0.1 port 3001 after 0 ms: Couldn't connect to server
+root@srv1609330:/home/automystics-ayyappan/src# pm2 logs ayyappan-api --lines 100
+[TAILING] Tailing last 100 lines for [ayyappan-api] process (change the value with --lines option)
+/root/.pm2/logs/ayyappan-api-error.log last 100 lines:
+0|ayyappan |   table: undefined,
+0|ayyappan |   column: undefined,
+0|ayyappan |   dataType: undefined,
+0|ayyappan |   constraint: undefined,
+0|ayyappan |   file: 'auth.c',
+0|ayyappan |   line: '331',
+0|ayyappan |   routine: 'auth_failed'
+0|ayyappan | }
+0|ayyappan | error: password authentication failed for user "ayyappan_user"
+0|ayyappan |     at <anonymous> (/home/automystics-ayyappan/src/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+0|ayyappan |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+0|ayyappan |     at async bootstrapSessionsTable (/home/automystics-ayyappan/src/artifacts/api-server/src/lib/bootstrap.ts:23:18)
+0|ayyappan |     at async <anonymous> (/home/automystics-ayyappan/src/artifacts/api-server/src/index.ts:20:1) {
+0|ayyappan |   length: 109,
+0|ayyappan |   severity: 'FATAL',
+0|ayyappan |   code: '28P01',
+0|ayyappan |   detail: undefined,
+0|ayyappan |   hint: undefined,
+0|ayyappan |   position: undefined,
+0|ayyappan |   internalPosition: undefined,
+0|ayyappan |   internalQuery: undefined,
+0|ayyappan |   where: undefined,
+0|ayyappan |   schema: undefined,
+0|ayyappan |   table: undefined,
+0|ayyappan |   column: undefined,
+0|ayyappan |   dataType: undefined,
+0|ayyappan |   constraint: undefined,
+0|ayyappan |   file: 'auth.c',
+0|ayyappan |   line: '331',
+0|ayyappan |   routine: 'auth_failed'
+0|ayyappan | }
+0|ayyappan | error: password authentication failed for user "ayyappan_user"
+0|ayyappan |     at <anonymous> (/home/automystics-ayyappan/src/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+0|ayyappan |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+0|ayyappan |     at async bootstrapSessionsTable (/home/automystics-ayyappan/src/artifacts/api-server/src/lib/bootstrap.ts:23:18)
+0|ayyappan |     at async <anonymous> (/home/automystics-ayyappan/src/artifacts/api-server/src/index.ts:20:1) {
+0|ayyappan |   length: 109,
+0|ayyappan |   severity: 'FATAL',
+0|ayyappan |   code: '28P01',
+0|ayyappan |   detail: undefined,
+0|ayyappan |   hint: undefined,
+0|ayyappan |   position: undefined,
+0|ayyappan |   internalPosition: undefined,
+0|ayyappan |   internalQuery: undefined,
+0|ayyappan |   where: undefined,
+0|ayyappan |   schema: undefined,
+0|ayyappan |   table: undefined,
+0|ayyappan |   column: undefined,
+0|ayyappan |   dataType: undefined,
+0|ayyappan |   constraint: undefined,
+0|ayyappan |   file: 'auth.c',
+0|ayyappan |   line: '331',
+0|ayyappan |   routine: 'auth_failed'
+0|ayyappan | }
+0|ayyappan | error: password authentication failed for user "ayyappan_user"
+0|ayyappan |     at <anonymous> (/home/automystics-ayyappan/src/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+0|ayyappan |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+0|ayyappan |     at async bootstrapSessionsTable (/home/automystics-ayyappan/src/artifacts/api-server/src/lib/bootstrap.ts:23:18)
+0|ayyappan |     at async <anonymous> (/home/automystics-ayyappan/src/artifacts/api-server/src/index.ts:20:1) {
+0|ayyappan |   length: 109,
+0|ayyappan |   severity: 'FATAL',
+0|ayyappan |   code: '28P01',
+0|ayyappan |   detail: undefined,
+0|ayyappan |   hint: undefined,
+0|ayyappan |   position: undefined,
+0|ayyappan |   internalPosition: undefined,
+0|ayyappan |   internalQuery: undefined,
+0|ayyappan |   where: undefined,
+0|ayyappan |   schema: undefined,
+0|ayyappan |   table: undefined,
+0|ayyappan |   column: undefined,
+0|ayyappan |   dataType: undefined,
+0|ayyappan |   constraint: undefined,
+0|ayyappan |   file: 'auth.c',
+0|ayyappan |   line: '331',
+0|ayyappan |   routine: 'auth_failed'
+0|ayyappan | }
+0|ayyappan | error: password authentication failed for user "ayyappan_user"
+0|ayyappan |     at <anonymous> (/home/automystics-ayyappan/src/node_modules/.pnpm/pg-pool@3.14.0_pg@8.22.0/node_modules/pg-pool/index.js:45:11)
+0|ayyappan |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+0|ayyappan |     at async bootstrapSessionsTable (/home/automystics-ayyappan/src/artifacts/api-server/src/lib/bootstrap.ts:23:18)
+0|ayyappan |     at async <anonymous> (/home/automystics-ayyappan/src/artifacts/api-server/src/index.ts:20:1) {
+0|ayyappan |   length: 109,
+0|ayyappan |   severity: 'FATAL',
+0|ayyappan |   code: '28P01',
+0|ayyappan |   detail: undefined,
+0|ayyappan |   hint: undefined,
+0|ayyappan |   position: undefined,
+0|ayyappan |   internalPosition: undefined,
+0|ayyappan |   internalQuery: undefined,
+0|ayyappan |   where: undefined,
+0|ayyappan |   schema: undefined,
+0|ayyappan |   table: undefined,
+0|ayyappan |   column: undefined,
+0|ayyappan |   dataType: undefined,
+0|ayyappan |   constraint: undefined,
+0|ayyappan |   file: 'auth.c',
+0|ayyappan |   line: '331',
+0|ayyappan |   routine: 'auth_failed'
+0|ayyappan | }
+
+/root/.pm2/logs/ayyappan-api-out.log last 100 lines:
+0|ayyappan | {"level":30,"time":1788213397464,"pid":27761,"hostname":"srv1609330","req":{"id":410,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":13,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788213706677,"pid":27761,"hostname":"srv1609330","req":{"id":411,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":17,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788214016035,"pid":27761,"hostname":"srv1609330","req":{"id":412,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":26,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788214325474,"pid":27761,"hostname":"srv1609330","req":{"id":413,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":28,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788214634867,"pid":27761,"hostname":"srv1609330","req":{"id":414,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":17,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788214935594,"pid":27761,"hostname":"srv1609330","req":{"id":415,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":15,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788215244954,"pid":27761,"hostname":"srv1609330","req":{"id":416,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":15,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788215554279,"pid":27761,"hostname":"srv1609330","req":{"id":417,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":16,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788215854466,"pid":27761,"hostname":"srv1609330","req":{"id":418,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":19,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788216163820,"pid":27761,"hostname":"srv1609330","req":{"id":419,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":13,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788216473253,"pid":27761,"hostname":"srv1609330","req":{"id":420,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":15,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788216782607,"pid":27761,"hostname":"srv1609330","req":{"id":421,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":16,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788217091982,"pid":27761,"hostname":"srv1609330","req":{"id":422,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":16,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788217398028,"pid":27761,"hostname":"srv1609330","req":{"id":423,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":19,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788217698743,"pid":27761,"hostname":"srv1609330","req":{"id":424,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":16,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788217999107,"pid":27761,"hostname":"srv1609330","req":{"id":425,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":25,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788218308232,"pid":27761,"hostname":"srv1609330","req":{"id":426,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":16,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788218608389,"pid":27761,"hostname":"srv1609330","req":{"id":427,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":18,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788218917763,"pid":27761,"hostname":"srv1609330","req":{"id":428,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":13,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788219227094,"pid":27761,"hostname":"srv1609330","req":{"id":429,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":33,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788219527120,"pid":27761,"hostname":"srv1609330","req":{"id":430,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":17,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788219836470,"pid":27761,"hostname":"srv1609330","req":{"id":431,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":11,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788220145847,"pid":27761,"hostname":"srv1609330","req":{"id":432,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":14,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788220455213,"pid":27761,"hostname":"srv1609330","req":{"id":433,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":18,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788220764589,"pid":27761,"hostname":"srv1609330","req":{"id":434,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":10,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788221073984,"pid":27761,"hostname":"srv1609330","req":{"id":435,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":14,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788221383425,"pid":27761,"hostname":"srv1609330","req":{"id":436,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":12,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788221683511,"pid":27761,"hostname":"srv1609330","req":{"id":437,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":16,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788221985320,"pid":27761,"hostname":"srv1609330","req":{"id":438,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":11,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788222292139,"pid":27761,"hostname":"srv1609330","req":{"id":439,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":12,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788222592404,"pid":27761,"hostname":"srv1609330","req":{"id":440,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":10,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788222901868,"pid":27761,"hostname":"srv1609330","req":{"id":441,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":89,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788223202111,"pid":27761,"hostname":"srv1609330","req":{"id":442,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":44,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788223511428,"pid":27761,"hostname":"srv1609330","req":{"id":443,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":20,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788223820796,"pid":27761,"hostname":"srv1609330","req":{"id":444,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":10,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788224121405,"pid":27761,"hostname":"srv1609330","req":{"id":445,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":14,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788224430887,"pid":27761,"hostname":"srv1609330","req":{"id":446,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":57,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788224733831,"pid":27761,"hostname":"srv1609330","req":{"id":447,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":13,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788225034273,"pid":27761,"hostname":"srv1609330","req":{"id":448,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":11,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788225343631,"pid":27761,"hostname":"srv1609330","req":{"id":449,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":10,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788225652989,"pid":27761,"hostname":"srv1609330","req":{"id":450,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":14,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788225962334,"pid":27761,"hostname":"srv1609330","req":{"id":451,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":19,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788226271749,"pid":27761,"hostname":"srv1609330","req":{"id":452,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":12,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788226571837,"pid":27761,"hostname":"srv1609330","req":{"id":453,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":22,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788226872689,"pid":27761,"hostname":"srv1609330","req":{"id":454,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":13,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788227172706,"pid":27761,"hostname":"srv1609330","req":{"id":455,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":15,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788227472916,"pid":27761,"hostname":"srv1609330","req":{"id":456,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":10,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788227782303,"pid":27761,"hostname":"srv1609330","req":{"id":457,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":16,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788228082785,"pid":27761,"hostname":"srv1609330","req":{"id":458,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":16,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788228392179,"pid":27761,"hostname":"srv1609330","req":{"id":459,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":17,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788228701441,"pid":27761,"hostname":"srv1609330","req":{"id":460,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":10,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788229010953,"pid":27761,"hostname":"srv1609330","req":{"id":461,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":24,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788229320181,"pid":27761,"hostname":"srv1609330","req":{"id":462,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":28,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788229629604,"pid":27761,"hostname":"srv1609330","req":{"id":463,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":13,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788229938924,"pid":27761,"hostname":"srv1609330","req":{"id":464,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":17,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788230238905,"pid":27761,"hostname":"srv1609330","req":{"id":465,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":9,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788230548302,"pid":27761,"hostname":"srv1609330","req":{"id":466,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":15,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788230857648,"pid":27761,"hostname":"srv1609330","req":{"id":467,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":20,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788231167008,"pid":27761,"hostname":"srv1609330","req":{"id":468,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":14,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788231467404,"pid":27761,"hostname":"srv1609330","req":{"id":469,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":14,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788231767865,"pid":27761,"hostname":"srv1609330","req":{"id":470,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":18,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788232077265,"pid":27761,"hostname":"srv1609330","req":{"id":471,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":10,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788232386579,"pid":27761,"hostname":"srv1609330","req":{"id":472,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":14,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788232695965,"pid":27761,"hostname":"srv1609330","req":{"id":473,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":13,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788233005285,"pid":27761,"hostname":"srv1609330","req":{"id":474,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":10,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788233306059,"pid":27761,"hostname":"srv1609330","req":{"id":475,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":14,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788233615430,"pid":27761,"hostname":"srv1609330","req":{"id":476,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":12,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788233924825,"pid":27761,"hostname":"srv1609330","req":{"id":477,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":9,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788236473113,"pid":191036,"hostname":"srv1609330","port":3019,"msg":"Server listening"}
+0|ayyappan | {"level":30,"time":1788237664615,"pid":194775,"hostname":"srv1609330","port":3019,"msg":"Server listening"}
+0|ayyappan | {"level":30,"time":1788238390826,"pid":195742,"hostname":"srv1609330","port":3019,"msg":"Server listening"}
+0|ayyappan | {"level":30,"time":1788244833728,"pid":195742,"hostname":"srv1609330","req":{"id":1,"method":"GET","url":"/api/.git/config"},"res":{"statusCode":404},"responseTime":49,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788245174912,"pid":195742,"hostname":"srv1609330","req":{"id":3,"method":"GET","url":"/api/auth/me"},"res":{"statusCode":304},"responseTime":75,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788245174913,"pid":195742,"hostname":"srv1609330","req":{"id":2,"method":"GET","url":"/api/settings"},"res":{"statusCode":304},"responseTime":95,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788245178218,"pid":195742,"hostname":"srv1609330","req":{"id":4,"method":"GET","url":"/api/donations"},"res":{"statusCode":304},"responseTime":24,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384295,"pid":195742,"hostname":"srv1609330","req":{"id":5,"method":"GET","url":"/api/news"},"res":{"statusCode":200},"responseTime":76,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384453,"pid":195742,"hostname":"srv1609330","req":{"id":6,"method":"GET","url":"/api/events"},"res":{"statusCode":200},"responseTime":5,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384486,"pid":195742,"hostname":"srv1609330","req":{"id":7,"method":"GET","url":"/api/contributions"},"res":{"statusCode":404},"responseTime":13,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384494,"pid":195742,"hostname":"srv1609330","req":{"id":8,"method":"GET","url":"/api/donations/approved"},"res":{"statusCode":200},"responseTime":17,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384499,"pid":195742,"hostname":"srv1609330","req":{"id":10,"method":"GET","url":"/api/donations/recent-ticker"},"res":{"statusCode":404},"responseTime":3,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384516,"pid":195742,"hostname":"srv1609330","req":{"id":9,"method":"GET","url":"/api/donations/stats"},"res":{"statusCode":200},"responseTime":29,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384621,"pid":195742,"hostname":"srv1609330","req":{"id":11,"method":"GET","url":"/api/gallery/albums"},"res":{"statusCode":200},"responseTime":8,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384640,"pid":195742,"hostname":"srv1609330","req":{"id":12,"method":"GET","url":"/api/settings"},"res":{"statusCode":200},"responseTime":5,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384657,"pid":195742,"hostname":"srv1609330","req":{"id":13,"method":"GET","url":"/api/visits/count"},"res":{"statusCode":404},"responseTime":2,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384717,"pid":195742,"hostname":"srv1609330","req":{"id":14,"method":"POST","url":"/api/visits/track"},"res":{"statusCode":404},"responseTime":60,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384719,"pid":195742,"hostname":"srv1609330","req":{"id":15,"method":"GET","url":"/api/auth/me"},"res":{"statusCode":401},"responseTime":1,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384776,"pid":195742,"hostname":"srv1609330","req":{"id":16,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":3,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384798,"pid":195742,"hostname":"srv1609330","req":{"id":17,"method":"GET","url":"/api/events"},"res":{"statusCode":304},"responseTime":4,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384813,"pid":195742,"hostname":"srv1609330","req":{"id":18,"method":"GET","url":"/api/settings"},"res":{"statusCode":304},"responseTime":7,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254384940,"pid":195742,"hostname":"srv1609330","req":{"id":19,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":3,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254385879,"pid":195742,"hostname":"srv1609330","req":{"id":20,"method":"GET","url":"/api/visits/count"},"res":{"statusCode":404},"responseTime":1,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254388087,"pid":195742,"hostname":"srv1609330","req":{"id":21,"method":"GET","url":"/api/visits/count"},"res":{"statusCode":404},"responseTime":1,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254392253,"pid":195742,"hostname":"srv1609330","req":{"id":22,"method":"GET","url":"/api/visits/count"},"res":{"statusCode":404},"responseTime":1,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254399231,"pid":195742,"hostname":"srv1609330","req":{"id":24,"method":"GET","url":"/api/auth/me"},"res":{"statusCode":401},"responseTime":1,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254399247,"pid":195742,"hostname":"srv1609330","req":{"id":23,"method":"GET","url":"/api/settings"},"res":{"statusCode":304},"responseTime":23,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254402018,"pid":195742,"hostname":"srv1609330","req":{"id":25,"method":"POST","url":"/api/auth/login"},"res":{"statusCode":200},"responseTime":573,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254402198,"pid":195742,"hostname":"srv1609330","req":{"id":26,"method":"GET","url":"/api/auth/me"},"res":{"statusCode":200},"responseTime":24,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254404783,"pid":195742,"hostname":"srv1609330","req":{"id":27,"method":"POST","url":"/api/auth/login"},"res":{"statusCode":200},"responseTime":537,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788254404954,"pid":195742,"hostname":"srv1609330","req":{"id":28,"method":"GET","url":"/api/auth/me"},"res":{"statusCode":200},"responseTime":13,"msg":"request completed"}
+0|ayyappan | {"level":30,"time":1788255994239,"pid":212566,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+

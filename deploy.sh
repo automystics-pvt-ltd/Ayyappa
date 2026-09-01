@@ -115,11 +115,9 @@ psql "$DB_URL" -f "$SOURCE_DIR/deploy/schema.sql" -q
 ok "Database migrations applied"
 
 info "Restarting API with PM2..."
-if pm2 describe "$PM2_APP" >/dev/null 2>&1; then
-  pm2 restart "$PM2_APP" --update-env
-else
-  pm2 start "$ECOSYSTEM" --env production
-fi
+# Always reload from the ecosystem file. Restarting only by process name can
+# retain stale PORT/DATABASE_URL values from the previous PM2 process.
+pm2 startOrReload "$ECOSYSTEM" --env production --update-env
 pm2 save --force >/dev/null
 ok "PM2 process is running"
 
