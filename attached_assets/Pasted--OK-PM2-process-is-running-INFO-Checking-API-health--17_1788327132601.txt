@@ -1,0 +1,63 @@
+[ OK ] PM2 process is running
+[INFO] Checking API health...
+
+============================================================
+ DEPLOYMENT COMPLETE
+============================================================
+Commit : fcd7fd3
+Health : http://127.0.0.1:3001/api/healthz
+
+Useful commands:
+  pm2 status
+  pm2 logs ayyappan-api --lines 80
+  pm2 restart ayyappan-api
+root@srv1609330:/home/automystics-ayyappan/src# pm2 logs ayyan-api --lines 80
+[TAILING] Tailing last 80 lines for [ayyan-api] process (change the value with --lines option)
+
+^X^C
+root@srv1609330:/home/automystics-ayyappan/src# pm2 logs ayyappan-api --lines 80
+[TAILING] Tailing last 80 lines for [ayyappan-api] process (change the value with --lines option)
+/root/.pm2/logs/ayyappan-api-error-2.log last 80 lines:
+/root/.pm2/logs/ayyappan-api-out-2.log last 80 lines:
+2|ayyappan | {"level":30,"time":1788256399912,"pid":212896,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+2|ayyappan | {"level":30,"time":1788256484829,"pid":212971,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+2|ayyappan | {"level":30,"time":1788256485195,"pid":212971,"hostname":"srv1609330","req":{"id":1,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":11,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788257000573,"pid":213507,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+2|ayyappan | {"level":30,"time":1788257004025,"pid":213507,"hostname":"srv1609330","req":{"id":1,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":9,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788257426505,"pid":214107,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+2|ayyappan | {"level":30,"time":1788257426977,"pid":214107,"hostname":"srv1609330","req":{"id":1,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":8,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788321337868,"pid":260647,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+2|ayyappan | {"level":30,"time":1788321342285,"pid":260647,"hostname":"srv1609330","req":{"id":1,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":13,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788321364791,"pid":260703,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+2|ayyappan | {"level":30,"time":1788321517617,"pid":260703,"hostname":"srv1609330","req":{"id":1,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":9,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788321701118,"pid":261080,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+2|ayyappan | {"level":30,"time":1788321705672,"pid":261080,"hostname":"srv1609330","req":{"id":1,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":11,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788321896038,"pid":261080,"hostname":"srv1609330","req":{"id":2,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":3,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788322193710,"pid":261080,"hostname":"srv1609330","req":{"id":3,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":3,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788322505496,"pid":261080,"hostname":"srv1609330","req":{"id":4,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":1,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788324525102,"pid":261080,"hostname":"srv1609330","req":{"id":5,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":1,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788324533740,"pid":261080,"hostname":"srv1609330","req":{"id":6,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":1,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788324545004,"pid":261080,"hostname":"srv1609330","req":{"id":7,"method":"GET","url":"/api/auth/me"},"res":{"statusCode":200},"responseTime":3,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788324545020,"pid":261080,"hostname":"srv1609330","req":{"id":8,"method":"GET","url":"/api/settings"},"res":{"statusCode":200},"responseTime":15,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788324548459,"pid":261080,"hostname":"srv1609330","req":{"id":9,"method":"GET","url":"/api/auth/me"},"res":{"statusCode":200},"responseTime":1,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788324548464,"pid":261080,"hostname":"srv1609330","req":{"id":10,"method":"GET","url":"/api/settings"},"res":{"statusCode":304},"responseTime":4,"msg":"request completed"}
+2|ayyappan | {"level":30,"time":1788324709057,"pid":263604,"hostname":"srv1609330","port":3001,"msg":"Server listening"}
+2|ayyappan | {"level":30,"time":1788324713526,"pid":263604,"hostname":"srv1609330","req":{"id":1,"method":"GET","url":"/api/healthz"},"res":{"statusCode":200},"responseTime":9,"msg":"request completed"}
+
+2|ayyappan-api  | {"level":30,"time":1788325676652,"pid":263604,"hostname":"srv1609330","req":{"id":2,"method":"GET","url":"/api/news"},"res":{"statusCode":200},"responseTime":29,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325676653,"pid":263604,"hostname":"srv1609330","req":{"id":3,"method":"GET","url":"/api/events"},"res":{"statusCode":200},"responseTime":22,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325676848,"pid":263604,"hostname":"srv1609330","req":{"id":4,"method":"GET","url":"/api/donations/recent-ticker"},"res":{"statusCode":200},"responseTime":6,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325676851,"pid":263604,"hostname":"srv1609330","req":{"id":5,"method":"GET","url":"/api/donations/stats"},"res":{"statusCode":200},"responseTime":6,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325676983,"pid":263604,"hostname":"srv1609330","req":{"id":6,"method":"GET","url":"/api/donations/approved"},"res":{"statusCode":200},"responseTime":5,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325676995,"pid":263604,"hostname":"srv1609330","req":{"id":7,"method":"GET","url":"/api/settings"},"res":{"statusCode":200},"responseTime":3,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325677017,"pid":263604,"hostname":"srv1609330","req":{"id":8,"method":"GET","url":"/api/contributions"},"res":{"statusCode":200},"responseTime":8,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325677044,"pid":263604,"hostname":"srv1609330","req":{"id":9,"method":"GET","url":"/api/gallery/albums"},"res":{"statusCode":200},"responseTime":10,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325677117,"pid":263604,"hostname":"srv1609330","req":{"id":11,"method":"GET","url":"/api/visits/count"},"res":{"statusCode":200},"responseTime":18,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325677130,"pid":263604,"hostname":"srv1609330","req":{"id":10,"method":"POST","url":"/api/visits/track"},"res":{"statusCode":204},"responseTime":80,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325677170,"pid":263604,"hostname":"srv1609330","req":{"id":12,"method":"GET","url":"/api/auth/me"},"res":{"statusCode":200},"responseTime":3,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325677203,"pid":263604,"hostname":"srv1609330","req":{"id":13,"method":"GET","url":"/api/events"},"res":{"statusCode":304},"responseTime":3,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325677255,"pid":263604,"hostname":"srv1609330","req":{"id":14,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":3,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325677327,"pid":263604,"hostname":"srv1609330","req":{"id":15,"method":"GET","url":"/api/settings"},"res":{"statusCode":304},"responseTime":2,"msg":"request completed"}
+2|ayyappan-api  | {"level":30,"time":1788325677448,"pid":263604,"hostname":"srv1609330","req":{"id":16,"method":"GET","url":"/api/news"},"res":{"statusCode":304},"responseTime":2,"msg":"request completed"}
+
+ ✖ Lost connection to the server
