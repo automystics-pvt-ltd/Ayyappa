@@ -13,6 +13,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: "3001",
+        ALLOWED_ORIGINS: "https://vadamadurai-ayyappan-temple.automystics.tech",
         // Copy the values from your Replit secrets:
         DATABASE_URL: "postgresql://USER:PASS@HOST:5432/DBNAME",
         SESSION_SECRET: "REPLACE_WITH_YOUR_SESSION_SECRET",
