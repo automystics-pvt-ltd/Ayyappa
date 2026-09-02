@@ -2,7 +2,8 @@ module.exports = {
   apps: [
     {
       name: "ayyappan-api",
-      script: "/opt/ayyappan-api/dist/index.mjs",
+      cwd: __dirname,
+      script: "./dist/index.mjs",
       interpreter: "node",
       interpreter_args: "--enable-source-maps",
       instances: 1,

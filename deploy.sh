@@ -117,7 +117,8 @@ ok "Database migrations applied"
 info "Restarting API with PM2..."
 # Always reload from the ecosystem file. Restarting only by process name can
 # retain stale PORT/DATABASE_URL values from the previous PM2 process.
-pm2 startOrReload "$ECOSYSTEM" --env production --update-env
+# The ecosystem template stores its production values in env (not env_production).
+pm2 startOrReload "$ECOSYSTEM" --update-env
 pm2 save --force >/dev/null
 ok "PM2 process is running"
 
